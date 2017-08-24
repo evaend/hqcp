@@ -20,7 +20,7 @@ import com.phxl.hqcp.common.constant.CustomConst.LoginUser;
 
 /**
  * 接口访问控制
- * 2017年4月13日 上午11:16:561
+ * 2017年4月13日 上午11:16:56
  * @author 陶悠
  *
  */
