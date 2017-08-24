@@ -29,7 +29,7 @@ public class PermissionServiceImpl
  {
 	private Log logInfo = LogFactory.getLog(getClass());   
 	
-	//前置方法a
+	//前置方法
 	public void permissionBefore(JoinPoint point) {
 		try{
 			HttpServletRequest request = SysContent.getRequest();
