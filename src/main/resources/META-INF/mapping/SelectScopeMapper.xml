@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.SelectScopeMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.SelectScope" >
+    <id column="SELECT_SCOPE_GUID" property="selectScopeGuid" jdbcType="VARCHAR" />
+    <result column="SELECT_ORG_ID" property="selectOrgId" jdbcType="DECIMAL" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="P_YEAR" property="pYear" jdbcType="VARCHAR" />
+    <result column="P_YMD" property="pYmd" jdbcType="VARCHAR" />
+    <result column="START_DATE" property="startDate" jdbcType="DATE" />
+    <result column="END_DATE" property="endDate" jdbcType="DATE" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="VARCHAR" />
+    <result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="DATE" />
+    <result column="MODEFILE_USER_ID" property="modefileUserId" jdbcType="VARCHAR" />
+    <result column="MODEFILE_USER_NMAE" property="modefileUserNmae" jdbcType="VARCHAR" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
+    <result column="SELECT_SCOPE_SUB_TYPE" property="selectScopeSubType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SELECT_SCOPE_GUID, SELECT_ORG_ID, ORG_ID, P_YEAR, P_YMD, START_DATE, END_DATE, CREATE_TIME, 
+    CREATE_USER_ID, CREATE_USER_NAME, MODIFY_TIME, MODEFILE_USER_ID, MODEFILE_USER_NMAE, 
+    TF_REMARK, SELECT_SCOPE_SUB_TYPE
+  </sql>
+  
+</mapper>
