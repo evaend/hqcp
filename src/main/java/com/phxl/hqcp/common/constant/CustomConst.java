@@ -23,7 +23,7 @@ public class CustomConst {
 	 * @since	JDK 1.6
 	 */
 	public static final class UserLevel {
-		/**01、系统管理员2*/
+		/**01、系统管理员*/
 		public static final String SUPER_ADMIN = "01";
 		/**02、机构管理员*/
 		public static final String ORG_ADMIN = "02";
