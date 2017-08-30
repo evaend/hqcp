@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.ConstrDeptMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.ConstrDept" >
+    <id column="CONSTR_DEPT_GUID" property="constrDeptGuid" jdbcType="VARCHAR" />
+    <result column="QC_ORG_ID" property="qcOrgId" jdbcType="DECIMAL" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="QC_SCOPE_TYPE" property="qcScopeType" jdbcType="VARCHAR" />
+    <result column="P_YEAR" property="pYear" jdbcType="VARCHAR" />
+    <result column="P_YMD" property="pYmd" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="AUDIT_ID" property="auditId" jdbcType="VARCHAR" />
+    <result column="AUDIT_NAME" property="auditName" jdbcType="VARCHAR" />
+    <result column="AUDIT_TIME" property="auditTime" jdbcType="DATE" />
+    <result column="AUDIT_FSTATE" property="auditFstate" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="VARCHAR" />
+    <result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="DATE" />
+    <result column="MODEFILE_USER_ID" property="modefileUserId" jdbcType="VARCHAR" />
+    <result column="MODEFILE_USER_NMAE" property="modefileUserNmae" jdbcType="VARCHAR" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
+    <result column="SCHEDULE" property="schedule" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONSTR_DEPT_GUID, QC_ORG_ID, ORG_ID, QC_SCOPE_TYPE, P_YEAR, P_YMD, START_TIME, END_TIME, 
+    AUDIT_ID, AUDIT_NAME, AUDIT_TIME, AUDIT_FSTATE, CREATE_TIME, CREATE_USER_ID, CREATE_USER_NAME, 
+    MODIFY_TIME, MODEFILE_USER_ID, MODEFILE_USER_NMAE, TF_REMARK, SCHEDULE
+  </sql>
+  
+</mapper>

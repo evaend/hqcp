@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.ConstrDeptUserMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.ConstrDeptUser" >
+    <id column="CONSTR_DEPT_USER_GUID" property="constrDeptUserGuid" jdbcType="VARCHAR" />
+    <result column="CONSTR_DEPT_GUID" property="constrDeptGuid" jdbcType="VARCHAR" />
+    <result column="FNAME" property="fname" jdbcType="VARCHAR" />
+    <result column="GENDER" property="gender" jdbcType="VARCHAR" />
+    <result column="BIRTH_CHAR" property="birthChar" jdbcType="VARCHAR" />
+    <result column="TECHNICAL_TITLES_A" property="technicalTitlesA" jdbcType="VARCHAR" />
+    <result column="TECHNICAL_TITLES_B" property="technicalTitlesB" jdbcType="VARCHAR" />
+    <result column="POST_NAME" property="postName" jdbcType="VARCHAR" />
+    <result column="POST_AGE" property="postAge" jdbcType="DECIMAL" />
+    <result column="HIGHEST_EDUCATION" property="highestEducation" jdbcType="VARCHAR" />
+    <result column="MAJOR_NAME" property="majorName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONSTR_DEPT_USER_GUID, CONSTR_DEPT_GUID, FNAME, GENDER, BIRTH_CHAR, TECHNICAL_TITLES_A, 
+    TECHNICAL_TITLES_B, POST_NAME, POST_AGE, HIGHEST_EDUCATION, MAJOR_NAME
+  </sql>
+  
+</mapper>

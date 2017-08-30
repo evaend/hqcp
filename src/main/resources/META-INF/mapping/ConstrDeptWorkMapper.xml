@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.ConstrDeptWorkMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.ConstrDeptWork" >
+    <id column="CONSTR_DEPT_WORK_GUID" property="constrDeptWorkGuid" jdbcType="VARCHAR" />
+    <result column="CONSTR_DEPT_GUID" property="constrDeptGuid" jdbcType="VARCHAR" />
+    <result column="FSORT" property="fsort" jdbcType="DECIMAL" />
+    <result column="EQUIPMENT_SUM" property="equipmentSum" jdbcType="DECIMAL" />
+    <result column="EQUIPMENT_VALUE" property="equipmentValue" jdbcType="DECIMAL" />
+    <result column="AB_EQUIPMENT_SUM" property="abEquipmentSum" jdbcType="DECIMAL" />
+    <result column="AB_EQUIPMENT_VALUE" property="abEquipmentValue" jdbcType="DECIMAL" />
+    <result column="CONSU_SUM" property="consuSum" jdbcType="DECIMAL" />
+    <result column="CONSU_VALUE" property="consuValue" jdbcType="DECIMAL" />
+    <result column="HIGH_CONSU_SUM" property="highConsuSum" jdbcType="DECIMAL" />
+    <result column="HIGH_CONSU_VALUE" property="highConsuValue" jdbcType="DECIMAL" />
+    <result column="LOGISTICS_SCOPE" property="logisticsScope" jdbcType="VARCHAR" />
+    <result column="LOGISTICS_TYPE" property="logisticsType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONSTR_DEPT_WORK_GUID, CONSTR_DEPT_GUID, FSORT, EQUIPMENT_SUM, EQUIPMENT_VALUE, AB_EQUIPMENT_SUM, 
+    AB_EQUIPMENT_VALUE, CONSU_SUM, CONSU_VALUE, HIGH_CONSU_SUM, HIGH_CONSU_VALUE, LOGISTICS_SCOPE, 
+    LOGISTICS_TYPE
+  </sql>
+ 
+</mapper>

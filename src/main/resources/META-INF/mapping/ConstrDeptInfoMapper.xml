@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.ConstrDeptInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.ConstrDeptInfo" >
+    <id column="CONSTR_DEPT_INFO_GUID" property="constrDeptInfoGuid" jdbcType="VARCHAR" />
+    <result column="CONSTR_DEPT_GUID" property="constrDeptGuid" jdbcType="VARCHAR" />
+    <result column="FSORT" property="fsort" jdbcType="DECIMAL" />
+    <result column="DEPT_NAME" property="deptName" jdbcType="VARCHAR" />
+    <result column="DEPT_NAME_REMARK" property="deptNameRemark" jdbcType="VARCHAR" />
+    <result column="DEPT_TYPE_NAME" property="deptTypeName" jdbcType="VARCHAR" />
+    <result column="DEPT_PARENT_NAME" property="deptParentName" jdbcType="VARCHAR" />
+    <result column="DEPT_WORK_SCOPE" property="deptWorkScope" jdbcType="VARCHAR" />
+    <result column="DEPT_WORK_OTHER" property="deptWorkOther" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONSTR_DEPT_INFO_GUID, CONSTR_DEPT_GUID, FSORT, DEPT_NAME, DEPT_NAME_REMARK, DEPT_TYPE_NAME, 
+    DEPT_PARENT_NAME, DEPT_WORK_SCOPE, DEPT_WORK_OTHER
+  </sql>
+  
+</mapper>

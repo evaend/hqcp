@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.ConstrDeptMeetingMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.ConstrDeptMeeting" >
+    <id column="CONSTR_DEPT_MEETING_GUID" property="constrDeptMeetingGuid" jdbcType="VARCHAR" />
+    <result column="CONSTR_DEPT_GUID" property="constrDeptGuid" jdbcType="VARCHAR" />
+    <result column="MEETING_NAME" property="meetingName" jdbcType="VARCHAR" />
+    <result column="MEETING_TYPE" property="meetingType" jdbcType="VARCHAR" />
+    <result column="MEETING_DATE" property="meetingDate" jdbcType="DATE" />
+    <result column="MEETING_ADDRESS" property="meetingAddress" jdbcType="VARCHAR" />
+    <result column="MEETING_SPONSOR" property="meetingSponsor" jdbcType="VARCHAR" />
+    <result column="MEETING_ALL_USER_SUM" property="meetingAllUserSum" jdbcType="DECIMAL" />
+    <result column="MEETING_DEPT_USER_SUM" property="meetingDeptUserSum" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONSTR_DEPT_MEETING_GUID, CONSTR_DEPT_GUID, MEETING_NAME, MEETING_TYPE, MEETING_DATE, 
+    MEETING_ADDRESS, MEETING_SPONSOR, MEETING_ALL_USER_SUM, MEETING_DEPT_USER_SUM
+  </sql>
+  
+</mapper>
