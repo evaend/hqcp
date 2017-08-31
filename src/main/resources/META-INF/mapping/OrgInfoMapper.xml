@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phxl.hqcp.dao.OrgInfoMapper">
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.OrgInfo">
+    <id column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    <result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    <result column="FQUN" jdbcType="VARCHAR" property="fqun" />
+    <result column="ORG_ALIAS" jdbcType="VARCHAR" property="orgAlias" />
+    <result column="TF_PROVINCE" jdbcType="VARCHAR" property="tfProvince" />
+    <result column="TF_CITY" jdbcType="VARCHAR" property="tfCity" />
+    <result column="TF_DISTRICT" jdbcType="VARCHAR" property="tfDistrict" />
+    <result column="ORG_TYPE" jdbcType="VARCHAR" property="orgType" />
+    <result column="FLAG" jdbcType="VARCHAR" property="flag" />
+    <result column="PARENT_ID" jdbcType="DECIMAL" property="parentId" />
+    <result column="LXR" jdbcType="VARCHAR" property="lxr" />
+    <result column="LXDH" jdbcType="VARCHAR" property="lxdh" />
+    <result column="TF_ACCESSORY" jdbcType="VARCHAR" property="tfAccessory" />
+    <result column="TF_LOGO" jdbcType="VARCHAR" property="tfLogo" />
+    <result column="AUDIT_ID" jdbcType="VARCHAR" property="auditId" />
+    <result column="AUDIT_NAME" jdbcType="VARCHAR" property="auditName" />
+    <result column="AUDIT_TIME" jdbcType="DATE" property="auditTime" />
+    <result column="AUDIT_FSTATE" jdbcType="VARCHAR" property="auditFstate" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+    <result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+    <result column="CREATE_USER_NAME" jdbcType="VARCHAR" property="createUserName" />
+    <result column="MODIFY_TIME" jdbcType="DATE" property="modifyTime" />
+    <result column="MODEFILE_USER_ID" jdbcType="VARCHAR" property="modefileUserId" />
+    <result column="MODEFILE_USER_NMAE" jdbcType="VARCHAR" property="modefileUserNmae" />
+    <result column="TF_REMARK" jdbcType="VARCHAR" property="tfRemark" />
+    <result column="AUDIT_ORG_CODE" jdbcType="VARCHAR" property="auditOrgCode" />
+    <result column="AUDIT_TF_ACCESSORY" jdbcType="VARCHAR" property="auditTfAccessory" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ORG_ID, ORG_NAME, ORG_CODE, FQUN, ORG_ALIAS, TF_PROVINCE, TF_CITY, TF_DISTRICT, ORG_TYPE, 
+    FLAG, PARENT_ID, LXR, LXDH, TF_ACCESSORY, TF_LOGO, AUDIT_ID, AUDIT_NAME, AUDIT_TIME, 
+    AUDIT_FSTATE, CREATE_TIME, CREATE_USER_ID, CREATE_USER_NAME, MODIFY_TIME, MODEFILE_USER_ID, 
+    MODEFILE_USER_NMAE, TF_REMARK, AUDIT_ORG_CODE, AUDIT_TF_ACCESSORY
+  </sql>
+</mapper>

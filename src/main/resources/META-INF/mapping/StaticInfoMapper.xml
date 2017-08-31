@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.StaticInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.StaticInfo" >
+    <id column="STATIC_ID" property="staticId" jdbcType="VARCHAR" />
+    <result column="STATIC_TYPE" property="staticType" jdbcType="VARCHAR" />
+    <result column="PARENT_STATIC_ID" property="parentStaticId" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="CREATE_USERID" property="createUserid" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="DATE" />
+    <result column="TF_TABLE" property="tfTable" jdbcType="VARCHAR" />
+    <result column="TF_CLO" property="tfClo" jdbcType="VARCHAR" />
+    <result column="TF_COMMENT" property="tfComment" jdbcType="VARCHAR" />
+    <result column="TF_TABLE_CLO" property="tfTableClo" jdbcType="VARCHAR" />
+    <result column="FSORT" property="fsort" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    STATIC_ID, STATIC_TYPE, PARENT_STATIC_ID, ORG_ID, CREATE_USERID, CREATE_TIME, MODIFY_TIME, 
+    TF_TABLE, TF_CLO, TF_COMMENT, TF_TABLE_CLO, FSORT
+  </sql>
+  <!-- 【运营】查询所有数据字典类型 -->
+	<select id="searchStaticInfo" resultType="hashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select i.STATIC_ID "staticId",i.TF_CLO "tfClo",i.TF_COMMENT "tfComment",i.ORG_ID "orgId",GET_ORGNAME(i.ORG_ID) "orgName",
+			   i.FSORT "fsort",i.PARENT_STATIC_ID "parentStaticId",
+			   case when i.PARENT_STATIC_ID !='0' then pi.TF_COMMENT 
+			   else '' end as "pTfComment"
+		from td_static_info i
+		left join td_static_info pi on i.PARENT_STATIC_ID = pi.STATIC_ID
+		where 1=1 
+		<if test="conditiions!=null">
+			<if test="conditiions.searchParams !=null and conditiions.searchParams !=''">
+			    and (regexp_like(GET_ORGNAME(i.ORG_ID), #{conditiions.searchParams, jdbcType=VARCHAR})
+				or regexp_like(i.TF_CLO, #{conditiions.searchParams, jdbcType=VARCHAR})
+				or regexp_like(i.TF_COMMENT, #{conditiions.searchParams, jdbcType=VARCHAR}))
+			</if>
+		</if>
+		order by i.org_id,i.fsort
+    </select>
+    
+    <!-- 【所有机构】查询机构对应的数据字典类型,需要拼成树结构 -->
+    <select id="searchStaticByOrgId" resultType="hashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select i.STATIC_ID "staticId",i.TF_CLO "tfClo",i.TF_COMMENT "tfComment",
+			   i.FSORT "fsort",i.PARENT_STATIC_ID "parentStaticId"
+		from td_static_info i
+		where i.ORG_ID = #{conditiions.sessionOrgId, jdbcType=VARCHAR}
+		<if test="conditiions.searchParams !=null and conditiions.searchParams !=''">
+		    and (regexp_like(i.TF_COMMENT, #{conditiions.searchParams, jdbcType=VARCHAR})
+			or regexp_like(i.TF_CLO, #{conditiions.searchParams, jdbcType=VARCHAR}))
+		</if>
+		order by i.fsort
+    </select>
+    
+    <!-- 查询数据字典是否存在 -->
+	<select id="countStaticInfo" resultType="int" parameterType="com.phxl.ysy.systemModule.entity.StaticInfo">
+		select COUNT(*) from (
+			select i.TF_CLO from td_static_info i 
+			where i.TF_CLO = #{tfClo,jdbcType=VARCHAR}
+				  and i.ORG_ID = #{orgId,jdbcType=VARCHAR}
+				  <if test="staticId != null and staticId !=''">
+				  	and i.static_id != #{staticId,jdbcType=VARCHAR}
+				  </if>
+		)
+	</select>
+    
+    
+     <!-- 【数据字典】查询某个机构的数据字典（select下拉框，带搜索） -->
+	 <select id="orgStaticInfo" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		SELECT
+		  DISTINCT i.STATIC_ID "value", i.TF_COMMENT "text"
+		FROM  td_static_info i
+		where i.ORG_ID = #{conditiions.orgId, jdbcType=VARCHAR}
+		<if test="conditiions.searchParams !=null and conditiions.searchParams !=''">
+		    and (regexp_like(i.TF_COMMENT, #{conditiions.searchParams, jdbcType=VARCHAR})
+			or regexp_like(i.TF_CLO, #{conditiions.searchParams, jdbcType=VARCHAR}))
+		</if>
+		order by i.fsort
+	</select>
+</mapper>

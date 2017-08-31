@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phxl.hqcp.dao.StaticDataMapper">
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.StaticData">
+    <result column="GU_ID" jdbcType="VARCHAR" property="guId" />
+    <result column="STATIC_CLASS" jdbcType="VARCHAR" property="staticClass" />
+    <result column="STATIC_CODE" jdbcType="VARCHAR" property="staticCode" />
+    <result column="PARENT_CODE" jdbcType="VARCHAR" property="parentCode" />
+    <result column="STATIC_NAME" jdbcType="VARCHAR" property="staticName" />
+    <result column="FQUN" jdbcType="VARCHAR" property="fqun" />
+    <result column="TF_TABLE" jdbcType="VARCHAR" property="tfTable" />
+    <result column="TF_CLO" jdbcType="VARCHAR" property="tfClo" />
+    <result column="TF_REMARK" jdbcType="VARCHAR" property="tfRemark" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="CREATETIME" jdbcType="DATE" property="createtime" />
+    <result column="LASTMODIFY" jdbcType="DATE" property="lastmodify" />
+    <result column="FSTATE" jdbcType="DECIMAL" property="fstate" />
+  </resultMap>
+   <sql id="Base_Column_List">
+    STATIC_DATA_GUID, TF_CLO_CODE, TF_CLO_NAME, CREATE_USERID, CREATE_TIME, TF_REMARK, 
+    STATIC_ID
+  </sql>
+  <select id="searchStaticData" resultType="hashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select t.TF_CLO_CODE,t.TF_CLO_NAME 
+		from TD_STATIC_INFO i,TD_STATIC_DATA t 
+		where i.static_id = t.static_id and i.STATIC_TYPE = '00'
+		<if test="conditiions.tableName !=null and conditiions.tableName !=''">
+			and i.TF_TABLE = #{conditiions.tableName,jdbcType=VARCHAR}
+		</if>
+		<if test="conditiions.filedName !=null and conditiions.filedName !=''">
+			and i.TF_CLO = #{conditiions.filedName,jdbcType=VARCHAR}
+		</if>
+		<if test="conditiions.tfCloCode !=null and conditiions.tfCloCode !=''">
+			and t.TF_CLO_CODE = #{conditiions.tfCloCode,jdbcType=VARCHAR}
+		</if>
+		<if test="conditiions.tfCloName !=null and conditiions.tfCloName !=''">
+			and t.TF_CLO_NAME = #{conditiions.tfCloName,jdbcType=VARCHAR}
+		</if>
+		order by t.TF_CLO_CODE
+    </select>
+    
+    <insert id="batchInsertFromStaticInfo">
+		INSERT INTO TD_STATIC_DATA(STATIC_DATA_GUID, 
+		TF_CLO_CODE, TF_CLO_NAME, CREATE_USERID, CREATE_TIME, 
+		STATIC_ID)
+		SELECT sys_guid(),d.TF_CLO_CODE, 
+			d.TF_CLO_NAME,#{newSInfo.createUserid},
+			#{newSInfo.modifyTime},#{newSInfo.staticId}
+			FROM TD_STATIC_DATA d
+            where d.static_id = #{sourceStaticId}
+	</insert>
+	
+	<!--根据字典类型id查询字典内容  -->
+	<select id="searchStaticDataByStaticId" resultType="hashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select <include refid="Base_Column_List" /> 
+		from TD_STATIC_DATA t 
+		where t.static_id = #{conditiions.staticId}
+		<if test="conditiions.searchParams !=null and conditiions.searchParams !=''">
+		    and (regexp_like(t.TF_CLO_CODE, #{conditiions.searchParams, jdbcType=VARCHAR})
+			or regexp_like(t.TF_CLO_NAME, #{conditiions.searchParams, jdbcType=VARCHAR}))
+		</if>
+		order by t.TF_CLO_CODE
+    </select>
+    
+    <!-- 查询某个分类的字典编码是否存在 -->
+	<select id="countStaticData" resultType="int" parameterType="com.phxl.ysy.systemModule.entity.StaticData">
+		select COUNT(*) from (
+			select d.TF_CLO_CODE from td_static_data d 
+			where d.TF_CLO_CODE=#{tfCloCode} and d.static_id = #{staticId}
+			  <if test="staticDataGuid != null and staticDataGuid !=''">
+				  	and d.STATIC_DATA_GUID != #{staticDataGuid,jdbcType=VARCHAR}
+			  </if>
+		)
+	</select>
+    
+    <!-- 根据staticid删除字典  -->
+    <delete id="deleteSdByStaticId">
+		DELETE FROM td_static_data 
+		WHERE static_id = #{staticId}
+    </delete>
+    
+    <!-- 查询机构私有字典 -->
+    <select id="privateData" resultType="hashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select t.TF_CLO_CODE,t.TF_CLO_NAME 
+		from TD_STATIC_INFO i,TD_STATIC_DATA t 
+		where i.static_id = t.static_id 
+		<if test="conditiions.tableName !=null and conditiions.tableName !=''">
+			and i.TF_TABLE = #{conditiions.tableName,jdbcType=VARCHAR}
+		</if>
+		<if test="conditiions.filedName !=null and conditiions.filedName !=''">
+			and i.TF_CLO = #{conditiions.filedName,jdbcType=VARCHAR}
+		</if>
+		<if test="conditiions.orgId !=null and conditiions.orgId !=''">
+			and i.ORG_ID = #{conditiions.orgId,jdbcType=VARCHAR}
+		</if>
+		order by t.TF_CLO_CODE
+    </select>
+
+	<!-- 过滤出字典中不存在的常量 -->
+	<select id="filterNoExistNames" resultType="string">
+		SELECT consts.name names
+		FROM (
+			<foreach collection="names" item="item" index="index" open=" " close=" " separator="UNION">
+				select #{names[${index}], jdbcType=VARCHAR} name FROM dual
+	    	</foreach>
+		  ) consts
+		left JOIN
+		(
+			SELECT DISTINCT cd.TF_CLO_NAME name
+			FROM TD_STATIC_INFO cn
+			JOIN TD_STATIC_DATA cd ON cn.STATIC_ID=cd.STATIC_ID
+			WHERE cn.TF_CLO = #{dictCode, jdbcType=VARCHAR}
+		) names ON consts.name=names.name
+		WHERE names.name is NULL
+	</select>
+	
+	<!-- 过滤出字典中不存在的code -->
+	<select id="filterNoExistCodes" resultType="string">
+		SELECT consts.name names
+		FROM (
+			<foreach collection="names" item="item" index="index" open=" " close=" " separator="UNION">
+				select #{names[${index}], jdbcType=VARCHAR} name FROM dual
+	    	</foreach>
+		  ) consts
+		left JOIN
+		(
+			SELECT DISTINCT cn.TF_CLO name
+			FROM TD_STATIC_INFO cn,TD_STATIC_INFO pcn
+			WHERE cn.PARENT_STATIC_ID = pcn.STATIC_ID and pcn.TF_CLO = #{dictCode, jdbcType=VARCHAR}
+		) names ON consts.name=names.name
+		WHERE names.name is NULL
+	</select>
+	
+	<!-- 翻译某一个具体字典码 -->
+	<select id="findDictName" resultType="string">
+		select cd.TF_CLO_NAME
+		from td_static_info cn
+		join td_static_data cd ON cn.STATIC_ID=cd.STATIC_ID
+		where 
+		cn.TF_CLO = #{dictType, jdbcType=VARCHAR} and cd.TF_CLO_CODE = #{dictCode, jdbcType=VARCHAR}
+	</select>
+
+</mapper>

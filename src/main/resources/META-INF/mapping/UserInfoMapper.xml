@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.UserInfo" >
+    <id column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="USER_NO" property="userNo" jdbcType="VARCHAR" />
+    <result column="PWD" property="pwd" jdbcType="VARCHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="SORT_NO" property="sortNo" jdbcType="VARCHAR" />
+    <result column="USER_LEVEL" property="userLevel" jdbcType="VARCHAR" />
+    <result column="MOBILE_PHONE" property="mobilePhone" jdbcType="VARCHAR" />
+    <result column="USER_ADDRESS" property="userAddress" jdbcType="VARCHAR" />
+    <result column="TF_FLAG" property="tfFlag" jdbcType="VARCHAR" />
+    <result column="FTYPE_USER" property="ftypeUser" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="AUDIT_ID" property="auditId" jdbcType="VARCHAR" />
+    <result column="AUDIT_NAME" property="auditName" jdbcType="VARCHAR" />
+    <result column="AUDIT_TIME" property="auditTime" jdbcType="DATE" />
+    <result column="AUDIT_FSTATE" property="auditFstate" jdbcType="VARCHAR" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
+    <result column="ORG_TYPE" property="orgType" jdbcType="VARCHAR" />
+   	<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	<result column="CREATE_USERID" property="createUserid" jdbcType="VARCHAR" />
+	<result column="MODIFY_USERID" property="modifyUserid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USER_ID, USER_NO, PWD, USER_NAME, SORT_NO, USER_LEVEL, MOBILE_PHONE, USER_ADDRESS, 
+    TF_FLAG, FTYPE_USER, ORGANIZATION_ID, AUDIT_ID, AUDIT_NAME, AUDIT_TIME, AUDIT_FSTATE, 
+    TF_REMARK
+  </sql>
+  <sql id="Base_Column_List_With_Prefix">
+		u.USER_ID, u.USER_NO, u.USER_NAME, u.PWD, u.FSTATE, u.TF_REMARK, u.MODIFY_TIME, u.CREATE_TIME,
+		u.CREATE_USERID, u.MODIFY_USERID, u.USER_LEVEL, u.MOBILE_PHONE, u.E_MAIL, u.QQ,
+		u.ORG_ID, u.WECHAT_OPENID, u.WECHAT_NO, u.ORG_TYPE, u.JOB_NUM		
+	</sql>
+	
+	<select id="findUserNoExist" resultType="int">
+	select COUNT(1) from (
+	    select TS_USER_INFO.USER_NO from TS_USER_INFO where TS_USER_INFO.USER_NO = #{userNo, jdbcType=VARCHAR}
+	    UNION
+	    select TD_USER_REGIST.USER_NO from TD_USER_REGIST,TD_ORG_REGIST where TD_USER_REGIST.REGIST_GUID = TD_ORG_REGIST.REGIST_GUID
+	    and TD_ORG_REGIST.Audit_Fstate = '00' and TD_USER_REGIST.USER_NO = #{userNo, jdbcType=VARCHAR}
+     )
+    </select>
+
+	<select id="selectUserMenu" resultType="hashMap">
+		select m.menu_id
+		from ts_group_user gu
+		left join ts_group g on gu.GROUP_ID = g.GROUP_ID
+		left join ts_group_menu gm on g.GROUP_ID = gm.GROUP_ID
+		left join ts_menu m on gm.MENU_ID = m.MENU_ID
+		where gu.USER_ID = #{userId,jdbcType=VARCHAR} and m.FSTATE = '01'
+    </select>
+
+	<resultMap id="UserExtResultMap" type="com.phxl.ysy.systemModule.entity.UserInfo" extends="BaseResultMap">
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR"/>
+		<result column="GROUPS" property="groups" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<!-- 查询机构用户列表 -->
+	<select id="findOrgUserList" resultMap="UserExtResultMap" parameterType="com.phxl.core.base.entity.Pager">
+		SELECT 
+			<include refid="Base_Column_List_With_Prefix"></include>, 
+			o.ORG_NAME, 
+			(SELECT wm_concat(g.GROUP_NAME) from TS_GROUP_USER gu LEFT JOIN TS_GROUP g on gu.GROUP_ID=g.GROUP_ID  WHERE gu.USER_ID = u.USER_ID) groups
+		FROM TS_USER_INFO u
+		LEFT JOIN TD_ORG_INFO o on u.ORG_ID=o.ORG_ID 
+		WHERE 1=1 
+			<choose>
+				<!-- 系统管理员 -->
+				<when test='conditiions.sessionOrgType=="09" and conditiions.sessionUserLevel=="01"'>
+					and ( (u.USER_LEVEL in ('01', '02', '03') and u.ORG_ID = #{conditiions.sessionOrgId, jdbcType=DECIMAL}) or u.USER_LEVEL = '02')
+				</when>
+				<!-- 运营商（服务商）用户 -->
+				<when test='conditiions.sessionOrgType=="09" and conditiions.sessionUserLevel!="01"'>
+					and ( (u.USER_LEVEL in ('02', '03') and u.ORG_ID = #{conditiions.sessionOrgId, jdbcType=DECIMAL}) or u.USER_LEVEL = '02' )
+				</when>
+				<!-- 医院、供应商、监管部门 -->
+				<otherwise>
+					and u.USER_LEVEL in ('02', '03') and u.ORG_ID = #{conditiions.sessionOrgId, jdbcType=DECIMAL}
+				</otherwise>
+			</choose>
+			<if test="conditiions!=null and !conditiions.empty">
+				<if test="conditiions.searchName != null and conditiions.searchName != ''">
+					and (
+							regexp_like(u.USER_NO, #{conditiions.searchName, jdbcType=VARCHAR})
+						or regexp_like(u.USER_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
+						or regexp_like(u.JOB_NUM, #{conditiions.searchName, jdbcType=VARCHAR})
+						or regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
+						or regexp_like(o.ORG_ALIAS, #{conditiions.searchName, jdbcType=VARCHAR})
+						or regexp_like(o.FQUN, #{conditiions.searchName, jdbcType=VARCHAR})
+					)
+			   </if>
+		   </if>
+			
+		<!-- 排序 -->
+		<choose>
+			<when test="conditiions != null and conditiions.orderMark != null and conditiions.orderField != null and conditiions.orderField!=''">
+				order by [orderField] ${conditiions.orderMark}
+			</when>
+			<otherwise>
+				order by nvl(u.MODIFY_TIME, u.CREATE_TIME) desc 
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 查看指定机构的机构类型 -->
+	<select id="findOrgTypeByOrgId" resultType="string">
+		SELECT ORG_TYPE FROM TD_ORG_INFO where ORG_ID = #{orgId}
+	</select>
+	
+	<!-- 查询用户名（登录名）是否存在 -->
+	<select id="countUserno" resultType="int">
+		select COUNT(*) from (
+			select USER_NO from TS_USER_INFO where USER_NO = #{userNo,jdbcType=VARCHAR}
+				<if test="excludeUserId!=null and excludeUserId!=''">
+					and USER_ID != #{excludeUserId}
+				</if>
+			UNION
+			select USER_NO from TD_USER_REGIST,TD_ORG_REGIST where TD_USER_REGIST.REGIST_GUID = TD_ORG_REGIST.REGIST_GUID
+				and TD_ORG_REGIST.Audit_Fstate = '00' and TD_USER_REGIST.USER_NO = #{userNo,jdbcType=VARCHAR}
+		)
+	</select>
+	
+	<!-- 判断指定机构是否运营商（服务商） -->
+	<select id="findServiceOrgByOrgId" resultType="int">
+		SELECT count(*) FROM TD_ORG_INFO where ORG_ID = #{orgId} and ORG_TYPE='09'
+	</select>
+
+	<!-- 查看指定机构的状态 -->
+	<select id="findOrgFstateByOrgId" resultType="string">
+		SELECT FSTATE FROM TD_ORG_INFO where ORG_ID = #{orgId}
+	</select>
+	
+	<!-- 查询机构对应的机构管理员 -->
+	<select id="findManagerUserIdByOrgId" resultType="string">
+		SELECT USER_ID FROM TS_USER_INFO where USER_LEVEL='02' and ORG_ID = #{orgId}
+	</select>
+
+	<!-- 查询还没有机构管理员的机构列表 -->
+	<select id="findWithoutAdminOrgList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		SELECT
+		  DISTINCT o.ORG_ID "value", o.ORG_NAME "text"
+		FROM  TD_ORG_INFO o
+		WHERE o.FSTATE='01'
+		and not exists(
+		  SELECT u.ORG_ID FROM TS_USER_INFO u WHERE u.ORG_ID=o.ORG_ID AND u.USER_LEVEL='02'
+		)
+		<if test="conditiions!=null">
+			<if test="conditiions.searchName!=null and conditiions.searchName!=''">
+				and regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
+			</if>
+		</if>
+	</select>
+	
+	<!-- 根据用户id查询用户信息 -->
+	<select id="findUserInfoById" resultMap="UserExtResultMap" parameterType="string">
+		SELECT 
+			<include refid="Base_Column_List_With_Prefix"></include>
+			, o.ORG_NAME 
+		FROM TS_USER_INFO u
+		LEFT JOIN TD_ORG_INFO o on u.ORG_ID=o.ORG_ID
+		where u.USER_ID = #{userId}
+	</select>
+</mapper>
