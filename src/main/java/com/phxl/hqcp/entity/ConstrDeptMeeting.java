@@ -15,7 +15,7 @@ public class ConstrDeptMeeting {
     private String meetingType;
 
     private Date meetingDate;
-
+    
     private String meetingAddress;
 
     private String meetingSponsor;
@@ -23,6 +23,10 @@ public class ConstrDeptMeeting {
     private Long meetingAllUserSum;
 
     private Long meetingDeptUserSum;
+    
+    private String tfRemark;
+    
+    private String meetingTime;
 
     public String getConstrDeptMeetingGuid() {
         return constrDeptMeetingGuid;
@@ -94,5 +98,21 @@ public class ConstrDeptMeeting {
 
     public void setMeetingDeptUserSum(Long meetingDeptUserSum) {
         this.meetingDeptUserSum = meetingDeptUserSum;
+    }
+    
+    public String getMeetingTime() {
+        return meetingTime;
+    }
+
+    public void setMeetingTime(String meetingTime) {
+        this.meetingTime = meetingTime;
+    }
+
+    public String getTfRemark() {
+        return tfRemark;
+    }
+
+    public void setTfRemark(String tfRemark) {
+        this.tfRemark = tfRemark;
     }
 }

@@ -2,6 +2,7 @@ package com.phxl.hqcp.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.phxl.core.base.annotation.BaseSql;
 
@@ -46,7 +47,15 @@ public class ConstrDept {
     private String tfRemark;
 
     private BigDecimal schedule;
-
+    
+    private ConstrDeptInfo deptInfo;//建设科室-科室基本信息
+    
+    private ConstrDeptWork deptWork;//建设科室-科室业务
+    
+    private List<ConstrDeptUser> userList;//建设科室-科室人员
+    
+    private List<ConstrDeptMeeting> meetingList;//建设科室-科室会议
+    
     public String getConstrDeptGuid() {
         return constrDeptGuid;
     }
@@ -205,5 +214,37 @@ public class ConstrDept {
 
     public void setSchedule(BigDecimal schedule) {
         this.schedule = schedule;
+    }
+    
+    public ConstrDeptInfo getDeptInfo() {
+        return deptInfo;
+    }
+
+    public void setDeptInfo(ConstrDeptInfo deptInfo) {
+        this.deptInfo = deptInfo;
+    }
+    
+    public ConstrDeptWork getDeptWork() {
+        return deptWork;
+    }
+
+    public void setDeptWork(ConstrDeptWork deptWork) {
+        this.deptWork = deptWork;
+    }
+    
+    public List<ConstrDeptUser> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<ConstrDeptUser> userList) {
+        this.userList = userList;
+    }
+
+    public List<ConstrDeptMeeting> getMeetingList() {
+        return meetingList;
+    }
+
+    public void setMeetingList(List<ConstrDeptMeeting> meetingList) {
+        this.meetingList = meetingList;
     }
 }

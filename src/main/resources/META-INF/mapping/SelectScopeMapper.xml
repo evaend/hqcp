@@ -24,4 +24,31 @@
     TF_REMARK, SELECT_SCOPE_SUB_TYPE
   </sql>
   
+  <!-- 查询时间列表（科室建设-时间下拉框） -->
+	<select id="getPyearList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select distinct s.p_year "value", s.p_year "text" from TD_SELECT_SCOPE s
+		where s.select_scope_sub_type = #{conditiions.selectScopeSubType, jdbcType=VARCHAR} 
+		and s.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR}
+	    and s.select_org_id = #{conditiions.orgId, jdbcType=DECIMAL}
+	    order by s.p_year desc
+	</select>
+	
+	<!-- 查询医院列表（科室建设） -->
+	<select id="searchSelectScopeList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select s.select_scope_guid "selectScopeGuid",t.constr_dept_guid "constrDeptGuid",s.org_id "orgId",o.org_name "orgName",
+		       s.p_year "pYear",(CASE WHEN t.schedule is null THEN '0%' ELSE t.schedule*100.0||'%' END) "schedule",t.audit_fstate "auditFstate"
+		from td_select_scope s 
+		left join tb_constr_dept t on s.org_id = t.org_id and t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} 
+		                                                  and t.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR}
+		left join TD_ORG_INFO o on o.org_id = s.org_id
+		where s.select_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and s.p_year = #{conditiions.pYear, jdbcType=VARCHAR} 
+		  and s.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} and s.select_scope_sub_type = #{conditiions.selectScopeSubType, jdbcType=VARCHAR}
+		<if test="conditiions!=null and conditiions.searchName != null and conditiions.searchName != ''">
+		  and regexp_like(o.org_name, #{conditiions.searchName,jdbcType=VARCHAR})
+	    </if>
+	    <if test="conditiions!=null and conditiions.fstate != null and conditiions.fstate != ''">
+		  and t.audit_fstate in (#{conditiions.fstate,jdbcType=VARCHAR})
+	    </if>
+	</select>
+  
 </mapper>

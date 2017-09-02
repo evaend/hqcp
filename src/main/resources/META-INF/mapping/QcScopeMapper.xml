@@ -34,5 +34,23 @@
         and s.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR}
         order by s.p_year desc
 	</select>
+	
+	<!-- 科室信息审核列表 -->
+	<select id="searchConstrDeptAuditList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select cd.constr_dept_guid "constrDeptGuid",cd.p_year "pYear",o.org_name "orgName",d.dept_name "deptName",o.lxr "lxr",o.lxdh "lxdh",cd.audit_fstate "auditFstate",
+		       (CASE WHEN cd.schedule is null THEN '0%' ELSE cd.schedule*100.0||'%' END) "schedule" 
+		from TD_QC_SCOPE qc,TB_CONSTR_DEPT cd
+		left join td_org_info o on o.org_id = cd.org_id
+		left join tb_constr_dept_info d on d.constr_dept_guid = cd.constr_dept_guid 
+		where qc.org_id = cd.org_id and qc.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and qc.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR} and qc.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+		and qc.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} and qc.qc_scope_sub_type = #{conditiions.qcScopeSubType, jdbcType=VARCHAR} and cd.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR} and cd.p_year = #{conditiions.pYear, jdbcType=VARCHAR} 
+		and cd.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR}
+		<if test="conditiions!=null and conditiions.orgName != null and conditiions.orgName != ''">
+		  and regexp_like(o.org_name, #{conditiions.orgName,jdbcType=VARCHAR})
+	    </if>
+	    <if test="conditiions!=null and conditiions.fstate != null and conditiions.fstate != ''">
+		  and cd.audit_fstate in (#{conditiions.fstate,jdbcType=VARCHAR})
+	    </if>
+	</select>
   
 </mapper>

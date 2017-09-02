@@ -1,5 +1,8 @@
 package com.phxl.hqcp.entity;
 
+import java.util.List;
+import java.util.Map;
+
 import com.phxl.core.base.annotation.BaseSql;
 
 @BaseSql(tableName="TB_CONSTR_DEPT_INFO", resultName="com.phxl.hqcp.dao.ConstrDeptInfoMapper.BaseResultMap")
@@ -21,6 +24,10 @@ public class ConstrDeptInfo {
     private String deptWorkScope;
 
     private String deptWorkOther;
+    
+    private List<Map<String, Object>> workScope;
+    
+    private List<Map<String, Object>> workOther;
 
     public String getConstrDeptInfoGuid() {
         return constrDeptInfoGuid;
@@ -92,5 +99,21 @@ public class ConstrDeptInfo {
 
     public void setDeptWorkOther(String deptWorkOther) {
         this.deptWorkOther = deptWorkOther == null ? null : deptWorkOther.trim();
+    }
+    
+    public List<Map<String, Object>> getWorkScope() {
+        return workScope;
+    }
+
+    public void setWorkScope(List<Map<String, Object>> workScope) {
+        this.workScope = workScope;
+    }
+
+    public List<Map<String, Object>> getWorkOther() {
+        return workOther;
+    }
+
+    public void setWorkOther(List<Map<String, Object>> workOther) {
+        this.workOther = workOther;
     }
 }

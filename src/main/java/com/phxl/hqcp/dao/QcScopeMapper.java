@@ -19,5 +19,18 @@ public interface QcScopeMapper extends BaseMapper {
      * @throws
      */
     List<Map<String, Object>> getDeptYearList(Pager pager);
+
+    /**
+     * 
+     * searchConstrDeptAuditList:(科室信息审核列表). <br/> 
+     * 
+     * @Title: searchConstrDeptAuditList
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return List<Map<String,Object>>    返回类型
+     * @throws
+     */
+    List<Map<String, Object>> searchConstrDeptAuditList(Pager pager);
    
 }
