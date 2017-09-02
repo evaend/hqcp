@@ -62,7 +62,7 @@
 		order by t.TF_CLO_CODE
     </select>
     
-    <!-- 查询某个分类的字典编码是否存在 -->
+    查询某个分类的字典编码是否存在
 	<select id="countStaticData" resultType="int" parameterType="com.phxl.ysy.systemModule.entity.StaticData">
 		select COUNT(*) from (
 			select d.TF_CLO_CODE from td_static_data d 
