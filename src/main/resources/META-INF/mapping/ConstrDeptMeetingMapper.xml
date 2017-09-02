@@ -11,10 +11,11 @@
     <result column="MEETING_SPONSOR" property="meetingSponsor" jdbcType="VARCHAR" />
     <result column="MEETING_ALL_USER_SUM" property="meetingAllUserSum" jdbcType="DECIMAL" />
     <result column="MEETING_DEPT_USER_SUM" property="meetingDeptUserSum" jdbcType="DECIMAL" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     CONSTR_DEPT_MEETING_GUID, CONSTR_DEPT_GUID, MEETING_NAME, MEETING_TYPE, MEETING_DATE, 
-    MEETING_ADDRESS, MEETING_SPONSOR, MEETING_ALL_USER_SUM, MEETING_DEPT_USER_SUM
+    MEETING_ADDRESS, MEETING_SPONSOR, MEETING_ALL_USER_SUM, MEETING_DEPT_USER_SUM, TF_REMARK
   </sql>
   
 </mapper>
