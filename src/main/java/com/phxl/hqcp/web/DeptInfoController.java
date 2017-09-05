@@ -377,6 +377,24 @@ public class DeptInfoController {
         deptInfoService.insertEditConstrDept(constrDept,sessionUserId,sessionUserName,sessionOrgId);
     }
 
+	/**
+	 * 
+	 * searchConstrDeptAuditList:(查询科室审核列表). <br/> 
+	 * 
+	 * @Title: searchConstrDeptAuditList
+	 * @Description: TODO
+	 * @param page
+	 * @param rows
+	 * @param sortCol
+	 * @param sortType
+	 * @param orgName
+	 * @param fstate
+	 * @param pYear
+	 * @param request
+	 * @return    设定参数
+	 * @return Pager    返回类型
+	 * @throws
+	 */
 	@ResponseBody
     @RequestMapping("/searchConstrDeptAuditList")
     public Pager searchConstrDeptAuditList(
@@ -387,7 +405,8 @@ public class DeptInfoController {
             @RequestParam(value = "orgName", required = false)String orgName,
             @RequestParam(value = "fstate", required = false)String fstate,
             @RequestParam(value = "pYear", required = false)String pYear,
-            HttpServletRequest request) {
+            HttpServletRequest request) throws Exception{
+	    LocalAssert.notBlank(pYear, "上报时间，不能为空");
         Pager pager = new Pager(true);
         if (page == null) {
             page = 1;
@@ -467,6 +486,195 @@ public class DeptInfoController {
         entity.setModefileUserId(sessionUserId);
         entity.setModefileUserNmae(sessionUserName);
         deptInfoService.updateInfo(entity);
+    }
+	
+	/**
+	 * 
+	 * searchConstrDeptUserList:(科室人员信息列表——科室建设详情). <br/> 
+	 * 
+	 * @Title: searchConstrDeptUserList
+	 * @Description: TODO
+	 * @param page
+	 * @param rows
+	 * @param sortCol
+	 * @param sortType
+	 * @param constrDeptGuid
+	 * @param request
+	 * @return    设定参数
+	 * @return Pager    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/searchConstrDeptUserList")
+    public Pager searchConstrDeptUserList(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pagesize", required = false) Integer rows,
+            @RequestParam(value = "sidx", required = false) String sortCol,
+            @RequestParam(value = "sord", required = false) String sortType,
+            @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
+            HttpServletRequest request) {
+        Pager pager = new Pager(true);
+        if (page == null) {
+            page = 1;
+        }
+        if (rows == null) {
+            rows = 5;
+        }
+        pager.setPageNum(page);
+        pager.setPageSize(rows);
+        if (StringUtils.isNotBlank(sortCol)) {
+            pager.addQueryParam("sortCol", sortCol);
+        }
+        if (StringUtils.isNotBlank(sortType)) {
+            if("descend".equals(sortType)){//降序
+                pager.addQueryParam("sortType", "desc");
+            }
+            if("ascend".equals(sortType)){//升序
+                pager.addQueryParam("sortType", "asc");
+            }
+        }
+        if (StringUtils.isNotBlank(constrDeptGuid)) {
+            pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }
+        List<Map<String, Object>> result = deptInfoService.searchConstrDeptUserList(pager);
+        pager.setRows(result);
+        return pager;
+    }
+	
+	/**
+	 * 
+	 * getDeptInfo:(按年度查询机构的床位数、机构员工总数、医工人员总数、医工培训总数). <br/> 
+	 * 
+	 * @Title: getDeptInfo
+	 * @Description: TODO
+	 * @param orgId
+	 * @param pYear
+	 * @param constrDeptGuid
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getDeptInfo")
+    public Map<String, Object> getDeptInfo(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "pYear", required = false) String pYear,
+            @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
+            HttpServletRequest request) throws Exception {
+	    LocalAssert.notBlank(pYear, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("pYear", pYear);
+        if (StringUtils.isNotBlank(constrDeptGuid)) {
+            pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }
+        Map<String, Object> result = deptInfoService.getDeptInfo(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getDeptUserAge:(按年度查询医工人员年龄情况（科室建设）). <br/> 
+	 * 
+	 * @Title: getDeptUserAge
+	 * @Description: TODO
+	 * @param orgId
+	 * @param pYear
+	 * @param constrDeptGuid
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getDeptUserAge")
+    public Map<String, Object> getDeptUserAge(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "pYear", required = false) String pYear,
+            @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(pYear, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("pYear", pYear);
+        if (StringUtils.isNotBlank(constrDeptGuid)) {
+            pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }
+        Map<String, Object> result = deptInfoService.getDeptUserAge(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getDeptUserEducation:(按年度查询医工人员学历情况（科室建设）). <br/> 
+	 * 
+	 * @Title: getDeptUserEducation
+	 * @Description: TODO
+	 * @param orgId
+	 * @param pYear
+	 * @param constrDeptGuid
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getDeptUserEducation")
+    public Map<String, Object> getDeptUserEducation(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "pYear", required = false) String pYear,
+            @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(pYear, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("pYear", pYear);
+        if (StringUtils.isNotBlank(constrDeptGuid)) {
+            pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }
+        Map<String, Object> result = deptInfoService.getDeptUserEducation(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getDeptUserMajor:(按年度查询医工人员专业情况（科室建设）). <br/> 
+	 * 
+	 * @Title: getDeptUserMajor
+	 * @Description: TODO
+	 * @param orgId
+	 * @param pYear
+	 * @param constrDeptGuid
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getDeptUserMajor")
+    public Map<String, Object> getDeptUserMajor(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "pYear", required = false) String pYear,
+            @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(pYear, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("pYear", pYear);
+        if (StringUtils.isNotBlank(constrDeptGuid)) {
+            pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }
+        Map<String, Object> result = deptInfoService.getDeptUserMajor(pager);
+        return result;
     }
 	
 }

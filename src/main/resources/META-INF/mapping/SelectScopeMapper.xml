@@ -35,11 +35,12 @@
 	
 	<!-- 查询医院列表（科室建设） -->
 	<select id="searchSelectScopeList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select s.select_scope_guid "selectScopeGuid",t.constr_dept_guid "constrDeptGuid",s.org_id "orgId",o.org_name "orgName",
+		select s.select_scope_guid "selectScopeGuid",t.constr_dept_guid "constrDeptGuid",s.org_id "orgId",o.org_name "orgName",d.DEPT_NAME "deptName"
 		       s.p_year "pYear",(CASE WHEN t.schedule is null THEN '0%' ELSE t.schedule*100.0||'%' END) "schedule",t.audit_fstate "auditFstate"
 		from td_select_scope s 
 		left join tb_constr_dept t on s.org_id = t.org_id and t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} 
 		                                                  and t.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR}
+		left join TB_CONSTR_DEPT_INFO d on d.CONSTR_DEPT_GUID = t.CONSTR_DEPT_GUID                                         
 		left join TD_ORG_INFO o on o.org_id = s.org_id
 		where s.select_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and s.p_year = #{conditiions.pYear, jdbcType=VARCHAR} 
 		  and s.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} and s.select_scope_sub_type = #{conditiions.selectScopeSubType, jdbcType=VARCHAR}
@@ -48,6 +49,66 @@
 	    </if>
 	    <if test="conditiions!=null and conditiions.fstate != null and conditiions.fstate != ''">
 		  and t.audit_fstate in (#{conditiions.fstate,jdbcType=VARCHAR})
+	    </if>
+	</select>
+	
+	<!-- 查询科室人员列表（科室建设） -->
+	<select id="searchConstrDeptUserList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select t.constr_dept_user_guid "constrDeptUserGuid",t.fname "fname",brand2.tf_clo_name "gender",brand4.tf_clo_name "birthChar",t.post_name "postName",t.post_age "postAge",brand6.tf_clo_name "highestEducation",
+		brand8.tf_clo_name "majorName",brand10.tf_clo_name "technicalTitlesA",brand12.tf_clo_name "technicalTitlesB"
+		from tb_constr_dept_user t
+		left join td_static_info brand on brand.TF_CLO='GENDER'
+		left join td_static_data brand2 on brand.STATIC_ID=brand2.STATIC_ID and brand2.TF_CLO_CODE=t.gender
+		left join td_static_info brand3 on brand3.TF_CLO='BIRTH_CHAR'
+		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.birth_char
+		left join td_static_info brand5 on brand5.TF_CLO='XL'
+		left join td_static_data brand6 on brand5.STATIC_ID=brand6.STATIC_ID and brand6.TF_CLO_CODE=t.highest_education
+		left join td_static_info brand7 on brand7.TF_CLO='ZY'
+		left join td_static_data brand8 on brand7.STATIC_ID=brand8.STATIC_ID and brand8.TF_CLO_CODE=t.major_name
+		left join td_static_info brand9 on brand9.TF_CLO='TECHNICAL_TITLES_A'
+		left join td_static_data brand10 on brand9.STATIC_ID=brand10.STATIC_ID and brand10.TF_CLO_CODE=t.technical_titles_a
+		left join td_static_info brand11 on brand11.TF_CLO='TECHNICAL_TITLES_B'
+		left join td_static_data brand12 on brand11.STATIC_ID=brand12.STATIC_ID and brand12.TF_CLO_CODE=t.technical_titles_b
+		where t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 按年度查询机构的床位数、机构员工总数、医工人员总数、医工培训总数（科室建设） -->
+	<select id="getDeptInfo" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select * from v_dept_info_tb t
+        where t.P_YEAR = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL}
+        <if test="conditiions!=null and conditiions.constrDeptGuid != null and conditiions.constrDeptGuid != ''">
+		  and t.CONSTR_DEPT_GUID = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+	    </if>
+	</select>
+	
+	<!-- 按年度查询医工人员年龄情况（科室建设） -->
+	<select id="getDeptUserAge" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select brand4.tf_clo_name "name",t.percent_age "value" from v_dept_user_age t 
+		left join td_static_info brand3 on brand3.TF_CLO='BIRTH_CHAR'
+		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.birth_char
+		where t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.org_id = #{conditiions.orgId, jdbcType=DECIMAL}
+		<if test="conditiions!=null and conditiions.constrDeptGuid != null and conditiions.constrDeptGuid != ''">
+		  and t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+	    </if>
+	</select>
+	
+	<!-- 按年度查询医工人员年龄情况（科室建设） -->
+	<select id="getDeptUserEducation" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select brand4.tf_clo_name "name",t.percent_education "value" from v_dept_user_education t 
+		left join td_static_info brand3 on brand3.TF_CLO='XL'
+		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.highest_education
+		where t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.org_id = #{conditiions.orgId, jdbcType=DECIMAL}
+		<if test="conditiions!=null and conditiions.constrDeptGuid != null and conditiions.constrDeptGuid != ''">
+		  and t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+	    </if>
+	</select>
+	
+	<!-- 按年度查询医工人员专业情况（科室建设） -->
+	<select id="getDeptUserMajor" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select t.major_name,t.num from v_dept_user_major t 
+		where t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.org_id = #{conditiions.orgId, jdbcType=DECIMAL}
+		<if test="conditiions!=null and conditiions.constrDeptGuid != null and conditiions.constrDeptGuid != ''">
+		  and t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
 	    </if>
 	</select>
   

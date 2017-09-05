@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phxl.hscm.dao.CallProcedureMapper">
+  
+  <resultMap id="InResultMap" type="java.util.HashMap">
+  	<result column="ls_return" jdbcType="VARCHAR" property="flag" />
+  	<result column="fno" jdbcType="VARCHAR" property="fno" />
+  	<result column="ls_errtext" jdbcType="VARCHAR" property="error" />
+  </resultMap>
+  
+   <!-- 写入建设科室-机构概要数据-->
+  <select id="SP_DEPT_ORG" parameterType="map" statementType="CALLABLE">
+  	{CALL SP_GKAAPPLY_ORDER(
+  		#{qcOrgId, jdbcType=VARCHAR, mode=IN},
+  		#{pYear, jdbcType=VARCHAR, mode=IN},
+  		#{pYmd, jdbcType=VARCHAR, mode=IN},
+  		#{ret_cursor, jdbcType=CURSOR,  mode=OUT, resultMap=InResultMap}
+  	)}
+  </select>
+  
+</mapper>

@@ -2,7 +2,9 @@ package com.phxl.hqcp.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.phxl.core.base.entity.Pager;
+import com.phxl.core.base.exception.ServiceException;
 import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.service.impl.BaseService;
 import com.phxl.core.base.util.IdentifieUtil;
 import com.phxl.core.base.util.LocalAssert;
+import com.phxl.hqcp.dao.CallProcedureMapper;
 import com.phxl.hqcp.dao.QcScopeMapper;
 import com.phxl.hqcp.dao.SelectScopeMapper;
 import com.phxl.hqcp.entity.ConstrDept;
 import com.phxl.hqcp.entity.ConstrDeptCheckbox;
 import com.phxl.hqcp.entity.ConstrDeptInfo;
 import com.phxl.hqcp.entity.ConstrDeptMeeting;
+import com.phxl.hqcp.entity.ConstrDeptOrg;
 import com.phxl.hqcp.entity.ConstrDeptUser;
 import com.phxl.hqcp.entity.ConstrDeptWork;
 import com.phxl.hqcp.entity.QcScope;
@@ -34,6 +39,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	SelectScopeMapper selectScopeMapper;
 	@Autowired
 	QcScopeMapper qcScopeMapper;
+	@Autowired
+	CallProcedureMapper callProcedureMapper;
 
     @Override
     public List<Map<String, Object>> getPyearList(Pager pager) {
@@ -51,8 +58,36 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
     }
     
     @Override
-    public List<Map<String, Object>> searchConstrDeptAuditList(Pager pager) {
-        return qcScopeMapper.searchConstrDeptAuditList(pager);
+    public List<Map<String, Object>> searchConstrDeptAuditList(Pager pager) throws ServiceException{
+        List<Map<String, Object>> list = qcScopeMapper.searchConstrDeptAuditList(pager);
+        //查询建设科室-机构概要
+        if(pager.getQueryParam("orgId")!=null && pager.getQueryParam("pYear")!=null){
+            ConstrDeptOrg deptOrg = new ConstrDeptOrg();
+            deptOrg.setQcOrgId(Long.parseLong(pager.getQueryParam("orgId").toString()));
+            deptOrg.setpYear((String)pager.getQueryParam("pYear"));
+            deptOrg.setpYmd("P_YEAR");
+            List<ConstrDeptOrg> orgList = super.searchList(deptOrg);//根据监管机构、上报年限查询科室机构信息
+            if(orgList==null || orgList.isEmpty()){
+                //若查询不到信息，则调用存储过程
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("qcOrgId",pager.getQueryParam("orgId"));//申请单库房id
+                params.put("pYear", pager.getQueryParam("pYear"));
+                params.put("pYmd", "P_YEAR");
+                callProcedureMapper.SP_DEPT_ORG(params);
+                List<Map> cursorList1 = params.get("ret_cursor") == null ? null : (List<Map>)params.get("ret_cursor");
+                if(cursorList1 != null && !cursorList1.isEmpty()){
+                    Map map = cursorList1.get(0);
+                    Integer ret = map.get("RET") == null ? 0 :Integer.parseInt( map.get("RET").toString());
+                    if(ret > 0){
+                        String error = map.get("ERROR") == null ? "" : (String)map.get("ERROR");
+                    }else{
+                        String error1 = map.get("ERROR") == null ? "" : (String)map.get("ERROR");
+                        throw new ServiceException(error1);
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -334,6 +369,85 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                 }
             }
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> searchConstrDeptUserList(Pager pager) {
+        return selectScopeMapper.searchConstrDeptUserList(pager);
+    }
+
+    @Override
+    public Map<String, Object> getDeptInfo(Pager pager) {
+        List<Map<String, Object>> list = selectScopeMapper.getDeptInfo(pager);
+        Map<String, Object> map = new HashMap<String, Object>();
+        if(list!=null && !list.isEmpty()){
+            Map<String, Object> deptMap = list.get(0);
+            if(deptMap!=null && !deptMap.isEmpty()){
+                //床位
+                Map<String, Object> bedMap = new HashMap<String, Object>();
+                bedMap.put("planBedSum", deptMap.get("PLAN_BED_SUM")==null?0:deptMap.get("PLAN_BED_SUM"));
+                bedMap.put("tbPlanBedSum", deptMap.get("TB_PLAN_BED_SUM")==null?"0%":deptMap.get("TB_PLAN_BED_SUM"));
+                map.put("bedSum", bedMap);
+                //机构员工总数
+                Map<String, Object> staffMap = new HashMap<String, Object>();
+                bedMap.put("planStaffSum", deptMap.get("STAFF_SUM")==null?0:deptMap.get("STAFF_SUM"));
+                bedMap.put("tbStaffSum", deptMap.get("TB_STAFF_SUM")==null?"0%":deptMap.get("TB_STAFF_SUM"));
+                map.put("staffSum", staffMap);
+                //医工人员总数
+                Map<String, Object> ygMap = new HashMap<String, Object>();
+                bedMap.put("planYgSum", deptMap.get("YG_NUM")==null?0:deptMap.get("YG_NUM"));
+                bedMap.put("tbYgSum", deptMap.get("TB_YG_NUM")==null?"0%":deptMap.get("TB_YG_NUM"));
+                map.put("ygSum", ygMap);
+                //医工培训总数
+                Map<String, Object> meetMap = new HashMap<String, Object>();
+                bedMap.put("planMeetSum", deptMap.get("MEET_NUM")==null?0:deptMap.get("MEET_NUM"));
+                bedMap.put("tbMeetSum", deptMap.get("TB_MEET_NUM")==null?"0%":deptMap.get("TB_MEET_NUM"));
+                map.put("meetSum", meetMap);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getDeptUserAge(Pager pager) {
+        List<Map<String, Object>> list = selectScopeMapper.getDeptUserAge(pager);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("data", list);
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getDeptUserEducation(Pager pager) {
+        List<Map<String, Object>> list = selectScopeMapper.getDeptUserEducation(pager);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("data", list);
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getDeptUserMajor(Pager pager) {
+        List<Map<String, Object>> list = selectScopeMapper.getDeptUserMajor(pager);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        if(list!=null && list.size()>0){
+            String[] majorName = new String[list.size()];
+            String[] num = new String[list.size()];
+            Map<String, Object> majorMap = new HashMap<String, Object>();
+            Map<String, Object> numMap = new HashMap<String, Object>();
+            for(int i=0;i<list.size();i++){
+                Map<String, Object> map = list.get(i);
+                if(map!=null && !map.isEmpty()){
+                    majorName[i] = map.get("MAJOR_NAME")==null?"":map.get("MAJOR_NAME").toString();
+                    num[i] = map.get("NUM")==null?"":map.get("NUM").toString();
+                }
+            }
+            majorMap.put("data", majorName);
+            numMap.put("data", num);
+            numMap.put("name", "专业人数");
+            resultMap.put("xAxis", majorMap);
+            resultMap.put("series", numMap);
+        }
+        
+        return resultMap;
     }
 
 }
