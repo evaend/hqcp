@@ -13,21 +13,33 @@
 		<property name="messageConverters">
 			<list>
 				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
-				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<bean class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+				<bean id="mappingJacksonHttpMessageConverter" class="com.phxl.core.base.converter.CommonResResult2HttpMessageConverter">
+					<property name="prettyPrint" value="false" />
+					<property name="objectMapper">
+						<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+							<property name="dateFormat">
+								<bean class="java.text.SimpleDateFormat">
+									<constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+								</bean>
+							</property>
+						</bean>
+					</property>
 					<property name="supportedMediaTypes">
 						<list>
-							<value>text/plain;charset=utf-8</value>
-							<value>text/html;charset=utf-8</value>
 							<value>text/json;charset=utf-8</value>
 							<value>application/json;charset=utf-8</value>
 						</list>
 					</property>
 				</bean>
-				<bean class="org.springframework.http.converter.ResourceHttpMessageConverter" />
-				<bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-					<property name="prettyPrint" value="true" />
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/plain;charset=utf-8</value>
+							<value>text/html;charset=utf-8</value>
+						</list>
+					</property>
 				</bean>
-
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
@@ -69,6 +81,38 @@
 
 	<!-- 定时任务注解的支持 -->
 	<task:annotation-driven />
+	<!-- 拦截器配置 -->
+	<mvc:interceptors>
+	
+		<!-- 请求响应标准报文数据结构处理 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/html/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
+			<mvc:exclude-mapping path="/css/**"/>
+			<mvc:exclude-mapping path="/js/**"/>
+			<mvc:exclude-mapping path="/fonts/**"/>
+			<mvc:exclude-mapping path="/template/**"/>
+			<mvc:exclude-mapping path="/MP_verify_EsrypQ0OkNd73fTe.txt"/>
+			<bean class="com.phxl.core.base.interceptor.ResResultBindingInterceptor">
+				<property name="prettyPrint" value="false" />
+			</bean>
+		</mvc:interceptor>
+		
+		<!-- 会话模拟器 -->
+		<!-- <mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/html/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
+			<mvc:exclude-mapping path="/css/**"/>
+			<mvc:exclude-mapping path="/js/**"/>
+			<mvc:exclude-mapping path="/fonts/**"/>
+			<mvc:exclude-mapping path="/template/**"/>
+			<mvc:exclude-mapping path="/MP_verify_EsrypQ0OkNd73fTe.txt"/>
+			<bean class="com.phxl.ysy.systemModule.interceptor.SessionInterceptor" />
+		</mvc:interceptor> -->
+		
+	</mvc:interceptors>
 
 
 </beans>
