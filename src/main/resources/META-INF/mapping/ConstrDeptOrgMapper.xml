@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.ConstrDeptOrgMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.ConstrDeptOrg" >
+    <id column="CONSTR_DEPT_ORG_GUID" property="constrDeptOrgGuid" jdbcType="VARCHAR" />
+    <result column="CONSTR_DEPT_GUID" property="constrDeptGuid" jdbcType="VARCHAR" />
+    <result column="FSORT" property="fsort" jdbcType="DECIMAL" />
+    <result column="TF_PROVINCE" property="tfProvince" jdbcType="VARCHAR" />
+    <result column="TF_CITY" property="tfCity" jdbcType="VARCHAR" />
+    <result column="TF_DISTRICT" property="tfDistrict" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_LEVEL" property="hospitalLevel" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_TYPE" property="hospitalType" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_PROPERTY" property="hospitalProperty" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_TEACHING" property="hospitalTeaching" jdbcType="VARCHAR" />
+    <result column="PLAN_BED_SUM" property="planBedSum" jdbcType="DECIMAL" />
+    <result column="STAFF_SUM" property="staffSum" jdbcType="DECIMAL" />
+    <result column="ACTUAL_BED_SUM" property="actualBedSum" jdbcType="DECIMAL" />
+    <result column="P_YEAR" property="pYear" jdbcType="VARCHAR" />
+    <result column="P_YMD" property="pYmd" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="AUDIT_ID" property="auditId" jdbcType="VARCHAR" />
+    <result column="AUDIT_NAME" property="auditName" jdbcType="VARCHAR" />
+    <result column="AUDIT_TIME" property="auditTime" jdbcType="DATE" />
+    <result column="AUDIT_FSTATE" property="auditFstate" jdbcType="VARCHAR" />
+    <result column="QC_ORG_ID" property="qcOrgId" jdbcType="DECIMAL" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="QC_SCOPE_TYPE" property="qcScopeType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONSTR_DEPT_ORG_GUID, CONSTR_DEPT_GUID, FSORT, TF_PROVINCE, TF_CITY, TF_DISTRICT, 
+    HOSPITAL_LEVEL, HOSPITAL_TYPE, HOSPITAL_PROPERTY, HOSPITAL_TEACHING, PLAN_BED_SUM, 
+    STAFF_SUM, ACTUAL_BED_SUM, P_YEAR, P_YMD, START_TIME, END_TIME, AUDIT_ID, AUDIT_NAME, 
+    AUDIT_TIME, AUDIT_FSTATE, QC_ORG_ID, ORG_ID, QC_SCOPE_TYPE
+  </sql>
+  
+</mapper>
