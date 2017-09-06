@@ -83,7 +83,7 @@
 	
 	<!-- 按年度查询医工人员年龄情况（科室建设） -->
 	<select id="getDeptUserAge" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select brand4.tf_clo_name "name",t.percent_age "value" from v_dept_user_age t 
+		select brand4.tf_clo_name "name",t.total_no "value" from v_dept_user_age t 
 		left join td_static_info brand3 on brand3.TF_CLO='BIRTH_CHAR'
 		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.birth_char
 		where t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.org_id = #{conditiions.orgId, jdbcType=DECIMAL}
@@ -92,9 +92,9 @@
 	    </if>
 	</select>
 	
-	<!-- 按年度查询医工人员年龄情况（科室建设） -->
+	<!-- 按年度查询医工人员学历情况（科室建设） -->
 	<select id="getDeptUserEducation" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select brand4.tf_clo_name "name",t.percent_education "value" from v_dept_user_education t 
+		select brand4.tf_clo_name "name",t.total_no "value" from v_dept_user_education t 
 		left join td_static_info brand3 on brand3.TF_CLO='XL'
 		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.highest_education
 		where t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.org_id = #{conditiions.orgId, jdbcType=DECIMAL}
