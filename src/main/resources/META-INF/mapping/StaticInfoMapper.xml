@@ -52,7 +52,7 @@
     </select>
     
     <!-- 查询数据字典是否存在 -->
-	<select id="countStaticInfo" resultType="int" parameterType="com.phxl.ysy.systemModule.entity.StaticInfo">
+	<select id="countStaticInfo" resultType="int" parameterType="com.phxl.hqcp.entity.StaticInfo">
 		select COUNT(*) from (
 			select i.TF_CLO from td_static_info i 
 			where i.TF_CLO = #{tfClo,jdbcType=VARCHAR}
