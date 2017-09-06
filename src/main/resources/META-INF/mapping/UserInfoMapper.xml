@@ -53,7 +53,7 @@
 		where gu.USER_ID = #{userId,jdbcType=VARCHAR} and m.FSTATE = '01'
     </select>
 
-	<resultMap id="UserExtResultMap" type="com.phxl.ysy.systemModule.entity.UserInfo" extends="BaseResultMap">
+	<resultMap id="UserExtResultMap" type="com.phxl.hqcp.entity.UserInfo" extends="BaseResultMap">
 		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR"/>
 		<result column="GROUPS" property="groups" jdbcType="VARCHAR"/>
 	</resultMap>
