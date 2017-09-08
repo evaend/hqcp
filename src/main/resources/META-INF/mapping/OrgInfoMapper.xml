@@ -45,52 +45,95 @@
 		    <if test="orgId != null and orgId > 0">
 			  and TD_ORG_INFO.ORG_ID not in ( #{orgId, jdbcType=DECIMAL} )
 		    </if>
-        UNION
-        select TD_ORG_REGIST.Org_Name from TD_ORG_REGIST where TD_ORG_REGIST.Audit_Fstate = '00' and TD_ORG_REGIST.Org_Name = #{orgValue,jdbcType=VARCHAR}
 	    </if>
 	    <if test="type != null and type == 'orgCode' ">
 	    select TD_ORG_INFO.Org_Code from TD_ORG_INFO where TD_ORG_INFO.Org_Code = #{orgValue,jdbcType=VARCHAR}
 		    <if test="orgId != null and orgId > 0">
 			  and TD_ORG_INFO.ORG_ID not in ( #{orgId, jdbcType=DECIMAL} )
 		    </if>
-		UNION
-		select TD_ORG_REGIST.Org_Code from TD_ORG_REGIST where TD_ORG_REGIST.Audit_Fstate = '00' and TD_ORG_REGIST.Org_Code = #{orgValue,jdbcType=VARCHAR}
 	    </if>
     )
   </select>
   
   <select id="searchOrgInfoList" resultType="HashMap" parameterType="com.phxl.core.base.entity.Pager">
-   select TD_ORG_INFO.ORG_ID,TD_ORG_INFO.Org_Type,TD_ORG_INFO.ORG_NAME,TD_ORG_INFO.Fstate,TD_ORG_INFO.Org_Alias,TD_ORG_INFO.Tf_Province,TD_ORG_INFO.Tf_City,TD_ORG_INFO.Tf_District,
-		  to_char(TD_ORG_INFO.Modify_Time,'yyyy-MM-dd') MODIFY_TIME,TD_ORG_INFO.Vip_Level,TD_ORG_INFO.ORG_CODE,TD_ORG_INFO.Parent_Orgid,TD_ORG_INFO.LEGAL_MAN,org.ORG_NAME as PARENT_ORGNAME,
-		  TD_ORG_INFO.Flag,TD_ORG_INFO.Lxr,TD_ORG_INFO.Lxdh,TD_ORG_INFO.Tf_Address,TD_ORG_INFO.Tf_Bank,TD_ORG_INFO.Bank_Account,TD_ORG_INFO.Tf_Remark,
-		  TD_HOSPITAL_INFO.Hospital_Level,TD_HOSPITAL_INFO.HOSPITAL_PROPERTY,TD_HOSPITAL_INFO.TAX_NO,TD_SUPPLIER_INFO.CORPORATION_TYPE,TD_SUPPLIER_INFO.Rmb_Amount,
-		  GET_STATICDATA(TD_SUPPLIER_INFO.CORPORATION_TYPE,'CORPORATION_TYPE') AS CORPORATION_TYPENAME,GET_STATICDATA(TD_HOSPITAL_INFO.Hospital_Level,'HOSPITAL_LEVEL') AS HOSPITAL_LEVELNAME,
-		  GET_STATICDATA(TD_HOSPITAL_INFO.HOSPITAL_PROPERTY,'HOSPITAL_PROPERTY') AS HOSPITAL_PROPERTYNAME
-   from TD_ORG_INFO left join TD_HOSPITAL_INFO on TD_HOSPITAL_INFO.ORG_ID = TD_ORG_INFO.Org_Id
-                    left join TD_SUPPLIER_INFO on TD_SUPPLIER_INFO.ORG_ID = TD_ORG_INFO.Org_Id
-                    left join TD_ORG_INFO org on org.ORG_ID = TD_ORG_INFO.Parent_Orgid
-   
-	where 1 = 1
-	  <if test="conditiions!=null and conditiions.orgId != null and conditiions.orgId > 0">
-		  and TD_ORG_INFO.ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL}
+   select oi.ORG_ID "orgId",oi.Org_Type "orgType",oi.ORG_NAME "orgName",
+   		  oi.Org_Alias "orgAlias",oi.Tf_Province "tfProvince",oi.Tf_City "tfCity",oi.Tf_District "tfDistrict",
+		  to_char(oi.Modify_Time,'yyyy-MM-dd') MODIFY_TIME,
+		  oi.ORG_CODE "orgCode",oi.TF_ACCESSORY "tfAccessory",
+		  oi.Lxr "lxr",oi.Lxdh "lxdh",
+		  oi.Tf_Province || oi.Tf_City || oi.Tf_District  "orgAddress",
+		  oi.AUDIT_FSTATE "auditFstate",
+		  cdo.Hospital_Level "hospitalLevel",cdo.HOSPITAL_PROPERTY "hospitalProperty",
+		  cdo.p_year "pYear",
+		  qoi.org_name "qcOrgName",
+		  cdo.plan_bed_sum "planBedSum",
+		  cdo.actual_bed_sum "actualBedSum",
+		  cdo.staff_sum "staffSum"
+   from TD_ORG_INFO oi
+   left join TB_CONSTR_DEPT_ORG cdo on oi.ORG_ID = cdo.ORG_ID
+   left join td_org_info qoi on cdo.qc_org_id = qoi.org_id  
+	<where>	  
+		<if test="conditiions!=null ">
+		  <if test="conditiions.orgId != null and conditiions.orgId !=''">
+		  and oi.ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL}
+	 	 </if>
+		  <if test="conditiions.orgType != null and conditiions.orgType != ''">
+			  and oi.Org_Type = #{conditiions.orgType, jdbcType=VARCHAR}
+		  </if>
+		   <if test="conditiions.qcOrgId != null and conditiions.qcOrgId != ''">
+			  and cdo.qc_org_id = #{conditiions.qcOrgId, jdbcType=DECIMAL}
+		  </if>
+		   <if test="conditiions.hospitalLevel != null and conditiions.hospitalLevel != ''">
+			  and cdo.Hospital_Level = #{conditiions.hospitalLevel, jdbcType=VARCHAR}
+		  </if>
+		   <if test="conditiions.hospitalProperty != null and conditiions.hospitalProperty != ''">
+			  and cdo.HOSPITAL_PROPERTY = #{conditiions.hospitalProperty, jdbcType=VARCHAR}
+		  </if>
+		   <if test="conditiions.pYear != null and conditiions.pYear != ''">
+			  and cdo.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+		  </if>
+		   <if test="conditiions.planBedSum != null and conditiions.planBedSum != ''">
+			  and cdo.plan_bed_sum 
+			  <choose>
+			  		<when test="conditiions.planBedSum == '01'">
+			  			between 0 and 100
+			  		</when>
+			  		<when test="conditiions.planBedSum == '02'">
+			  			between 100 and 200
+			  		</when>
+			  		<when test="conditiions.planBedSum == '03'">
+			  			between 200 and 500
+			  		</when>
+			  		<when test="conditiions.planBedSum == '04'">
+			  			> 500
+			  		</when>
+			  </choose>			   
+		  </if> 
+		  <if test="conditiions.staffSum != null and conditiions.staffSum != ''">
+			  and cdo.staff_sum
+			  <choose>
+			  		<when test="conditiions.staffSum == '01'">
+			  			between 0 and 100
+			  		</when>
+			  		<when test="conditiions.staffSum == '02'">
+			  			between 100 and 200
+			  		</when>
+			  		<when test="conditiions.staffSum == '03'">
+			  			between 200 and 500
+			  		</when>
+			  		<when test="conditiions.staffSum == '04'">
+			  			> 500
+			  		</when>
+			  </choose>			   
+		  </if> 
+		  <if test="conditiions!=null and conditiions.searchName != null and conditiions.searchName != ''">
+			<![CDATA[  and ( regexp_like(oi.ORG_NAME, #{conditiions.searchName,jdbcType=VARCHAR})
+	    			   or   regexp_like(oi.Org_Alias, #{conditiions.searchName,jdbcType=VARCHAR}) 
+	    			   or   regexp_like(oi.FQUN, #{conditiions.searchName,jdbcType=VARCHAR}))]]>
+		  </if>
 	  </if>
-	  <if test="conditiions!=null and conditiions.orgType != null and conditiions.orgType != ''">
-		  and TD_ORG_INFO.Org_Type = #{conditiions.orgType, jdbcType=VARCHAR}
-	  </if>
-	  <if test="conditiions!=null and conditiions.searchName != null and conditiions.searchName != ''">
-		<![CDATA[  and ( regexp_like(TD_ORG_INFO.ORG_NAME, #{conditiions.searchName,jdbcType=VARCHAR})
-    			   or   regexp_like(TD_ORG_INFO.Org_Alias, #{conditiions.searchName,jdbcType=VARCHAR}) 
-    			   or   regexp_like(TD_ORG_INFO.FQUN, #{conditiions.searchName,jdbcType=VARCHAR}))]]>
-	  </if>
-	
-	  <choose>
-		   <when test="conditiions!=null and conditiions.sortCol!= null and conditiions.sortCol != ''">
-		    order by ${conditiions.sortCol} ${conditiions.sortType}
-		   </when>
-		   <otherwise>
-		   order by TD_ORG_INFO.MODIFY_TIME desc
-		   </otherwise>
-	  </choose> 
+	</where>
+		order by cdo.p_year desc,oi.org_id
     </select>
   
      <select id="searchParentOrgInfoList" resultType="hashMap" parameterType="com.phxl.core.base.entity.Pager">
@@ -108,19 +151,20 @@
 	 <!-- 查询机构列表（联想下拉搜索） -->
 	 <select id="findOrgListForSelector" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		SELECT
-		  DISTINCT o.ORG_ID "value", o.ORG_NAME "text"
+		  DISTINCT o.ORG_ID "value", o.ORG_NAME "text",o.org_code "orgCode",o.TF_ACCESSORY "tfAccessory"
 		FROM  TD_ORG_INFO o
-		WHERE o.FSTATE='01'
-		<if test="conditiions!=null">
-			<if test="conditiions.orgTypes!=null and conditiions.orgTypes.length>0">
-				and o.ORG_TYPE in  
-				<foreach collection="conditiions.orgTypes" item="item" index="index" open="(" close=")" separator=",">
-					#{conditiions.orgTypes[${index}], jdbcType=VARCHAR}
-				</foreach>
+		<where>
+			<if test="conditiions!=null">
+				<if test="conditiions.orgTypes!=null and conditiions.orgTypes.length>0">
+					and o.ORG_TYPE in  
+					<foreach collection="conditiions.orgTypes" item="item" index="index" open="(" close=")" separator=",">
+						#{conditiions.orgTypes[${index}], jdbcType=VARCHAR}
+					</foreach>
+				</if>
+				<if test="conditiions.searchName!=null and conditiions.searchName!=''">
+					and regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
+				</if>
 			</if>
-			<if test="conditiions.searchName!=null and conditiions.searchName!=''">
-				and regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
-			</if>
-		</if>
+		</where>
 	</select>
 </mapper>

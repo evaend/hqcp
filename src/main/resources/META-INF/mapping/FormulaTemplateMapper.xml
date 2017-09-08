@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.FormulaTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.FormulaTemplate" >
+    <id column="INDEX_GUID" property="indexGuid" jdbcType="VARCHAR" />
+    <result column="INDEX_CODE" property="indexCode" jdbcType="VARCHAR" />
+    <result column="QC_SCOPE_TYPE" property="qcScopeType" jdbcType="VARCHAR" />
+    <result column="QC_ORG_ID" property="qcOrgId" jdbcType="DECIMAL" />
+    <result column="P_YEAR" property="pYear" jdbcType="VARCHAR" />
+    <result column="P_YMD" property="pYmd" jdbcType="VARCHAR" />
+    <result column="START_DATE" property="startDate" jdbcType="DATE" />
+    <result column="END_DATE" property="endDate" jdbcType="DATE" />
+    <result column="QC_SCOPE_SUB_TYPE" property="qcScopeSubType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    INDEX_GUID, INDEX_CODE, QC_SCOPE_TYPE, QC_ORG_ID, P_YEAR, P_YMD, START_DATE, END_DATE,QC_SCOPE_SUB_TYPE
+  </sql>
+  
+  <!-- 查询所有质量上报模板 -->
+  <select id="selectAllFormulaTemplate" resultMap="BaseResultMap">
+  	select * from tb_formula_template where QC_SCOPE_SUB_TYPE = '02'
+  </select>
+  
+</mapper>

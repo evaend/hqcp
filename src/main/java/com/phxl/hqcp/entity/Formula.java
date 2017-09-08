@@ -4,9 +4,11 @@ import java.util.Date;
 
 import com.phxl.core.base.annotation.BaseSql;
 
-@BaseSql(tableName="TD_QC_SCOPE", resultName="com.phxl.hqcp.dao.QcScopeMapper.BaseResultMap")
-public class QcScope {
-    private String qcScopeGuid;
+@BaseSql(tableName="TB_FORMULA", resultName="com.phxl.hqcp.dao.FormulaMapper.BaseResultMap")
+public class Formula {
+    private String indexGuid;
+
+    private String indexName;
 
     private Long qcOrgId;
 
@@ -14,13 +16,21 @@ public class QcScope {
 
     private String qcScopeType;
 
-    private String pYear;
-
     private String pYmd;
 
-    private Date startDate;
+    private String pYear;
 
-    private Date endDate;
+    private Date startTime;
+
+    private Date endTime;
+
+    private String auditId;
+
+    private String auditName;
+
+    private Date auditTime;
+
+    private String auditFstate;
 
     private Date createTime;
 
@@ -36,14 +46,20 @@ public class QcScope {
 
     private String tfRemark;
 
-    private String qcScopeSubType;
-
-    public String getQcScopeGuid() {
-        return qcScopeGuid;
+    public String getIndexGuid() {
+        return indexGuid;
     }
 
-    public void setQcScopeGuid(String qcScopeGuid) {
-        this.qcScopeGuid = qcScopeGuid == null ? null : qcScopeGuid.trim();
+    public void setIndexGuid(String indexGuid) {
+        this.indexGuid = indexGuid == null ? null : indexGuid.trim();
+    }
+
+    public String getIndexName() {
+        return indexName;
+    }
+
+    public void setIndexName(String indexName) {
+        this.indexName = indexName == null ? null : indexName.trim();
     }
 
     public Long getQcOrgId() {
@@ -70,14 +86,6 @@ public class QcScope {
         this.qcScopeType = qcScopeType == null ? null : qcScopeType.trim();
     }
 
-    public String getpYear() {
-        return pYear;
-    }
-
-    public void setpYear(String pYear) {
-        this.pYear = pYear == null ? null : pYear.trim();
-    }
-
     public String getpYmd() {
         return pYmd;
     }
@@ -86,20 +94,60 @@ public class QcScope {
         this.pYmd = pYmd == null ? null : pYmd.trim();
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public String getpYear() {
+        return pYear;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setpYear(String pYear) {
+        this.pYear = pYear == null ? null : pYear.trim();
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getAuditId() {
+        return auditId;
+    }
+
+    public void setAuditId(String auditId) {
+        this.auditId = auditId == null ? null : auditId.trim();
+    }
+
+    public String getAuditName() {
+        return auditName;
+    }
+
+    public void setAuditName(String auditName) {
+        this.auditName = auditName == null ? null : auditName.trim();
+    }
+
+    public Date getAuditTime() {
+        return auditTime;
+    }
+
+    public void setAuditTime(Date auditTime) {
+        this.auditTime = auditTime;
+    }
+
+    public String getAuditFstate() {
+        return auditFstate;
+    }
+
+    public void setAuditFstate(String auditFstate) {
+        this.auditFstate = auditFstate == null ? null : auditFstate.trim();
     }
 
     public Date getCreateTime() {
@@ -156,13 +204,5 @@ public class QcScope {
 
     public void setTfRemark(String tfRemark) {
         this.tfRemark = tfRemark == null ? null : tfRemark.trim();
-    }
-
-    public String getQcScopeSubType() {
-        return qcScopeSubType;
-    }
-
-    public void setQcScopeSubType(String qcScopeSubType) {
-        this.qcScopeSubType = qcScopeSubType == null ? null : qcScopeSubType.trim();
     }
 }

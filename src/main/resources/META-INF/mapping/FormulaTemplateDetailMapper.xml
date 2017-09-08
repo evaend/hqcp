@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.FormulaTemplateDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.FormulaTemplateDetail" >
+    <id column="TEMPLATE_DETAIL_GUID" property="templateDetailGuid" jdbcType="VARCHAR" />
+    <result column="INDEX_GUID" property="indexGuid" jdbcType="VARCHAR" />
+    <result column="FSORT" property="fsort" jdbcType="DECIMAL" />
+    <result column="INDEX_DEFINE" property="indexDefine" jdbcType="VARCHAR" />
+    <result column="INDEX_MEANING" property="indexMeaning" jdbcType="VARCHAR" />
+    <result column="INDEX_HELP" property="indexHelp" jdbcType="VARCHAR" />
+    <result column="INDEX_NAME" property="indexName" jdbcType="VARCHAR" />
+    <result column="INDEX_P_CODE" property="indexPCode" jdbcType="VARCHAR" />
+    <result column="NUMERATOR_P_CODE" property="numeratorPCode" jdbcType="VARCHAR" />
+    <result column="DENOMINATOR_P_CODE" property="denominatorPCode" jdbcType="VARCHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="DECIMAL" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="GROUP_SORT" property="groupSort" jdbcType="DECIMAL" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TEMPLATE_DETAIL_GUID, INDEX_GUID, FSORT, INDEX_DEFINE, INDEX_MEANING, INDEX_HELP, 
+    INDEX_NAME, INDEX_P_CODE, NUMERATOR_P_CODE, DENOMINATOR_P_CODE, GROUP_ID, GROUP_NAME, 
+    GROUP_SORT, TF_REMARK
+  </sql>
+  
+  <select id="selectFormulaDetailCount" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select * from tb_formula_template_detail where index_guid = '${_parameter}'
+  </select>
+  
+</mapper>

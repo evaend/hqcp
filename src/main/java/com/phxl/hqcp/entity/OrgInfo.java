@@ -60,6 +60,16 @@ public class OrgInfo {
     private String auditOrgCode;
 
     private String auditTfAccessory;
+    
+    //每年机构可能会变化的信息，重新上报
+    private String hospitalLevel;
+    private String hospitalType;
+    private String hospitalProperty;
+    private String hospitalTeaching;
+    private Long planBedSum;
+    private Long staffSum;
+    private Long actualBedSum;
+    private String pYear;
 
     public Long getOrgId() {
         return orgId;
@@ -284,4 +294,68 @@ public class OrgInfo {
     public void setAuditTfAccessory(String auditTfAccessory) {
         this.auditTfAccessory = auditTfAccessory == null ? null : auditTfAccessory.trim();
     }
+
+	public String getHospitalLevel() {
+		return hospitalLevel;
+	}
+
+	public void setHospitalLevel(String hospitalLevel) {
+		this.hospitalLevel = hospitalLevel;
+	}
+
+	public String getHospitalType() {
+		return hospitalType;
+	}
+
+	public void setHospitalType(String hospitalType) {
+		this.hospitalType = hospitalType;
+	}
+
+	public String getHospitalProperty() {
+		return hospitalProperty;
+	}
+
+	public void setHospitalProperty(String hospitalProperty) {
+		this.hospitalProperty = hospitalProperty;
+	}
+
+	public String getHospitalTeaching() {
+		return hospitalTeaching;
+	}
+
+	public void setHospitalTeaching(String hospitalTeaching) {
+		this.hospitalTeaching = hospitalTeaching;
+	}
+
+	public Long getPlanBedSum() {
+		return planBedSum;
+	}
+
+	public void setPlanBedSum(Long planBedSum) {
+		this.planBedSum = planBedSum;
+	}
+
+	public Long getStaffSum() {
+		return staffSum;
+	}
+
+	public void setStaffSum(Long staffSum) {
+		this.staffSum = staffSum;
+	}
+
+	public Long getActualBedSum() {
+		return actualBedSum;
+	}
+
+	public void setActualBedSum(Long actualBedSum) {
+		this.actualBedSum = actualBedSum;
+	}
+
+	public String getpYear() {
+		return pYear;
+	}
+
+	public void setpYear(String pYear) {
+		this.pYear = pYear;
+	}
 }

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.FormulaMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.Formula" >
+    <id column="INDEX_GUID" property="indexGuid" jdbcType="VARCHAR" />
+    <result column="INDEX_NAME" property="indexName" jdbcType="VARCHAR" />
+    <result column="QC_ORG_ID" property="qcOrgId" jdbcType="DECIMAL" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="QC_SCOPE_TYPE" property="qcScopeType" jdbcType="VARCHAR" />
+    <result column="P_YMD" property="pYmd" jdbcType="VARCHAR" />
+    <result column="P_YEAR" property="pYear" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="AUDIT_ID" property="auditId" jdbcType="VARCHAR" />
+    <result column="AUDIT_NAME" property="auditName" jdbcType="VARCHAR" />
+    <result column="AUDIT_TIME" property="auditTime" jdbcType="DATE" />
+    <result column="AUDIT_FSTATE" property="auditFstate" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="VARCHAR" />
+    <result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="DATE" />
+    <result column="MODEFILE_USER_ID" property="modefileUserId" jdbcType="VARCHAR" />
+    <result column="MODEFILE_USER_NMAE" property="modefileUserNmae" jdbcType="VARCHAR" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    INDEX_GUID, INDEX_NAME, QC_ORG_ID, ORG_ID, QC_SCOPE_TYPE, P_YMD, P_YEAR, START_TIME, 
+    END_TIME, AUDIT_ID, AUDIT_NAME, AUDIT_TIME, AUDIT_FSTATE, CREATE_TIME, CREATE_USER_ID, 
+    CREATE_USER_NAME, MODIFY_TIME, MODEFILE_USER_ID, MODEFILE_USER_NMAE, TF_REMARK
+  </sql>
+ 
+ 	<select id="selectFormulaList" resultType="java.util.HashMap" parameterType="com.phxl.core.base.entity.Pager">
+ 		select 
+ 			tb_formula.index_guid "constrDeptGuid" , 
+			tb_formula.org_id "orgId",
+			td_org_info.org_name "orgName",
+			tb_formula.p_ymd "pYmd",
+			tb_formula.p_year "pYear",
+			tb_formula.start_time "startTime",
+			tb_formula.end_time "endTime",
+<!-- 			tb_constr_dept_info.dept_name "deptName", -->
+			td_org_info.lxr "lxr",
+			td_org_info.lxdh "lxdh",
+			tb_formula.audit_fstate "auditFstate",
+			(select count(*) from tb_formula_detail 
+			where index_guid = tb_formula.index_guid 
+			and index_value is not null) 
+			         "indexValue",
+			(select count(*) from tb_formula_template_detail)
+			        "indexCount"
+			from tb_formula join td_org_info on 
+			(tb_formula.org_id = td_org_info.org_id)
+			where tb_formula.qc_org_id = #{conditiions.orgId, jdbcType = DECIMAL}
+		<if test="conditiions.orgName!=null and conditiions.orgName!=''">
+			<![CDATA[ and regexp_like(td_org_info.org_name, #{conditiions.orgName, jdbcType=VARCHAR}) ]]>
+		</if>
+		<if test="conditiions.auditFstate!=null and conditiions.auditFstate!=''">
+			and tb_formula.audit_fstate = #{conditiions.auditFstate, jdbcType=VARCHAR}
+		</if>
+		<if test="conditiions.pYear!=null and conditiions.pYear!=''">
+			and tb_formula.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+		</if>
+ 	</select>
+ 
+ 	<!-- 查询建设科室信息 -->
+	<select id="selectHospitalInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select staff_sum "staffSum" ,plan_bed_sum "planBedSum"
+			,(select sum(meeting_dept_user_sum ) from tb_constr_dept_meeting
+			where meeting_date > to_date(#{startDate},'yyyy-MM-dd')
+			and meeting_date >= to_date(#{endDate},'yyyy-MM-dd')) "meetingDeptUserSum"
+			from tb_constr_dept_org where 
+			constr_dept_guid = 
+			(select constr_dept_guid from 
+			tb_constr_dept where org_id = #{orgId}
+			and p_year = #{pYear}
+			)
+	</select> 
+	
+	<!-- 查询建设科室公式记录 -->
+	<select id="selectTemplateDetail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select index_p_code "value",
+		index_name "text" from tb_formula_template_detail
+		where index_guid = (select index_guid from tb_formula_template
+		<if test="month != null and month !=''">
+			<![CDATA[ where start_date <= to_date(#{month},'yyyy-MM-dd') ]]>
+			and end_date >= to_date(#{month},'yyyy-MM-dd') )
+		</if>
+		<if test="month == null or month ==''">
+			<![CDATA[ where start_date <= sysdate ]]>
+			and end_date >= sysdate )
+		</if>
+	</select>
+ 
+ 	<!-- 查询所有质量上报的时间段 -->
+ 	<select id="selectAllDate" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+ 		select p_year "pYear" , start_date "startDate" , end_date "endDate" from tb_formula_template
+ 		order by start_date desc
+ 	</select>
+ 	
+ 	
+ 	<resultMap id="FormulaInfo" type="java.util.LinkedHashMap" >
+	    <result column="index_guid" property="indexGuid" jdbcType="VARCHAR" />
+	    <result column="INDEX_NAME" property="indexName" jdbcType="VARCHAR" />
+	    <result column="QC_ORG_ID" property="qcOrgId" jdbcType="DECIMAL" />
+	    <result column="r_org_name" property="rOrgName" jdbcType="VARCHAR" />
+	    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+	    <result column="f_org_name" property="fOrgName" jdbcType="VARCHAR" />
+	    <result column="hospital_level" property="hospitalLevel" jdbcType="VARCHAR" />
+	    <result column="hospital_type" property="hospitalType" jdbcType="VARCHAR" />
+	    <result column="qc_scope_type" property="qcScopeType" jdbcType="VARCHAR" />
+	    <result column="p_ymd" property="pYmd" jdbcType="VARCHAR" />
+	    <result column="p_year" property="pYear" jdbcType="VARCHAR" />
+	    <result column="ymd" property="ymd" jdbcType="VARCHAR" />
+	    <result column="qc_audit_fstate" property="qcAuditFstate" jdbcType="VARCHAR" />
+	    <result column="DEPT_AUDIT_FSTATE" property="deptAuditFstate" jdbcType="VARCHAR" />
+	    <result column="qc_name_fz" property="qcNameFz" jdbcType="VARCHAR" />
+	    <result column="numerator_p_code" property="numeratorPCode" jdbcType="VARCHAR" />
+	    <result column="numerator_value" property="numeratorValue" jdbcType="VARCHAR" />
+	    <result column="qc_name_fm" property="qcNameFm" jdbcType="VARCHAR" />
+	    <result column="denominator_p_code" property="denominatorPCode" jdbcType="VARCHAR" />
+	    <result column="denominator_value" property="denominatorValue" jdbcType="VARCHAR" />
+	    <result column="qc_name_zb" property="qcNameZb" jdbcType="VARCHAR" />
+	    <result column="index_p_code" property="indexPCode" jdbcType="VARCHAR" />
+	    <result column="index_value" property="indexValue" jdbcType="VARCHAR" />
+	    <result column="index_value_level" property="indexValueLevel" jdbcType="VARCHAR" />
+	    <result column="index_value_all" property="indexValueAll" jdbcType="VARCHAR" />
+  	</resultMap>
+  	
+ 	<!-- 查询质量指标详情 -->
+ 	<select id="selectFormulaInfo" resultMap="FormulaInfo" parameterType="java.util.HashMap">
+ 		select * from v_qc_score where qc_org_id = #{qcOrgId} 
+			and index_p_code = #{indexPCode}
+			and org_id = #{orgId}
+			order by ymd desc
+ 	</select>
+ 	
+ 	<!-- 查询质量指标列表 -->
+ 	<select id="selectFormulaInfoList" resultMap="FormulaInfo" parameterType="com.phxl.core.base.entity.Pager">
+ 		select * from v_qc_score where qc_org_id = #{conditiions.qcOrgId, jdbcType=DECIMAL} 
+			<![CDATA[ and ymd <= #{conditiions.ymd, jdbcType=DECIMAL} 
+				and index_p_code = #{conditiions.indexPCode, jdbcType=VARCHAR} ]]>
+			order by ymd desc
+ 	</select>
+ 
+</mapper>

@@ -2,6 +2,7 @@ package com.phxl.hqcp.entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.phxl.core.base.annotation.BaseSql;
 @BaseSql(tableName="TS_USER_INFO", resultName="com.phxl.hqcp.dao.UserInfoMapper.BaseResultMap")
 public class UserInfo {
@@ -9,6 +10,7 @@ public class UserInfo {
 
     private String userNo;
 
+    @JsonIgnore
     private String pwd;
 
     private String userName;
@@ -48,6 +50,10 @@ public class UserInfo {
     private String modifyUserid;
     
     private String orgName;
+    
+    private String confirmPwd;
+    private String auditOrgCode;
+    private String auditTfAccessory;
 
     public String getUserId() {
         return userId;
@@ -223,6 +229,30 @@ public class UserInfo {
 
 	public void setModifyUserid(String modifyUserid) {
 		this.modifyUserid = modifyUserid;
+	}
+
+	public String getConfirmPwd() {
+		return confirmPwd;
+	}
+
+	public void setConfirmPwd(String confirmPwd) {
+		this.confirmPwd = confirmPwd;
+	}
+
+	public String getAuditOrgCode() {
+		return auditOrgCode;
+	}
+
+	public void setAuditOrgCode(String auditOrgCode) {
+		this.auditOrgCode = auditOrgCode;
+	}
+
+	public String getAuditTfAccessory() {
+		return auditTfAccessory;
+	}
+
+	public void setAuditTfAccessory(String auditTfAccessory) {
+		this.auditTfAccessory = auditTfAccessory;
 	}
 	
 }

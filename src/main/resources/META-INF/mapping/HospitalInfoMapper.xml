@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phxl.hqcp.dao.HospitalInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.phxl.hqcp.entity.HospitalInfo" >
+    <id column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+    <result column="HOSPITAL_LEVEL" property="hospitalLevel" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_TYPE" property="hospitalType" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_PROPERTY" property="hospitalProperty" jdbcType="VARCHAR" />
+    <result column="HOSPITAL_TEACHING" property="hospitalTeaching" jdbcType="VARCHAR" />
+    <result column="FSORT" property="fsort" jdbcType="DECIMAL" />
+    <result column="PLAN_BED_SUM" property="planBedSum" jdbcType="DECIMAL" />
+    <result column="ACTUAL_BED_SUM" property="actualBedSum" jdbcType="DECIMAL" />
+    <result column="STAFF_SUM" property="staffSum" jdbcType="DECIMAL" />
+    <result column="TF_REMARK" property="tfRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ORG_ID, HOSPITAL_LEVEL, HOSPITAL_TYPE, HOSPITAL_PROPERTY, HOSPITAL_TEACHING, FSORT, 
+    PLAN_BED_SUM, ACTUAL_BED_SUM, STAFF_SUM, TF_REMARK
+  </sql>
+</mapper>
