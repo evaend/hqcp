@@ -677,4 +677,150 @@ public class DeptInfoController {
         return result;
     }
 	
+	/**
+	 * 
+	 * getOrgInfoTb:(按年度查询监管机构下的机构总数、三甲机构数、二甲机构数、及同比). <br/> 
+	 * 
+	 * @Title: getOrgInfoTb
+	 * @Description: TODO
+	 * @param orgId
+	 * @param ymd
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getOrgInfoTb")
+    public Map<String, Object> getOrgInfoTb(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "ymd", required = false) String ymd,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(ymd, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("ymd", ymd);
+        Map<String, Object> result = deptInfoService.getOrgInfoTb(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getOrgDeptInfoByGender:(按年度查询监管机构下医工人数男女比例). <br/> 
+	 * 
+	 * @Title: getOrgDeptInfoByGender
+	 * @Description: TODO
+	 * @param orgId
+	 * @param ymd
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getOrgDeptInfoByGender")
+    public Map<String, Object> getOrgDeptInfoByGender(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "ymd", required = false) String ymd,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(ymd, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("ymd", ymd);
+        Map<String, Object> result = deptInfoService.getOrgDeptInfoByGender(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getOrgEducation:(查询医工人员学历). <br/> 
+	 * 
+	 * @Title: getOrgEducation
+	 * @Description: TODO
+	 * @param orgId
+	 * @param pYear
+	 * @param constrDeptGuid
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getOrgEducation")
+    public Map<String, Object> getOrgEducation(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "ymd", required = false) String ymd,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(ymd, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("ymd", ymd);
+        Map<String, Object> result = deptInfoService.getOrgEducation(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getAdverseEvents:(按年度查询不良事件上报率). <br/> 
+	 * 
+	 * @Title: getAdverseEvents
+	 * @Description: TODO
+	 * @param orgId
+	 * @param ymd
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getAdverseEvents")
+    public Map<String, Object> getAdverseEvents(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "ymd", required = false) String ymd,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(ymd, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("ymd", ymd);
+        Map<String, Object> result = deptInfoService.getAdverseEvents(pager);
+        return result;
+    }
+	
+	/**
+	 * 
+	 * getMaterialTraceability:(按年度查询耗材追溯分析). <br/> 
+	 * 
+	 * @Title: getMaterialTraceability
+	 * @Description: TODO
+	 * @param orgId
+	 * @param ymd
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getMaterialTraceability")
+    public Map<String, Object> getMaterialTraceability(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "ymd", required = false) String ymd,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(ymd, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("ymd", ymd);
+        Map<String, Object> result = deptInfoService.getMaterialTraceability(pager);
+        return result;
+    }
+	
 }

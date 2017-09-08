@@ -2,10 +2,13 @@ package com.phxl.hqcp.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -389,19 +392,47 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                 map.put("bedSum", bedMap);
                 //机构员工总数
                 Map<String, Object> staffMap = new HashMap<String, Object>();
-                bedMap.put("planStaffSum", deptMap.get("STAFF_SUM")==null?0:deptMap.get("STAFF_SUM"));
-                bedMap.put("tbStaffSum", deptMap.get("TB_STAFF_SUM")==null?"0%":deptMap.get("TB_STAFF_SUM"));
+                staffMap.put("planStaffSum", deptMap.get("STAFF_SUM")==null?0:deptMap.get("STAFF_SUM"));
+                staffMap.put("tbStaffSum", deptMap.get("TB_STAFF_SUM")==null?"0%":deptMap.get("TB_STAFF_SUM"));
                 map.put("staffSum", staffMap);
                 //医工人员总数
                 Map<String, Object> ygMap = new HashMap<String, Object>();
-                bedMap.put("planYgSum", deptMap.get("YG_NUM")==null?0:deptMap.get("YG_NUM"));
-                bedMap.put("tbYgSum", deptMap.get("TB_YG_NUM")==null?"0%":deptMap.get("TB_YG_NUM"));
+                ygMap.put("planYgSum", deptMap.get("YG_NUM")==null?0:deptMap.get("YG_NUM"));
+                ygMap.put("tbYgSum", deptMap.get("TB_YG_NUM")==null?"0%":deptMap.get("TB_YG_NUM"));
                 map.put("ygSum", ygMap);
                 //医工培训总数
                 Map<String, Object> meetMap = new HashMap<String, Object>();
-                bedMap.put("planMeetSum", deptMap.get("MEET_NUM")==null?0:deptMap.get("MEET_NUM"));
-                bedMap.put("tbMeetSum", deptMap.get("TB_MEET_NUM")==null?"0%":deptMap.get("TB_MEET_NUM"));
+                meetMap.put("planMeetSum", deptMap.get("MEET_NUM")==null?0:deptMap.get("MEET_NUM"));
+                meetMap.put("tbMeetSum", deptMap.get("TB_MEET_NUM")==null?"0%":deptMap.get("TB_MEET_NUM"));
                 map.put("meetSum", meetMap);
+            }
+        }
+        return map;
+    }
+    
+
+    @Override
+    public Map<String, Object> getOrgInfoTb(Pager pager) {
+        List<Map<String, Object>> list = qcScopeMapper.getOrgInfoTb(pager);
+        Map<String, Object> map = new HashMap<String, Object>();
+        if(list!=null && !list.isEmpty()){
+            Map<String, Object> orgMap = list.get(0);
+            if(orgMap!=null && !orgMap.isEmpty()){
+                //机构总数
+                Map<String, Object> orgTotalMap = new HashMap<String, Object>();
+                orgTotalMap.put("totalOrg", orgMap.get("totalOrg")==null?0:orgMap.get("totalOrg"));
+                orgTotalMap.put("tbTotalOrg", orgMap.get("tbTotalOrg")==null?"0%":orgMap.get("tbTotalOrg"));
+                map.put("orgSum", orgTotalMap);
+                //三甲机构
+                Map<String, Object> topThreeOrg = new HashMap<String, Object>();
+                topThreeOrg.put("totalLevel3", orgMap.get("totalLevel3")==null?0:orgMap.get("totalLevel3"));
+                topThreeOrg.put("tbTotalLevel3", orgMap.get("tbTotalLevel3")==null?"0%":orgMap.get("tbTotalLevel3"));
+                map.put("topThreeOrg", topThreeOrg);
+                //二甲机构
+                Map<String, Object> topTwoOrg = new HashMap<String, Object>();
+                topTwoOrg.put("totalLevel2", orgMap.get("totalLevel2")==null?0:orgMap.get("totalLevel2"));
+                topTwoOrg.put("tbTotalLevel2", orgMap.get("tbTotalLevel2")==null?"0%":orgMap.get("tbTotalLevel2"));
+                map.put("topTwoOrg", topTwoOrg);
             }
         }
         return map;
@@ -412,6 +443,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         List<Map<String, Object>> list = selectScopeMapper.getDeptUserAge(pager);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("data", list);
+        map.put("name", "医工人员年龄情况");
         return map;
     }
 
@@ -420,6 +452,16 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         List<Map<String, Object>> list = selectScopeMapper.getDeptUserEducation(pager);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("data", list);
+        map.put("name", "医工人员学历情况");
+        return map;
+    }
+    
+    @Override
+    public Map<String, Object> getOrgEducation(Pager pager) {
+        List<Map<String, Object>> list = qcScopeMapper.getOrgEducation(pager);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("data", list);
+        map.put("name", "医工人员学历情况");
         return map;
     }
 
@@ -427,6 +469,10 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
     public Map<String, Object> getDeptUserMajor(Pager pager) {
         List<Map<String, Object>> list = selectScopeMapper.getDeptUserMajor(pager);
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        String[] legendData = {"医工人员专业情况"};
+        Map<String, Object> legendMap = new HashMap<String, Object>();
+        legendMap.put("data", legendData);
+        resultMap.put("legend", legendMap);
         if(list!=null && list.size()>0){
             String[] majorName = new String[list.size()];
             String[] num = new String[list.size()];
@@ -441,11 +487,136 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             }
             majorMap.put("data", majorName);
             numMap.put("data", num);
+            numMap.put("type", "bar");
             numMap.put("name", "专业人数");
             resultMap.put("xAxis", majorMap);
             resultMap.put("series", numMap);
         }
         
+        return resultMap;
+    }
+    
+    @Override
+    public Map<String, Object> getAdverseEvents(Pager pager) {
+        List<Map<String, Object>> list = qcScopeMapper.getAdverseEvents(pager);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        String[] legendData = {"不良事件上报率"};
+        Map<String, Object> legendMap = new HashMap<String, Object>();
+        legendMap.put("data", legendData);
+        resultMap.put("legend", legendMap);
+        List<Map<String, Object>> adverList = new ArrayList<Map<String,Object>>();
+        if(list!=null && list.size()>0){
+            String[] orgName = new String[list.size()];
+            String[] num = new String[list.size()];
+            String[] aver = new String[list.size()];
+            Map<String, Object> majorMap = new HashMap<String, Object>();
+            Map<String, Object> numMap = new HashMap<String, Object>();
+            Map<String, Object> lineMap = new HashMap<String, Object>();
+            for(int i=0;i<list.size();i++){
+                Map<String, Object> map = list.get(i);
+                if(map!=null && !map.isEmpty()){
+                    orgName[i] = map.get("F_ORG_NAME")==null?"":map.get("F_ORG_NAME").toString();
+                    num[i] = map.get("INDEX_VALUE")==null?"":map.get("INDEX_VALUE").toString();
+                    aver[i] = map.get("INDEX_VALUE_ALL")==null?"":map.get("INDEX_VALUE_ALL").toString();
+                }
+            }
+            majorMap.put("data", orgName);
+            numMap.put("data", num);
+            numMap.put("type", "bar");
+            numMap.put("name", "不良事件上报率");
+            adverList.add(numMap);
+            lineMap.put("name", "不良事件上报率");
+            lineMap.put("type", "line");
+            lineMap.put("data", aver);
+            adverList.add(lineMap);
+            resultMap.put("xAxis", majorMap);
+            resultMap.put("series", adverList);
+        }
+        
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> getMaterialTraceability(Pager pager) {
+        List<Map<String, Object>> list = qcScopeMapper.getMaterialTraceability(pager);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        String[] legendData = {"医用高值耗材溯源率"};
+        Map<String, Object> legendMap = new HashMap<String, Object>();
+        legendMap.put("data", legendData);
+        resultMap.put("legend", legendMap);
+        List<Map<String, Object>> traceList = new ArrayList<Map<String,Object>>();
+        if(list!=null && list.size()>0){
+            String[] orgName = new String[list.size()];
+            String[] num = new String[list.size()];
+            String[] aver = new String[list.size()];
+            Map<String, Object> majorMap = new HashMap<String, Object>();
+            Map<String, Object> numMap = new HashMap<String, Object>();
+            Map<String, Object> lineMap = new HashMap<String, Object>();
+            for(int i=0;i<list.size();i++){
+                Map<String, Object> map = list.get(i);
+                if(map!=null && !map.isEmpty()){
+                    orgName[i] = map.get("F_ORG_NAME")==null?"":map.get("F_ORG_NAME").toString();
+                    num[i] = map.get("INDEX_VALUE")==null?"":map.get("INDEX_VALUE").toString();
+                    aver[i] = map.get("INDEX_VALUE_ALL")==null?"":map.get("INDEX_VALUE_ALL").toString();
+                }
+            }
+            majorMap.put("data", orgName);
+            numMap.put("data", num);
+            numMap.put("type", "bar");
+            numMap.put("name", "医用高值耗材溯源率");
+            traceList.add(numMap);
+            lineMap.put("name", "医用高值耗材溯源率");
+            lineMap.put("type", "line");
+            lineMap.put("data", aver);
+            traceList.add(lineMap);
+            resultMap.put("xAxis", majorMap);
+            resultMap.put("series", traceList);
+        }
+        
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> getOrgDeptInfoByGender(Pager pager) {
+        List<Map<String, Object>> list = qcScopeMapper.getOrgDeptInfoByGender(pager);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        String[] legendData = {"男","女"};
+        Map<String, Object> legendMap = new HashMap<String, Object>();
+        legendMap.put("data", legendData);
+        resultMap.put("legend", legendMap);
+        Set<String> orgList = new HashSet<String>();//机构
+        List<String> maleList = new ArrayList<String>();//男
+        List<String> femaleList = new ArrayList<String>();//女
+        List<Map<String, Object>> genders = new ArrayList<Map<String,Object>>();
+        if(list!=null && !list.isEmpty()){
+            for(Map<String, Object> map:list){
+                if(map!=null && !map.isEmpty() && map.get("ORG_ID")!=null){
+                    orgList.add((String)map.get("ORG_NAME"));
+                    if(map.get("GENDER")!=null && StringUtils.isNotBlank(map.get("GENDER").toString()) && "1".equals(map.get("GENDER").toString())){//男
+                        maleList.add(map.get("YG_NUM")==null?"0":map.get("YG_NUM").toString());
+                    }
+                    if(map.get("GENDER")!=null && StringUtils.isNotBlank(map.get("GENDER").toString()) && "2".equals(map.get("GENDER").toString())){//女
+                        femaleList.add(map.get("YG_NUM")==null?"0":map.get("YG_NUM").toString());
+                    }
+                }
+            }
+        }
+        Map<String, Object> orgs = new HashMap<String, Object>();
+        orgs.put("data", orgList.toArray());
+        resultMap.put("xAxis", orgs);
+        Map<String, Object> males = new HashMap<String, Object>();
+        males.put("name", "男");
+        males.put("type", "bar");
+        males.put("stack", "医工人数");
+        males.put("data", maleList.toArray());
+        genders.add(males);
+        Map<String, Object> females = new HashMap<String, Object>();
+        females.put("name", "女");
+        females.put("type", "bar");
+        females.put("stack", "医工人数");
+        females.put("data", femaleList.toArray());
+        genders.add(females);
+        resultMap.put("series", genders);
         return resultMap;
     }
 

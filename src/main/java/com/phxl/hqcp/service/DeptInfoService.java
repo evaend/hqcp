@@ -141,5 +141,70 @@ public interface DeptInfoService extends IBaseService{
      * @throws
      */
     Map<String, Object> getDeptUserMajor(Pager pager);
+    
+    /**
+     * 
+     * getOrgInfoTb:(按年度查询监管机构下的机构总数、三甲机构数、二甲机构数、及同比). <br/> 
+     * 
+     * @Title: getOrgInfoTb
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return Map<String,Object>    返回类型
+     * @throws
+     */
+    Map<String, Object> getOrgInfoTb(Pager pager);
+    
+    /**
+     * 
+     * getOrgDeptInfoByGender:(按年度查询监管机构下医工人数男女比例). <br/> 
+     * 
+     * @Title: getOrgDeptInfoByGender
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return Map<String,Object>    返回类型
+     * @throws
+     */
+    Map<String, Object> getOrgDeptInfoByGender(Pager pager);
+    
+    /**
+     * 
+     * getOrgEducation:(查询医工人员学历). <br/> 
+     * 
+     * @Title: getOrgEducation
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return Map<String,Object>    返回类型
+     * @throws
+     */
+    Map<String, Object> getOrgEducation(Pager pager);
+    
+    /**
+     * 
+     * getAdverseEvents:(按年度查询不良事件上报率). <br/> 
+     * 
+     * @Title: getAdverseEvents
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return Map<String,Object>    返回类型
+     * @throws
+     */
+    Map<String, Object> getAdverseEvents(Pager pager);
+    
+    /**
+     * 
+     * getMaterialTraceability:(按年度查询耗材追溯分析). <br/> 
+     * 
+     * @Title: getMaterialTraceability
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return Map<String,Object>    返回类型
+     * @throws
+     */
+    Map<String, Object> getMaterialTraceability(Pager pager);
 	
 }
