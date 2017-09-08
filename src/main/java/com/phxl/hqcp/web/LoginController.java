@@ -104,7 +104,6 @@ public class LoginController {
 			UserInfo userInfo = (UserInfo) userLogin.get("userInfo");
 			LocalAssert.notEmpty(userInfo.getUserNo(), "登录: 用户登录名，未知!");
 			LocalAssert.notEmpty(userInfo.getOrgType(), "登录: 用户的机构类型未知!");
-			LocalAssert.notEmpty(userInfo.getUserLevel(), "登录: 用户类型（级别），未知!");
 			session.setAttribute(LoginUser.SESSION_USERNAME, userInfo.getUserName());
 			session.setAttribute(LoginUser.SESSION_USER_ORGID, userInfo.getOrgId());
 			session.setAttribute(LoginUser.SESSISON_USER_LEVEL, userInfo.getUserLevel());

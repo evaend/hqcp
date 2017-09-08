@@ -2,7 +2,6 @@ package com.phxl.hqcp.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +34,11 @@ import com.phxl.hqcp.service.DeptInfoService;
 @Service
 public class DeptInfoServiceImpl extends BaseService implements DeptInfoService {
 	
-	@Autowired
+    @Autowired
 	SelectScopeMapper selectScopeMapper;
-	@Autowired
+    @Autowired
 	QcScopeMapper qcScopeMapper;
-	@Autowired
+    @Autowired
 	CallProcedureMapper callProcedureMapper;
 
     @Override

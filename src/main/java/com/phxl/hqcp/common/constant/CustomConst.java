@@ -155,11 +155,11 @@ public class CustomConst {
 		/**00、保存 */
 		public static final String DRAFT = "00";
 		/**01、待审核*/
-		public static final String AWAIT_AUDIT = "01";
+		public static final String AWAIT_AUDIT = "10";
 		/**02、审核通过*/
-		public static final String PASSED = "02";
+		public static final String PASSED = "20";
 		/**03、审核不通过*/
-		public static final String NO_PASS = "03";
+		public static final String NO_PASS = "30";
 	}
 	
 	/**

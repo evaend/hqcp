@@ -1,11 +1,16 @@
 package com.phxl.hqcp.service.impl;
 
 
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,21 +20,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phxl.core.base.entity.Pager;
 import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.service.impl.BaseService;
-import com.phxl.core.base.util.BaseUtils;
+import com.phxl.core.base.util.FTPUtils;
 import com.phxl.core.base.util.JSONUtils;
-import com.phxl.core.base.util.MD5Util;
-import com.phxl.core.base.util.SHAUtil;
+import com.phxl.core.base.util.SystemConfig;
 import com.phxl.hqcp.common.constant.CustomConst;
+import com.phxl.hqcp.common.constant.CustomConst.AuditFstate;
+import com.phxl.hqcp.common.util.Base64FileHelper;
 import com.phxl.hqcp.dao.UserInfoMapper;
+import com.phxl.hqcp.entity.OrgInfo;
 import com.phxl.hqcp.entity.UserInfo;
 import com.phxl.hqcp.service.UserService;
 
 /**
  * 用户服务（隶属于机构）
- * @date	2017年3月23日 下午2:06:24
- * @author	黄文君
- * @version	1.0
- * @since	JDK 1.6
  */
 @Service
 public class UserServiceImpl extends BaseService implements UserService {
@@ -59,15 +62,15 @@ public class UserServiceImpl extends BaseService implements UserService {
 			loginSuccess = false;
 			result = "用户名不存在";
 		}else{
-			String sysPwd = null;
-			try{
-				String[] strArray =  {newUserInfo.getPwd().toUpperCase(),token};
-			    String shastr = BaseUtils.sort(strArray);//将待加密的字符组排序并组成一个字符串    
-				sysPwd = SHAUtil.shaEncode(shastr);//字符串加密
-			}catch(Exception e)
-			{
-				return null;
-			}
+			String sysPwd = newUserInfo.getPwd();
+//			try{
+//				String[] strArray =  {newUserInfo.getPwd().toUpperCase(),token};
+//			    String shastr = BaseUtils.sort(strArray);//将待加密的字符组排序并组成一个字符串    
+//				sysPwd = SHAUtil.shaEncode(shastr);//字符串加密
+//			}catch(Exception e)
+//			{
+//				return null;
+//			}
 			if( sysPwd!= null && !pwd.toUpperCase().equals(sysPwd.toUpperCase())){
 				loginSuccess = false;
 				result = "用户名或者密码错误";
@@ -80,9 +83,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 					if(StringUtils.isBlank(orgFstate)){
 						loginSuccess = false;
 						result = "用户所属机构状态未知";
-					}else if(!orgFstate.equals(CustomConst.Fstate.USABLE)){
+					}else if(!orgFstate.equals(CustomConst.AuditFstate.PASSED)){
 						loginSuccess = false;
-						result = "用户所属机构已停用";
+						result = "用户所属机构未审核通过，无法登录";
 					}
 				}else{
 					loginSuccess = false;
@@ -93,11 +96,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 		map.put("loginStatus", loginSuccess);
 		if(loginSuccess == true){
 			map.put("userInfo", this.findUserInfoById(newUserInfo.getUserId()));
-			//如果是默认密码，提示修改密码
-			if((MD5Util.MD5Encrypt(CustomConst.DEFAULT_PASSWORD).toUpperCase()
-					).equals(newUserInfo.getPwd().toUpperCase())){
-				result = "您的密码是默认密码，请及时修改！";
-			}
 //			//查询当前用户的菜单权限
 			JSONUtils json = new JSONUtils();
 			map.put("menuList", json.toPrettyJson(this.selectUserMenu(newUserInfo.getUserId())));            
@@ -194,11 +192,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 	
 	/**
-	 * 判断指定机构是否运营商（服务商）
-	 * @author	黄文君
-	 * @date	2017年3月24日 下午9:06:35
-	 * @param	orgId
-	 * @return	boolean
+	 * 判断指定机构是否运营商
 	 */
 	public boolean assertServiceOrgByOrgId(Long orgId) {
 		return userInfoMapper.findServiceOrgByOrgId(orgId)>0?true:false;
@@ -206,10 +200,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	/**
 	 * 查询机构用户列表
-	 * @author	黄文君
-	 * @date	2017年3月24日 下午8:20:36
-	 * @param	pager
-	 * @return	List<UserInfo>
 	 */
 	public List<UserInfo> findOrgUserList(Pager pager) {
 		return userInfoMapper.findOrgUserList(pager);
@@ -217,11 +207,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 	
 	/**
 	 * 根据用户id查询用户信息
-	 * @author	黄文君
-	 * @date	2017年4月6日 下午2:02:45
-	 * @param userId
-	 * @return
-	 * @return	UserInfo
 	 */
 	public UserInfo findUserInfoById(String userId){
 		return userInfoMapper.findUserInfoById(userId);
@@ -229,10 +214,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	/**
 	 * 判断用户名（登录名）是否存在
-	 * @date	2017年3月24日 下午9:10:07
-	 * @param	userno
-	 * @param	excludeUserId
-	 * @return	boolean
 	 */
 	public boolean existedUserno(String userno, String excludeUserId) {
 		return userInfoMapper.countUserno(userno, excludeUserId)>0?true:false;
@@ -240,10 +221,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	/**
 	 * 查看指定机构的机构类型
-	 * @author	黄文君
-	 * @date	2017年3月24日 下午5:00:11
-	 * @param	orgId
-	 * @return	String
 	 */
 	public String findOrgTypeByOrgId(Long orgId) {
 		return userInfoMapper.findOrgTypeByOrgId(orgId);
@@ -256,9 +233,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 	
 	/**
 	 * 查询还没有机构管理员的机构列表
-	 * @author	黄文君
-	 * @date	2017年3月29日 下午5:21:26
-	 * @return	List<Map<String,Object>>
 	 */
 	@Override
 	public List<Map<String, Object>> findWithoutAdminOrgList(Pager pager) {
@@ -267,11 +241,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 	
 	/**
 	 * 添加用户
-	 * @author	黄文君
-	 * @date	2017年3月30日 上午9:12:26
-	 * @param	user
-	 * @return	void
-	 * @throws	ValidationException 
 	 */
 	@Override
 	public void addUser(UserInfo user) throws ValidationException {
@@ -299,5 +268,58 @@ public class UserServiceImpl extends BaseService implements UserService {
 //				}
 //			}
 		}
+	}
+
+	@Override
+	public void saveRegisterUserInfo(UserInfo user,OrgInfo orgInfo, String newTfAccessoryFile) throws Exception {		
+		if(StringUtils.isNotBlank(newTfAccessoryFile)){//新附件
+			String var0 =  String.valueOf(user.getOrgId());
+			String timestamp = DateUtils.format(new Date(), "yyMMddHHmmssSSS");
+			
+			//定位存储路径
+			StringBuffer filePath = new StringBuffer();
+			String directory = SystemConfig.getProperty("resource.ftp.hqcpFile.organization.register");//目录位置
+			directory = MessageFormat.format(directory, var0);
+			filePath.append(directory).append(timestamp);
+			//base64格式文件转成数据流
+			InputStream file = Base64FileHelper.decodeFile(newTfAccessoryFile, filePath);
+			//新附件，上传ftp存储
+			FTPUtils.upload(directory, FilenameUtils.getName(filePath.toString()), file);
+			//确定文件保存位置
+			user.setAuditTfAccessory(filePath.toString());
+		}
+//		this.updateInfo(orgInfo);
+		this.insertInfo(user);
+		
+	}
+
+	@Override
+	public void auditUserInfo(UserInfo userInfo) throws Exception {
+		if(AuditFstate.PASSED.equals(userInfo.getAuditFstate())){//审核通过，如果有机构的信息，需要填到机构表
+			OrgInfo orgInfo = this.find(OrgInfo.class, userInfo.getOrgId());
+			if(StringUtils.isNotBlank(userInfo.getAuditOrgCode())){
+				orgInfo.setOrgCode(userInfo.getAuditOrgCode());
+				this.updateInfo(orgInfo);
+			}
+			if(StringUtils.isNotBlank(userInfo.getAuditTfAccessory())){
+				String var0 =  String.valueOf(userInfo.getOrgId());
+				String timestamp = DateUtils.format(new Date(), "yyMMddHHmmssSSS");
+				//定位存储路径
+				StringBuffer filePath = new StringBuffer();
+				String directory = SystemConfig.getProperty("resource.ftp.hqcpFile.organization.hospital");//目录位置
+				directory = MessageFormat.format(directory, var0);
+				filePath.append(directory).append(timestamp);
+				//删除原文件
+				if(StringUtils.isNotBlank(orgInfo.getTfAccessory())){
+					FTPUtils.deleteFile(orgInfo.getTfAccessory());
+				}
+				//复制文件
+				FTPUtils.copyFileRemote(userInfo.getAuditTfAccessory(), filePath.toString());
+				//确定文件保存位置
+				orgInfo.setTfAccessory(filePath.toString());
+				this.updateInfo(orgInfo);
+			}
+		}
+		this.updateInfo(userInfo);
 	}
 }
