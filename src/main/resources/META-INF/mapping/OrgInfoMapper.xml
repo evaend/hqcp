@@ -155,19 +155,20 @@
 	 <!-- 查询机构列表（联想下拉搜索） -->
 	 <select id="findOrgListForSelector" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		SELECT
-		  DISTINCT o.ORG_ID "value", o.ORG_NAME "text"
+		  DISTINCT o.ORG_ID "value", o.ORG_NAME "text",o.org_code "orgCode",o.TF_ACCESSORY "tfAccessory"
 		FROM  TD_ORG_INFO o
-		WHERE o.FSTATE='01'
-		<if test="conditiions!=null">
-			<if test="conditiions.orgTypes!=null and conditiions.orgTypes.length>0">
-				and o.ORG_TYPE in  
-				<foreach collection="conditiions.orgTypes" item="item" index="index" open="(" close=")" separator=",">
-					#{conditiions.orgTypes[${index}], jdbcType=VARCHAR}
-				</foreach>
+		<where>
+			<if test="conditiions!=null">
+				<if test="conditiions.orgTypes!=null and conditiions.orgTypes.length>0">
+					and o.ORG_TYPE in  
+					<foreach collection="conditiions.orgTypes" item="item" index="index" open="(" close=")" separator=",">
+						#{conditiions.orgTypes[${index}], jdbcType=VARCHAR}
+					</foreach>
+				</if>
+				<if test="conditiions.searchName!=null and conditiions.searchName!=''">
+					and regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
+				</if>
 			</if>
-			<if test="conditiions.searchName!=null and conditiions.searchName!=''">
-				and regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
-			</if>
-		</if>
+		</where>
 	</select>
 </mapper>
