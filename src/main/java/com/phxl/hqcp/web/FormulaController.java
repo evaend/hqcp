@@ -72,6 +72,12 @@ public class FormulaController {
 			pager.addQueryParam("pYear", pYear.trim().substring(0, 4));
 		}
 		List<Map<String, Object>> list = formulaService.selectFormulaList(pager);
+		
+		//计算百分比
+		for (Map<String, Object> map : list) {
+			double schedule = Double.valueOf(map.get("indexValue").toString()) / Double.valueOf(map.get("indexCount").toString());
+			map.put("schedule", schedule);
+		}
 		pager.setRows(list);
 		return pager;
 	}
@@ -233,11 +239,21 @@ public class FormulaController {
 		pager.addQueryParam("indexPCode", indexValue);
 //		pager.addQueryParam("qcOrgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
 		pager.addQueryParam("qcOrgId", 10001);
+
+		Map<String, Object> titleMap = new HashMap<String, Object>();
 		
 		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
+		if (selectFormulaInfoList.size()<1) {
+			
+		}else {
+			titleMap.put("qcNameFz", selectFormulaInfoList.get(0).get("qcNameFz"));
+			titleMap.put("qcNameFm", selectFormulaInfoList.get(0).get("qcNameFm"));
+			titleMap.put("qcNameZb", selectFormulaInfoList.get(0).get("qcNameZb"));
+		}
 		pager.setRows(selectFormulaInfoList);
 		
 		resultMap.put("pager", pager);
+		resultMap.put("titleMap", titleMap);
 		return resultMap;
 	}
 	

@@ -31,7 +31,7 @@
  
  	<select id="selectFormulaList" resultType="java.util.HashMap" parameterType="com.phxl.core.base.entity.Pager">
  		select 
- 			tb_formula.index_guid "indexGuid" , 
+ 			tb_formula.index_guid "constrDeptGuid" , 
 			tb_formula.org_id "orgId",
 			td_org_info.org_name "orgName",
 			tb_formula.p_ymd "pYmd",
