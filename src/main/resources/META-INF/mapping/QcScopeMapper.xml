@@ -88,5 +88,14 @@
 		select t.ORG_ID,t.f_org_name,t.INDEX_VALUE,t.index_value_all from v_qc_score t 
         where t.QC_ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL} and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.QC_NAME_ZB = '医用高值耗材溯源率' and t.P_YMD = 'P_HALF_YEAR'
 	</select>
+	
+	<!-- 按年度查询机构分布-->
+	<select id="getOrgAllLevel" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select t.tf_city "name",t.total_hospital_level "value" from v_org_all_level t 
+		where t.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
+		<if test="conditiions!=null and conditiions.level != null and conditiions.level != ''">
+		  and t.hospital_level = #{conditiions.level,jdbcType=VARCHAR}
+	    </if>
+	</select>
   
 </mapper>

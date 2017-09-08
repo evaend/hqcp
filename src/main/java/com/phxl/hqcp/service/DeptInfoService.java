@@ -206,5 +206,18 @@ public interface DeptInfoService extends IBaseService{
      * @throws
      */
     Map<String, Object> getMaterialTraceability(Pager pager);
+
+    /**
+     * 
+     * getOrgAllLevel:(机构分布). <br/> 
+     * 
+     * @Title: getOrgAllLevel
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return Map<String,Object>    返回类型
+     * @throws
+     */
+    Map<String, Object> getOrgAllLevel(Pager pager);
 	
 }

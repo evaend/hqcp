@@ -823,4 +823,33 @@ public class DeptInfoController {
         return result;
     }
 	
+	/**
+	 * 
+	 * getOrgAllLevel:(机构分布). <br/> 
+	 * 
+	 * @Title: getOrgAllLevel
+	 * @Description: TODO
+	 * @param orgId
+	 * @param ymd
+	 * @param request
+	 * @return
+	 * @throws Exception    设定参数
+	 * @return Map<String,Object>    返回类型
+	 * @throws
+	 */
+	@ResponseBody
+    @RequestMapping("/getOrgAllLevel")
+    public Map<String, Object> getOrgAllLevel(
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "ymd", required = false) String ymd,
+            HttpServletRequest request) throws Exception {
+        LocalAssert.notBlank(ymd, "请选择时间!");
+        Assert.notNull(orgId, "机构ID，不能为空");
+        Pager pager = new Pager(false);
+        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("ymd", ymd);
+        Map<String, Object> result = deptInfoService.getOrgAllLevel(pager);
+        return result;
+    }
+	
 }

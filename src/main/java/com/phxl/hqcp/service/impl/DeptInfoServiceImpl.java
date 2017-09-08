@@ -620,4 +620,20 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         return resultMap;
     }
 
+    @Override
+    public Map<String, Object> getOrgAllLevel(Pager pager) {
+        pager.addQueryParam("level", "3");
+        List<Map<String, Object>> threeList = qcScopeMapper.getOrgAllLevel(pager);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> threeMap = new HashMap<String, Object>();
+        threeMap.put("data", threeList);
+        resultMap.put("level3", threeMap);
+        pager.addQueryParam("level", "2");
+        List<Map<String, Object>> twoList = qcScopeMapper.getOrgAllLevel(pager);
+        Map<String, Object> twoMap = new HashMap<String, Object>();
+        twoMap.put("data", twoList);
+        resultMap.put("level2", twoMap);
+        return null;
+    }
+
 }

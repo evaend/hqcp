@@ -97,5 +97,18 @@ public interface QcScopeMapper extends BaseMapper {
      * @throws
      */
     List<Map<String, Object>> getMaterialTraceability(Pager pager);
+    
+    /**
+     * 
+     * getOrgAllLevel:(机构分布). <br/> 
+     * 
+     * @Title: getOrgAllLevel
+     * @Description: TODO
+     * @param pager
+     * @return    设定参数
+     * @return List<Map<String,Object>>    返回类型
+     * @throws
+     */
+    List<Map<String, Object>> getOrgAllLevel(Pager pager);
    
 }
