@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.phxl.core.base.annotation.BaseSql;
 
-@BaseSql(tableName="TD_SELECT_SCOPE", resultName="com.phxl.hqcp.dao.QcScopeMapper.BaseResultMap")
+@BaseSql(tableName="TD_QC_SCOPE", resultName="com.phxl.hqcp.dao.QcScopeMapper.BaseResultMap")
 public class QcScope {
     private String qcScopeGuid;
 

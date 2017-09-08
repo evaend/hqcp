@@ -45,16 +45,12 @@
 		    <if test="orgId != null and orgId > 0">
 			  and TD_ORG_INFO.ORG_ID not in ( #{orgId, jdbcType=DECIMAL} )
 		    </if>
-        UNION
-        select TD_ORG_REGIST.Org_Name from TD_ORG_REGIST where TD_ORG_REGIST.Audit_Fstate = '00' and TD_ORG_REGIST.Org_Name = #{orgValue,jdbcType=VARCHAR}
 	    </if>
 	    <if test="type != null and type == 'orgCode' ">
 	    select TD_ORG_INFO.Org_Code from TD_ORG_INFO where TD_ORG_INFO.Org_Code = #{orgValue,jdbcType=VARCHAR}
 		    <if test="orgId != null and orgId > 0">
 			  and TD_ORG_INFO.ORG_ID not in ( #{orgId, jdbcType=DECIMAL} )
 		    </if>
-		UNION
-		select TD_ORG_REGIST.Org_Code from TD_ORG_REGIST where TD_ORG_REGIST.Audit_Fstate = '00' and TD_ORG_REGIST.Org_Code = #{orgValue,jdbcType=VARCHAR}
 	    </if>
     )
   </select>

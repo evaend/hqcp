@@ -67,28 +67,14 @@
 			<include refid="Base_Column_List_With_Prefix"></include>, 
 			o.ORG_NAME,
 			case when u.AUDIT_FSTATE = '20' then o.org_code
-			else when u.audit_org_code is null then o.org_code
+			     when u.audit_org_code is null then o.org_code
 			else u.audit_org_code end org_code,
 			case when u.AUDIT_FSTATE = '20' then o.tf_accessory
-			else when u.audit_tf_accessory is null then o.tf_accessory
+			     when u.audit_tf_accessory is null then o.tf_accessory
 			else u.audit_tf_accessory  end tf_accessory
 		FROM TS_USER_INFO u
 		LEFT JOIN TD_ORG_INFO o on u.ORG_ID=o.ORG_ID 
 		WHERE 1=1 
-			<choose>
-				<!-- 系统管理员 -->
-				<when test='conditiions.sessionOrgType=="09" and conditiions.sessionUserLevel=="01"'>
-					and ( (u.USER_LEVEL in ('01', '02', '03') and u.ORG_ID = #{conditiions.sessionOrgId, jdbcType=DECIMAL}) or u.USER_LEVEL = '02')
-				</when>
-				<!-- 运营商（服务商）用户 -->
-				<when test='conditiions.sessionOrgType=="09" and conditiions.sessionUserLevel!="01"'>
-					and ( (u.USER_LEVEL in ('02', '03') and u.ORG_ID = #{conditiions.sessionOrgId, jdbcType=DECIMAL}) or u.USER_LEVEL = '02' )
-				</when>
-				<!-- 医院、供应商、监管部门 -->
-				<otherwise>
-					and u.USER_LEVEL in ('02', '03') and u.ORG_ID = #{conditiions.sessionOrgId, jdbcType=DECIMAL}
-				</otherwise>
-			</choose>
 			<if test="conditiions!=null and !conditiions.empty">
 				<if test="conditiions.searchName != null and conditiions.searchName != ''">
 					and (
@@ -125,10 +111,7 @@
 				<if test="excludeUserId!=null and excludeUserId!=''">
 					and USER_ID != #{excludeUserId}
 				</if>
-			UNION
-			select USER_NO from TD_USER_REGIST,TD_ORG_REGIST where TD_USER_REGIST.REGIST_GUID = TD_ORG_REGIST.REGIST_GUID
-				and TD_ORG_REGIST.Audit_Fstate = '00' and TD_USER_REGIST.USER_NO = #{userNo,jdbcType=VARCHAR}
-		)
+			)
 	</select>
 	
 	<!-- 判断指定机构是否运营商（服务商） -->

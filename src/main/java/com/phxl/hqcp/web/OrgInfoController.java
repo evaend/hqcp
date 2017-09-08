@@ -133,14 +133,14 @@ public class OrgInfoController{
 		 }
 		 validOrgInfoLength(orginfo);
 		 
-		if(StringUtils.isBlank(String.valueOf(orginfo.getOrgId()))){//新增
+		if(orginfo.getOrgId() == null){//新增
 //			目前新增机构只有医院
 			LocalAssert.notBlank(orginfo.getOrgName(), "请输入医院名称");
 			LocalAssert.notBlank(orginfo.getOrgAlias(), "请输入医院简称");
 			if(0 != orgInfoService.findOrgNameExist(orginfo.getOrgName(),null)){
 	             throw new ValidationException("机构名称已存在!");
 	         }
-			 if(0 != orgInfoService.findOrgCodeExist(orginfo.getOrgCode(),null)){
+			 if(StringUtils.isNotBlank(orginfo.getOrgCode()) && 0 != orgInfoService.findOrgCodeExist(orginfo.getOrgCode(),null)){
 	             throw new ValidationException("机构代码已存在!");
 	         }
 			 orginfo.setOrgType(OrgType.HOSPITAL);//只有医院
@@ -151,6 +151,9 @@ public class OrgInfoController{
 		}else{//编辑
 			OrgInfo ooi = orgInfoService.find(OrgInfo.class, orginfo.getOrgId());
 			Assert.notNull(ooi, "该机构不存在!");
+			 if(StringUtils.isNotBlank(orginfo.getOrgCode()) && 0 != orgInfoService.findOrgCodeExist(orginfo.getOrgCode(),orginfo.getOrgId())){
+	             throw new ValidationException("机构代码已存在!");
+	         }
 			ooi.setModefileUserId(userid);
 			ooi.setModefileUserNmae(username);
 			ooi.setModifyTime(new Date());
