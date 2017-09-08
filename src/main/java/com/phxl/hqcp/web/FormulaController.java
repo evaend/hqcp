@@ -149,6 +149,9 @@ public class FormulaController {
 		//返回的数据
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
+		//柱状图
+		Map<String, Object> majorSeries = new HashMap<String, Object>();
+		
 		//参数
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qcOrgId", 10001);
@@ -164,67 +167,63 @@ public class FormulaController {
 		//横坐标
 		Map<String, Object> xAxis = new HashMap<String, Object>();
 		//纵坐标
-		Map<String, Object> yAxis = new HashMap<String, Object>();
-		//值
-		Map<String, Object> series = new HashMap<String, Object>();
-		String xAxisData = "";
+		Map<String, Object> legend = new HashMap<String, Object>();
+		
+		String [] xAxisData = new String [selectFormulaInfo.size()];
+		String [] legendData = {"时间","同级医院平均水平","全省医院平均配置水平对比"};
 
-		//柱状图
-		String seriesName = "时间";
-		String type = "bar";
-		String seriesDate = "";
-		//线型（同级医院）
-		String seriesName1 = "同级医院平均水平";
-		String type1 = "line";
-		String seriesLevel = "";
-		//线型（同级医院）
-		String seriesName2 = "全省医院平均水平";
-		String type2 = "line";
-		String seriesAll = "";
+//		//柱状图
+//		String seriesName = "时间";
+//		String type = "bar";
+		String [] seriesDate = new String [selectFormulaInfo.size()];
+//		//线型（同级医院）
+//		String seriesName1 = "同级医院平均水平";
+//		String type1 = "line";
+		String [] seriesLevel = new String [selectFormulaInfo.size()];
+//		//线型（同级医院）
+//		String seriesName2 = "全省医院平均水平";
+//		String type2 = "line";
+		String [] seriesAll = new String [selectFormulaInfo.size()];
 				
 		for (int i = 0 ; i < selectFormulaInfo.size() ; i++) {
 			Map<String, Object> map2 = selectFormulaInfo.get(i);
 			char m = map2.get("ymd").toString().trim().charAt(4);
-			if (i != (selectFormulaInfo.size()-1)) {
-				//获取横坐标的值(如果为上半年)
-				if (m == '1') {
-					xAxisData += (map2.get("pYear").toString().trim()+"上半年")+" , ";
-				}else{
-					xAxisData += (map2.get("pYear").toString().trim()+"下半年")+" , ";
-				}
-				seriesDate += map2.get("indexValue").toString()+", ";
-				seriesLevel += map2.get("indexValueLevel").toString()+", ";
-				seriesAll += map2.get("indexValueAll").toString()+", ";
-				continue;
+			//获取横坐标的值(如果为上半年)
+			if (m == '1') {
+				xAxisData[i] = map2.get("pYear").toString().trim()+"上半年";
 			}else{
-				//获取横坐标的值(如果为上半年)
-				if (m == '1') {
-					xAxisData += (map2.get("pYear").toString().trim()+"上半年");
-				}else{
-					xAxisData += (map2.get("pYear").toString().trim()+"下半年");
-				}
-				seriesDate += map2.get("indexValue").toString();
-				seriesLevel += map2.get("indexValueLevel").toString();
-				seriesAll += map2.get("indexValueAll").toString();
-				continue;
+				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年";
 			}
-
+			seriesDate[i] = map2.get("indexValue").toString();
+			seriesLevel[i] = map2.get("indexValueLevel").toString();
+			seriesAll[i] = map2.get("indexValueAll").toString();			
 		}
-		String  seriesTitle = "name: '"+seriesName+"', type: '"+type+"', "+"data: ["+seriesDate+"] ";
-		String  seriesLevelTitle = "name: '"+seriesName1+"', type: '"+type1+"' , "+"data: ["+seriesLevel+"] ";
-		String  seriesAllTitle = "name: '"+seriesName2+"', type: '"+type2+"' , "+"data: ["+seriesAll+"] ";
-		
-		xAxis.put("type", "category");
 		xAxis.put("data", xAxisData);
-		//获取纵坐标的值
-		yAxis.put("type", "value");
-		//列表的值
-		series.put("series" , seriesTitle);
-		series.put("seriesLevel" , seriesLevelTitle);
-		series.put("seriesAll" , seriesAllTitle);
+		legend.put("data",legendData);
+		
+		//时间（柱）
+		Map<String, Object> series1 = new HashMap<String, Object>();
+		series1.put("name","时间");
+		series1.put("type","bar");
+		series1.put("data",seriesDate);
+		//同级（线）
+		Map<String, Object> series2 = new HashMap<String, Object>();
+		series2.put("name","同级医院平均水平");
+		series2.put("type","line");
+		series2.put("data",seriesLevel);
+		//全省（线）
+		Map<String, Object> series3 = new HashMap<String, Object>();
+		series3.put("name","全省医院平均配置水平对比");
+		series3.put("type","line");
+		series3.put("data",seriesAll);
+		//值
+		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
+		series.add(series1);
+		series.add(series2);
+		series.add(series3);
 		
 		resultMap.put("xAxis", xAxis);
-		resultMap.put("yAxis", yAxis);
+		resultMap.put("legend", legend);
 		resultMap.put("series", series);
 		
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
