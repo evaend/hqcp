@@ -11,8 +11,7 @@ public interface FormulaService extends IBaseService{
 	List<Map<String, Object>> selectFormulaList(Pager<Map<String, Object>> pager);
 	
 	//添加质量上报信息
-	public void insertForMula(Long qcOrgId, Long orgId,String createUserId,
-			String createUserName);
+	public void insertForMula(Long orgId,String createUserId,String createUserName);
 
 	//查询所有质量上报的时间段
 	List<Map<String, Object>> selectAllDate(Map<String, Object> map);

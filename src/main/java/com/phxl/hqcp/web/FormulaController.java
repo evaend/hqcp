@@ -1,11 +1,14 @@
 package com.phxl.hqcp.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.phxl.core.base.entity.Pager;
+import com.phxl.core.base.exception.ValidationException;
+import com.phxl.core.base.util.DateUtils;
 import com.phxl.hqcp.common.constant.CustomConst.LoginUser;
+import com.phxl.hqcp.common.util.ExportUtil;
+import com.phxl.hqcp.entity.OrgInfo;
 import com.phxl.hqcp.service.FormulaService;
-
 @Controller
 @RequestMapping("/formulaController")
 public class FormulaController {
@@ -257,4 +263,104 @@ public class FormulaController {
 		return resultMap;
 	}
 	
+	/**
+	 * 导出质量指标详情
+	 * @param yearMonth 当前选择的时间（如2016下半年）
+	 * @param indexValue 当前选择类型（如医学工程人员配置水平）
+	 */
+	@ResponseBody
+	@RequestMapping("/exporAllYearFornla")
+	public void exporAllYearFornla(
+			@RequestParam(value="yearMonth",required = false ) String yearMonth,
+			@RequestParam(value="indexValue",required = false ) String indexValue,
+			HttpServletRequest request,HttpServletResponse response) throws Exception{
+		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
+		pager.addQueryParam("ymd", yearMonth);
+		pager.addQueryParam("indexPCode", indexValue);
+//		pager.addQueryParam("qcOrgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
+		pager.addQueryParam("qcOrgId", 10001);
+
+		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
+		//如果没有查询数据
+		if (selectFormulaInfoList == null || selectFormulaInfoList.size() == 0) {
+			throw new ValidationException("当前没有查询结果，不允许导出");
+		}
+		
+		final String qcNameFz = selectFormulaInfoList.get(0).get("qcNameFz").toString();
+		final String qcNameFm = selectFormulaInfoList.get(0).get("qcNameFm").toString();
+		final String qcNameZb = selectFormulaInfoList.get(0).get("qcNameZb").toString();
+		
+		String date = "";
+		char m = yearMonth.trim().charAt(4);
+		if (m == '1') {
+			date = yearMonth.substring(0,4).toString().trim()+"上半年";
+		}else{
+			date = yearMonth.substring(0,4).toString().trim()+"下半年";
+		}
+
+		// 导出的excel列头，和数据库查询的结果一致
+		List<String> fieldName = Arrays.asList("pYear" , "fOrgName", "hospitalLevel", "hospitalType", "numeratorValue", 
+				"denominatorValue", "indexValue", "indexValueLevel", "indexValueAll");
+		Map<String,String> ApplyDetailExcelMap = new HashMap<String, String>() {{  
+	        put("pYear", "时间");  
+	        put("fOrgName", "医院名称"); 
+	        put("hospitalLevel", "医院等级");  
+	        put("hospitalType", "医院性质");
+	        put("numeratorValue", qcNameFz);
+	        put("denominatorValue", qcNameFm); 
+	        put("indexValue", qcNameZb); 
+	        put("indexValueLevel", "同级医院平均配置水平对比");
+	        put("indexValueAll", "全省医院平均配置水平对比");
+	    }};
+
+		String nowDay = DateUtils.DateToStr(new Date(), "yyyy-MM-dd");
+		String fileName = nowDay + "-质量指标详情";
+		Map<String, String> format = new HashMap<String, String>();
+		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+		for(Object detail: selectFormulaInfoList){
+			Map<String, Object> r = new HashMap<String, Object>();
+			Map<String, Object> entity = (Map<String, Object>) detail;
+			r.put("pYear", entity.get("pYear")==null ? "" : entity.get("pYear").toString());  
+			r.put("fOrgName", entity.get("fOrgName")==null ? "" : entity.get("fOrgName").toString());  
+			r.put("hospitalLevel", entity.get("hospitalLevel")==null ? "" : entity.get("hospitalLevel").toString());   
+			r.put("hospitalType", entity.get("hospitalType")==null ? "" : entity.get("hospitalType").toString());  
+			r.put("numeratorValue", entity.get("numeratorValue")==null ? "" : entity.get("numeratorValue").toString());  
+			r.put("denominatorValue", entity.get("denominatorValue")==null ? "" : entity.get("denominatorValue").toString());  
+			r.put("indexValue", entity.get("indexValue")==null ? "" : entity.get("indexValue").toString());   
+			r.put("indexValueLevel", entity.get("indexValueLevel")==null ? "" : entity.get("indexValueLevel").toString());  
+			r.put("indexValueAll", entity.get("indexValueAll")==null ? "" : entity.get("indexValueAll").toString());  
+			dataList.add(r);
+		}
+		List<String> conditionBefore = null;
+		conditionBefore = Arrays.asList(
+				""+ qcNameZb
+				+ ",时间：,"+ date
+				);
+		
+		ExportUtil.exportExcel(response, fieldName, dataList, format, "汇 总 单 详 情", conditionBefore,
+				null, fileName, ApplyDetailExcelMap);	
+		
+	}
+	
+	/**
+	 * 添加质量上报信息
+	 * @param orgId 要上报的机构
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/insertForMula")
+	public String insertForMula(
+			@RequestParam(value="orgId",required = false) Long orgId,
+			HttpServletRequest request){
+		String result = "error";
+		Assert.notNull(orgId, "请选择机构");
+		Assert.notNull(formulaService.find(OrgInfo.class, orgId), "当前机构不存在");
+		String createUserId = "111"; //session.getAttribute(LoginUser.SESSION_USERID).toString();
+		String createUserName = "222"; //session.getAttribute(LoginUser.SESSION_USERNAME).toString();
+		
+		//添加质量上报信息
+		formulaService.insertForMula(orgId, createUserId, createUserName);
+		result = "success";
+		return result;
+	}
 }

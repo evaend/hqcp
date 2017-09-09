@@ -18,7 +18,7 @@
   
   <!-- 查询所有质量上报模板 -->
   <select id="selectAllFormulaTemplate" resultMap="BaseResultMap">
-  	select * from tb_formula_template where QC_SCOPE_SUB_TYPE = '02'
+  	select * from tb_formula_template
   </select>
   
 </mapper>

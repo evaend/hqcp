@@ -38,7 +38,7 @@
 			tb_formula.p_year "pYear",
 			tb_formula.start_time "startTime",
 			tb_formula.end_time "endTime",
-<!-- 			tb_constr_dept_info.dept_name "deptName", -->
+	    tb_constr_dept_info.dept_name "deptName",
 			td_org_info.lxr "lxr",
 			td_org_info.lxdh "lxdh",
 			tb_formula.audit_fstate "auditFstate",
@@ -50,6 +50,10 @@
 			        "indexCount"
 			from tb_formula join td_org_info on 
 			(tb_formula.org_id = td_org_info.org_id)
+      left join tb_constr_dept on
+      (tb_constr_dept.org_id = td_org_info.org_id)
+      left join tb_constr_dept_info on
+      (tb_constr_dept_info.constr_dept_guid = tb_constr_dept.constr_dept_guid )
 			where tb_formula.qc_org_id = #{conditiions.orgId, jdbcType = DECIMAL}
 		<if test="conditiions.orgName!=null and conditiions.orgName!=''">
 			<![CDATA[ and regexp_like(td_org_info.org_name, #{conditiions.orgName, jdbcType=VARCHAR}) ]]>
@@ -140,6 +144,11 @@
 			<![CDATA[ and ymd <= #{conditiions.ymd, jdbcType=DECIMAL} 
 				and index_p_code = #{conditiions.indexPCode, jdbcType=VARCHAR} ]]>
 			order by ymd desc
+ 	</select>
+ 	
+ 	<!-- 查询当前机构，有没有质量上报信息 -->
+ 	<select id="selectFormulaIsNull" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+ 		select * from tb_formula where org_id = #{orgId}
  	</select>
  
 </mapper>

@@ -23,4 +23,7 @@ public interface FormulaMapper {
 	
 	//查询质量指标列表
 	List<Map<String, Object>> selectFormulaInfoList(Pager<Map<String, Object>> pager);
+	
+	//查询当前机构，有没有质量上报信息
+	List<Map<String, Object>> selectFormulaIsNull(Map<String, Object> map);
 }
