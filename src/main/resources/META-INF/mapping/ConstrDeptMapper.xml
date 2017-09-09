@@ -29,4 +29,30 @@
     MODIFY_TIME, MODEFILE_USER_ID, MODEFILE_USER_NMAE, TF_REMARK, SCHEDULE
   </sql>
   
+   <!-- 查询科室上报信息 -->
+	<select id="searchConstrDeptAuditList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+		select t.org_id "orgId",t.p_year "pYear",round(t.schedule,2) "schedule",t.constr_dept_guid "constrDeptGuid",t.audit_fstate "auditFstate",i.dept_name "deptName",
+		i.dept_type_name "deptTypeName",i.dept_parent_name "deptParentName",w.equipment_sum "equipmentSum",w.equipment_value "equipmentValue",w.ab_equipment_sum "abEquipmentSum",
+		w.ab_equipment_value "abEquipmentValue",w.consu_sum "consuSum",w.consu_value "consuValue",w.high_consu_sum "highConsuSum",w.high_consu_value "highConsuValue"
+		from tb_constr_dept t left join TB_CONSTR_DEPT_INFO i on i.constr_dept_guid = t.constr_dept_guid
+		left join TB_CONSTR_DEPT_WORK w on w.constr_dept_guid = t.constr_dept_guid
+		where t.org_id = #{conditiions.orgId, jdbcType=DECIMAL} and t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = 'P_YEAR' and t.qc_scope_type = '02'
+		<if test="conditiions!=null and conditiions.constrDeptGuid != null and conditiions.constrDeptGuid != ''">
+		  and t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+	    </if>
+	</select>
+	
+	<!-- 查询科室上报多选信息 -->
+	<select id="searchConstrDeptCheckBox" resultType="java.util.LinkedHashMap" >
+		select t.fsort,t.tf_value,t.checkbox_type from tb_constr_dept_checkbox t 
+        where t.constr_dept_detail_guid in (
+         <if test="type != null and type == 'info'">
+		    select i.constr_dept_info_guid from TB_CONSTR_DEPT_INFO i where i.constr_dept_guid = #{constrDeptGuid,jdbcType=VARCHAR}
+	     </if> 
+	     <if test="type != null and type == 'work'">
+		    select w.constr_dept_work_guid from TB_CONSTR_DEPT_WORK w where w.constr_dept_guid = #{constrDeptGuid,jdbcType=VARCHAR}
+	     </if> 
+        )
+	</select>
+  
 </mapper>

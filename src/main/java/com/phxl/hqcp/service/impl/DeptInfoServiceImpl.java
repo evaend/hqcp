@@ -20,8 +20,10 @@ import com.phxl.core.base.exception.ServiceException;
 import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.service.impl.BaseService;
 import com.phxl.core.base.util.IdentifieUtil;
-import com.phxl.core.base.util.LocalAssert;
+import com.phxl.hqcp.common.constant.CustomConst.DeptParentName;
+import com.phxl.hqcp.common.constant.CustomConst.DeptTypeName;
 import com.phxl.hqcp.dao.CallProcedureMapper;
+import com.phxl.hqcp.dao.ConstrDeptMapper;
 import com.phxl.hqcp.dao.QcScopeMapper;
 import com.phxl.hqcp.dao.SelectScopeMapper;
 import com.phxl.hqcp.entity.ConstrDept;
@@ -37,7 +39,7 @@ import com.phxl.hqcp.service.FormulaService;
 
 @Service
 public class DeptInfoServiceImpl extends BaseService implements DeptInfoService {
-	
+
     @Autowired
 	SelectScopeMapper selectScopeMapper;
     @Autowired
@@ -46,6 +48,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	CallProcedureMapper callProcedureMapper;
     @Autowired
     FormulaService formulaService;
+    @Autowired
+    ConstrDeptMapper constrDeptMapper;
 
     @Override
     public List<Map<String, Object>> getPyearList(Pager pager) {
@@ -61,7 +65,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
     public List<Map<String, Object>> getDeptYearList(Pager pager) {
         return qcScopeMapper.getDeptYearList(pager);
     }
-    
+
     @Override
     public List<Map<String, Object>> searchConstrDeptAuditList(Pager pager) throws ServiceException{
         List<Map<String, Object>> list = qcScopeMapper.searchConstrDeptAuditList(pager);
@@ -207,7 +211,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             insertConstrDeptMeeting(constrDept);
         }
     }
-    
+
     private void insertConstrDeptInfo(ConstrDept constrDept) throws Exception {
         ConstrDeptInfo deptInfo = constrDept.getDeptInfo();
         deptInfo.setConstrDeptInfoGuid(IdentifieUtil.getGuId());
@@ -257,7 +261,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             }
         }
     }
-    
+
     private void insertConstrDeptWork(ConstrDept constrDept) throws Exception {
         ConstrDeptWork deptWork = constrDept.getDeptWork();
         deptWork.setConstrDeptWorkGuid(IdentifieUtil.getGuId());
@@ -322,7 +326,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             }
         }
     }
-    
+
     private void insertConstrDeptUser(ConstrDept constrDept) throws Exception {
         List<ConstrDeptUser> userList = constrDept.getUserList();
         if(userList!=null && !userList.isEmpty()){
@@ -344,7 +348,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             }
         }
     }
-    
+
     private void insertConstrDeptMeeting(ConstrDept constrDept) throws Exception {
         List<ConstrDeptMeeting> meetingList = constrDept.getMeetingList();
         if(meetingList!=null && !meetingList.isEmpty()){
@@ -416,7 +420,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         }
         return map;
     }
-    
+
 
     @Override
     public Map<String, Object> getOrgInfoTb(Pager pager) {
@@ -462,7 +466,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         map.put("name", "医工人员学历情况");
         return map;
     }
-    
+
     @Override
     public Map<String, Object> getOrgEducation(Pager pager) {
         List<Map<String, Object>> list = qcScopeMapper.getOrgEducation(pager);
@@ -499,10 +503,10 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             resultMap.put("xAxis", majorMap);
             resultMap.put("series", numMap);
         }
-        
+
         return resultMap;
     }
-    
+
     @Override
     public Map<String, Object> getAdverseEvents(Pager pager) {
         List<Map<String, Object>> list = qcScopeMapper.getAdverseEvents(pager);
@@ -539,7 +543,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             resultMap.put("xAxis", majorMap);
             resultMap.put("series", adverList);
         }
-        
+
         return resultMap;
     }
 
@@ -579,7 +583,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             resultMap.put("xAxis", majorMap);
             resultMap.put("series", traceList);
         }
-        
+
         return resultMap;
     }
 
@@ -642,5 +646,131 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         resultMap.put("level2", twoMap);
         return null;
     }
+
+	@Override
+	public Map<String, Object> searchConstrDept(Pager pager) {
+		List<Map<String, Object>> list = constrDeptMapper.searchConstrDept(pager);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if(list!=null && !list.isEmpty()){
+			resultMap = list.get(0);
+			if(resultMap!=null && !resultMap.isEmpty()){
+				if(resultMap.get("deptTypeName")!=null && StringUtils.isNotBlank((String)resultMap.get("deptTypeName"))){//部门级别
+					if(DeptTypeName.BU.equals((String)resultMap.get("deptTypeName"))){
+						resultMap.put("deptTypeName", "1");
+	                }else if(DeptTypeName.KE.equals((String)resultMap.get("deptTypeName"))){
+	                	resultMap.put("deptTypeName", "2");
+	                }else if(DeptTypeName.ZU.equals((String)resultMap.get("deptTypeName"))){
+	                	resultMap.put("deptTypeName", "3");
+	                }else{
+	                	resultMap.put("deptTypeName", "4");
+	                	resultMap.put("deptTypeOther", (String)resultMap.get("deptTypeName"));
+	                }
+				}
+				if(resultMap.get("deptParentName")!=null && StringUtils.isNotBlank((String)resultMap.get("deptParentName"))){//上级管理部门
+					if(DeptParentName.YW.equals((String)resultMap.get("deptParentName"))){
+						resultMap.put("deptParentName", "1");
+	                }else if(DeptParentName.HQ.equals((String)resultMap.get("deptParentName"))){
+	                	resultMap.put("deptParentName", "2");
+	                }else if(DeptParentName.KJ.equals((String)resultMap.get("deptParentName"))){
+	                	resultMap.put("deptParentName", "3");
+	                }else if(DeptParentName.DL.equals((String)resultMap.get("deptParentName"))){
+	                	resultMap.put("deptParentName", "4");
+	                }else{
+	                	resultMap.put("deptParentName", "5");
+	                	resultMap.put("deptParentOther", (String)resultMap.get("deptTypeName"));
+	                }
+				}
+				//部门业务管理范围、部门承担的其它工作
+				List<Map<String, Object>> infoList = constrDeptMapper.searchConstrDeptCheckBox((String)resultMap.get("constrDeptGuid"), "info");
+				if(infoList!=null && !infoList.isEmpty()){
+					Set<String> workScope = new HashSet<String>();
+					Set<String> workOther = new HashSet<String>();
+					for(Map<String, Object> infoMap:infoList){
+						if(infoMap!=null && infoMap.get("FSORT")!=null && StringUtils.isNotBlank((String)infoMap.get("FSORT"))){
+							if(infoMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_INFO.DEPT_WORK_SCOPE".equals(infoMap.get("CHECKBOX_TYPE").toString())){
+								workScope.add((String)infoMap.get("FSORT"));
+								if("7".equals((String)infoMap.get("FSORT"))){
+									resultMap.put("workScopeOther", infoMap.get("TF_VALUE"));
+								}
+							}
+							if(infoMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_INFO.DEPT_WORK_OTHER".equals(infoMap.get("CHECKBOX_TYPE").toString())){
+								workOther.add((String)infoMap.get("FSORT"));
+								if("3".equals((String)infoMap.get("FSORT"))){
+									resultMap.put("workMassName", infoMap.get("TF_VALUE"));
+								}
+								if("4".equals((String)infoMap.get("FSORT"))){
+									resultMap.put("workOtherName", infoMap.get("TF_VALUE"));
+								}
+							}
+						}
+					}
+					resultMap.put("workScope", workScope.toArray());
+					resultMap.put("workOther", workOther.toArray());
+				}
+				//医疗器械物流管理开展范围、卫生材料医疗器械物流管理模式
+				List<Map<String, Object>> workList = constrDeptMapper.searchConstrDeptCheckBox((String)resultMap.get("constrDeptGuid"), "work");
+				if(workList!=null && !workList.isEmpty()){
+					Set<String> logisticsScope = new HashSet<String>();
+					Set<String> logisticsType = new HashSet<String>();
+					for(Map<String, Object> workMap:infoList){
+						if(workMap!=null && workMap.get("FSORT")!=null && StringUtils.isNotBlank((String)workMap.get("FSORT"))){
+							if(workMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_WORK.LOGISTICS_SCOPE".equals(workMap.get("CHECKBOX_TYPE").toString())){
+								logisticsScope.add((String)workMap.get("FSORT"));
+							}
+							if(workMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_WORK.LOGISTICS_TYPE".equals(workMap.get("CHECKBOX_TYPE").toString())){
+								logisticsType.add((String)workMap.get("FSORT"));
+								if("6".equals((String)workMap.get("FSORT"))){
+									resultMap.put("logisticsTypeOther", workMap.get("TF_VALUE"));
+								}
+							}
+						}
+					}
+					resultMap.put("logisticsScope", logisticsScope.toArray());
+					resultMap.put("logisticsType", logisticsType.toArray());
+				}
+				//医工人员
+				ConstrDeptUser deptUser = new ConstrDeptUser();
+				deptUser.setConstrDeptGuid((String)resultMap.get("constrDeptGuid"));
+				List<ConstrDeptUser> users = super.searchList(deptUser);
+				if(users!=null && !users.isEmpty()){
+					resultMap.put("userCount", users.size());
+					for(int i=0;i<users.size();i++){
+						deptUser = users.get(i);
+						resultMap.put("fname-"+i, deptUser.getFname());
+						resultMap.put("gender-"+i, deptUser.getGender());
+						resultMap.put("birthChar-"+i, deptUser.getBirthChar());
+						resultMap.put("technicalTitlesA-"+i, deptUser.getTechnicalTitlesA());
+						resultMap.put("technicalTitlesB-"+i, deptUser.getTechnicalTitlesB());
+						resultMap.put("postName-"+i, deptUser.getPostName());
+						resultMap.put("postAge-"+i, deptUser.getPostAge());
+						resultMap.put("highestEducation-"+i, deptUser.getHighestEducation());
+						resultMap.put("majorName-"+i, deptUser.getMajorName());
+					}
+				}
+				//部门培训
+				ConstrDeptMeeting deptMeeting = new ConstrDeptMeeting();
+				deptMeeting.setConstrDeptGuid((String)resultMap.get("constrDeptGuid"));
+				List<ConstrDeptMeeting> meetings = super.searchList(deptMeeting);
+				if(meetings!=null && !meetings.isEmpty()){
+					resultMap.put("meetingCount", meetings.size());
+					for(int j=0;j<meetings.size();j++){
+						deptMeeting = meetings.get(j);
+						resultMap.put("meetingName-"+j, deptMeeting.getMeetingName());
+						resultMap.put("meetingType-"+j, deptMeeting.getMeetingType());
+						if(deptMeeting.getMeetingDate()!=null){
+							SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+							resultMap.put("meetingTime-"+j, sdf.format(deptMeeting.getMeetingDate()));
+						}
+						resultMap.put("meetingAddress-"+j, deptMeeting.getMeetingAddress());
+						resultMap.put("meetingSponsor-"+j, deptMeeting.getMeetingSponsor());
+						resultMap.put("meetingAllUserSum-"+j, deptMeeting.getMeetingAllUserSum());
+						resultMap.put("meetingDeptUserSum-"+j, deptMeeting.getMeetingDeptUserSum());
+						resultMap.put("tfRemark-"+j, deptMeeting.getTfRemark());
+					}
+				}
+			}
+		}
+		return resultMap;
+	}
 
 }
