@@ -114,12 +114,14 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                   qcOrgId = qc.getQcOrgId();
               }
           }
+          Assert.notNull(qcOrgId, "监管机构，不能为空!");
           String startTime = "";
           String endTime = "";
           SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-          StringBuffer buf =  new StringBuffer(constrDept.getpYear());
-          startTime = buf.append("-01-01").toString();
-          endTime = buf.append("-12-31").toString();
+          StringBuffer sbuf =  new StringBuffer(constrDept.getpYear());
+          StringBuffer ebuf =  new StringBuffer(constrDept.getpYear());
+          startTime = sbuf.append("-01-01").toString();
+          endTime = ebuf.append("-12-31").toString();
           //开始新增科室上报信息
           constrDept.setConstrDeptGuid(IdentifieUtil.getGuId());
           constrDept.setQcOrgId(qcOrgId);
@@ -224,7 +226,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                     check.setConstrDeptDetailGuid(deptInfo.getConstrDeptInfoGuid());
                     check.setFsort(Long.parseLong(map.get("workScopeValue").toString()));
                     check.setTfCode(map.get("workScopeValue").toString());
-                    check.setCheckboxType("DEPT_WORK_SCOPE");
+                    check.setCheckboxType("TB_CONSTR_DEPT_INFO.DEPT_WORK_SCOPE");
                     if(map.get("workScopeName")!=null){
                         check.setTfValue(map.get("workScopeName").toString());
                     }
@@ -241,7 +243,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                     check.setConstrDeptDetailGuid(deptInfo.getConstrDeptInfoGuid());
                     check.setFsort(Long.parseLong(map.get("workOtherValue").toString()));
                     check.setTfCode(map.get("workOtherValue").toString());
-                    check.setCheckboxType("DEPT_WORK_OTHER");
+                    check.setCheckboxType("TB_CONSTR_DEPT_INFO.DEPT_WORK_OTHER");
                     if(map.get("workOtherName")!=null){
                         check.setTfValue(map.get("workOtherName").toString());
                     }
@@ -289,7 +291,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                     check.setConstrDeptDetailGuid(deptWork.getConstrDeptWorkGuid());
                     check.setFsort(Long.parseLong(map.get("logisticsScopeValue").toString()));
                     check.setTfCode(map.get("logisticsScopeValue").toString());
-                    check.setCheckboxType("LOGISTICS_SCOPE");
+                    check.setCheckboxType("TB_CONSTR_DEPT_WORK.LOGISTICS_SCOPE");
                     if(map.get("logisticsScopeName")!=null){
                         check.setTfValue(map.get("logisticsScopeName").toString());
                     }
@@ -306,7 +308,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                     check.setConstrDeptDetailGuid(deptWork.getConstrDeptWorkGuid());
                     check.setFsort(Long.parseLong(map.get("logisticsTypeValue").toString()));
                     check.setTfCode(map.get("logisticsTypeValue").toString());
-                    check.setCheckboxType("LOGISTICS_TYPE");
+                    check.setCheckboxType("TB_CONSTR_DEPT_WORK.LOGISTICS_TYPE");
                     if(map.get("logisticsTypeName")!=null){
                         check.setTfValue(map.get("logisticsTypeName").toString());
                     }

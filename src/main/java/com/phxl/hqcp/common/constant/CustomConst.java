@@ -189,5 +189,107 @@ public class CustomConst {
 		/**订单状态*/
 		public static final String ORDER_TYPE = "ORDER_TYPE";
 	}
+	
+	/**
+     * 部门级别
+     * @version 1.0
+     * @since   JDK 1.6
+     */
+	public static final class DeptTypeName {
+        /**处/部*/
+        public static final String BU = "处/部";
+        /**科*/
+        public static final String KE = "科";
+        /**组*/
+        public static final String ZU = "组";
+    }
+	
+	/**
+     * 上级管理部门
+     * @version 1.0
+     * @since   JDK 1.6
+     */
+	public static final class DeptParentName {
+        /**医务*/
+        public static final String YW = "医务";
+        /**后勤*/
+        public static final String HQ = "后勤";
+        /**科教*/
+        public static final String KJ = "科教";
+        /**独立运行*/
+        public static final String DL = "独立运行";
+    }
+	
+	/**
+     * 部门业务管理范围
+     * @version 1.0
+     * @since   JDK 1.6
+     */
+	public static final class DeptWorkScope {
+        /**设备*/
+        public static final String SB = "设备";
+        /**耗材*/
+        public static final String HC = "耗材";
+        /**试剂*/
+        public static final String SJ = "试剂";
+        /**药品*/
+        public static final String YP = "药品";
+        /**办公用品*/
+        public static final String BG = "办公用品";
+        /**总务*/
+        public static final String ZW = "总务";
+    }
+	
+	/**
+     * 部门承担的其它工作
+     * @version 1.0
+     * @since   JDK 1.6
+     */
+	public static final class DeptWorkOther {
+        /**本省、市卫生行政部门：医疗器械管理质控中心*/
+        public static final String XZBM = "本省、市卫生行政部门:医疗器械管理质控中心";
+        /**本省、市药监部门：医疗器械临床实验基地*/
+        public static final String YJBM = "本省、市药监部门:医疗器械临床实验基地";
+        /**本省、市质量技术监督部门：计量与测试技术合作*/
+        public static final String JDBM = "本省、市质量技术监督部门:计量与测试技术合作";
+    }
+	
+	/**
+     * 医疗器械物流管理开展范围
+     * @version 1.0
+     * @since   JDK 1.6
+     */
+    public static final class LogisticsScope {
+        /**医疗设备物流*/
+        public static final String SBWL = "医疗设备物流";
+        /**普通卫生材料物流*/
+        public static final String WSWL = "普通卫生材料物流";
+        /**植入、介入类耗材物流*/
+        public static final String ZRWL = "植入、介入类耗材物流";
+        /**消毒供应材料物流*/
+        public static final String XDWL = "消毒供应材料物流";
+        /**试剂物流*/
+        public static final String SJWL = "试剂物流";
+        /**医疗废弃物物流*/
+        public static final String FQWL = "医疗废弃物物流";
+    }
+    
+    /**
+     * 卫生材料医疗器械物流管理模式
+     * @version 1.0
+     * @since   JDK 1.6
+     */
+    public static final class LogisticsType {
+        /**物流管理外包*/
+        public static final String WLWB = "物流管理外包";
+        /**仓库外包*/
+        public static final String CKWB = "仓库外包";
+        /**零库存管理*/
+        public static final String LKC = "零库存管理";
+        /**第三方托管*/
+        public static final String DSFTG = "第三方托管";
+        /**二级库管*/
+        public static final String EJKG = "二级库管";
+    }
     
 }

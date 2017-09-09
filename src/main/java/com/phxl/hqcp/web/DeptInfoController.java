@@ -30,8 +30,15 @@ import com.google.gson.JsonParser;
 import com.phxl.core.base.entity.Pager;
 import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.interceptor.ResResultBindingInterceptor;
+import com.phxl.core.base.util.JSONUtils;
 import com.phxl.core.base.util.LocalAssert;
+import com.phxl.hqcp.common.constant.CustomConst.DeptParentName;
+import com.phxl.hqcp.common.constant.CustomConst.DeptTypeName;
+import com.phxl.hqcp.common.constant.CustomConst.DeptWorkOther;
+import com.phxl.hqcp.common.constant.CustomConst.DeptWorkScope;
 import com.phxl.hqcp.common.constant.CustomConst.LoginUser;
+import com.phxl.hqcp.common.constant.CustomConst.LogisticsScope;
+import com.phxl.hqcp.common.constant.CustomConst.LogisticsType;
 import com.phxl.hqcp.entity.ConstrDept;
 import com.phxl.hqcp.entity.ConstrDeptCheckbox;
 import com.phxl.hqcp.entity.ConstrDeptInfo;
@@ -341,17 +348,206 @@ public class DeptInfoController {
             HttpServletRequest request,
             HttpSession session) throws Exception{
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));//配置项:默认日期格式
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//配置项:忽略未知属性
-        
         //获取会话中的信息
         String sessionUserId = (String)session.getAttribute(LoginUser.SESSION_USERID);
         String sessionUserName = (String)session.getAttribute(LoginUser.SESSION_USERNAME);
         Long sessionOrgId = (Long)session.getAttribute(LoginUser.SESSION_USER_ORGID);
         
-        //科室上报信息
-        ConstrDept constrDept = objectMapper.readValue(request.getReader(), ConstrDept.class);
+        ConstrDept constrDept = new ConstrDept();
+        
+        StringBuilder buffer = new StringBuilder();
+        BufferedReader reader = request.getReader();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            buffer.append(line);
+        }
+        String body = buffer.toString();
+        JsonParser parser = new JsonParser();
+        JsonElement pje = parser.parse(body);
+        if(pje.isJsonObject()){
+            JsonObject jo = pje.getAsJsonObject();
+            constrDept = JSONUtils.toBean(body, ConstrDept.class);
+            Assert.notNull(constrDept, "科室上报的信息，不能为空!");
+            //部门基本情况
+            ConstrDeptInfo deptInfo = new ConstrDeptInfo();//deptTypeName
+            deptInfo.setDeptName(constrDept.getDeptName());
+            if(StringUtils.isNotBlank(constrDept.getDeptTypeName())){//部门级别
+                if("1".equals(constrDept.getDeptTypeName())){
+                    deptInfo.setDeptTypeName(DeptTypeName.BU);
+                }else if("2".equals(constrDept.getDeptTypeName())){
+                    deptInfo.setDeptTypeName(DeptTypeName.KE);
+                }else if("3".equals(constrDept.getDeptTypeName())){
+                    deptInfo.setDeptTypeName(DeptTypeName.ZU);
+                }else{
+                    deptInfo.setDeptTypeName(constrDept.getDeptTypeOther());
+                }
+            }
+            if(StringUtils.isNotBlank(constrDept.getDeptParentName())){//上级管理部门
+                if("1".equals(constrDept.getDeptParentName())){
+                    deptInfo.setDeptParentName(DeptParentName.YW);
+                }else if("2".equals(constrDept.getDeptParentName())){
+                    deptInfo.setDeptParentName(DeptParentName.HQ);
+                }else if("3".equals(constrDept.getDeptParentName())){
+                    deptInfo.setDeptParentName(DeptParentName.KJ);
+                }else if("4".equals(constrDept.getDeptParentName())){
+                    deptInfo.setDeptParentName(DeptParentName.DL);
+                }else{
+                    deptInfo.setDeptParentName(constrDept.getDeptParentOther());
+                }
+            }
+            if(constrDept.getWorkScope()!=null && constrDept.getWorkScope().length>0){//部门业务管理范围
+                List<Map<String, Object>> workScope = new ArrayList<Map<String,Object>>();
+                for(int k=0;k<constrDept.getWorkScope().length;k++){
+                    String val = constrDept.getWorkScope()[k];
+                    Map<String, Object> scopeMap = new HashMap<String, Object>();
+                    scopeMap.put("workScopeValue", val);
+                    if("1".equals(val)){
+                        scopeMap.put("workScopeName", DeptWorkScope.SB);
+                    }else if("2".equals(val)){
+                        scopeMap.put("workScopeName", DeptWorkScope.HC);
+                    }else if("3".equals(val)){
+                        scopeMap.put("workScopeName", DeptWorkScope.SJ);
+                    }else if("4".equals(val)){
+                        scopeMap.put("workScopeName", DeptWorkScope.YP);
+                    }else if("5".equals(val)){
+                        scopeMap.put("workScopeName", DeptWorkScope.BG);
+                    }else if("6".equals(val)){
+                        scopeMap.put("workScopeName", DeptWorkScope.ZW);
+                    }else{
+                        scopeMap.put("workScopeName", constrDept.getWorkScopeOther());
+                    }
+                    workScope.add(scopeMap);
+                }
+                if(workScope!=null && !workScope.isEmpty()){
+                    deptInfo.setWorkScope(workScope);
+                }
+            }
+            if(constrDept.getWorkOther()!=null && constrDept.getWorkOther().length>0){//部门承担的其它工作
+                List<Map<String, Object>> workOther = new ArrayList<Map<String,Object>>();
+                for(int m=0;m<constrDept.getWorkOther().length;m++){
+                    String val = constrDept.getWorkOther()[m];
+                    Map<String, Object> otherMap = new HashMap<String, Object>();
+                    otherMap.put("workOtherValue", val);
+                    if("1".equals(val)){
+                        otherMap.put("workOtherName", DeptWorkOther.XZBM);
+                    }else if("2".equals(val)){
+                        otherMap.put("workOtherName", DeptWorkOther.YJBM);
+                    }else if("3".equals(val)){
+                        otherMap.put("workOtherName", constrDept.getWorkMassName());
+                    }else{
+                        otherMap.put("workOtherName", constrDept.getWorkOtherName());
+                    }
+                    workOther.add(otherMap);
+                }
+                if(workOther!=null && !workOther.isEmpty()){
+                    deptInfo.setWorkOther(workOther);
+                }
+            }
+            if(deptInfo!=null){
+                constrDept.setDeptInfo(deptInfo);
+            }
+            //部门相关业务
+            ConstrDeptWork deptWork = new ConstrDeptWork();
+            deptWork.setEquipmentSum(constrDept.getEquipmentSum());
+            deptWork.setEquipmentValue(constrDept.getEquipmentValue());
+            deptWork.setAbEquipmentSum(constrDept.getAbEquipmentSum());
+            deptWork.setAbEquipmentValue(constrDept.getAbEquipmentValue());
+            deptWork.setConsuSum(constrDept.getConsuSum());
+            deptWork.setConsuValue(constrDept.getConsuValue());
+            deptWork.setHighConsuSum(constrDept.getHighConsuSum());
+            deptWork.setHighConsuValue(constrDept.getHighConsuValue());
+            if(constrDept.getLogisticsScope()!=null && constrDept.getLogisticsScope().length>0){//医疗器械物流管理开展范围
+                List<Map<String, Object>> logisticsScopeList = new ArrayList<Map<String,Object>>();
+                for(int k=0;k<constrDept.getLogisticsScope().length;k++){
+                    String val = constrDept.getLogisticsScope()[k];
+                    Map<String, Object> logisticsScopeMap = new HashMap<String, Object>();
+                    logisticsScopeMap.put("logisticsScopeValue", val);
+                    if("1".equals(val)){
+                        logisticsScopeMap.put("logisticsScopeName", LogisticsScope.SBWL);
+                    }else if("2".equals(val)){
+                        logisticsScopeMap.put("logisticsScopeName", LogisticsScope.WSWL);
+                    }else if("3".equals(val)){
+                        logisticsScopeMap.put("logisticsScopeName", LogisticsScope.ZRWL);
+                    }else if("4".equals(val)){
+                        logisticsScopeMap.put("logisticsScopeName", LogisticsScope.XDWL);
+                    }else if("5".equals(val)){
+                        logisticsScopeMap.put("logisticsScopeName", LogisticsScope.SJWL);
+                    }else if("6".equals(val)){
+                        logisticsScopeMap.put("logisticsScopeName", LogisticsScope.FQWL);
+                    }
+                    logisticsScopeList.add(logisticsScopeMap);
+                }
+                if(logisticsScopeList!=null && !logisticsScopeList.isEmpty()){
+                    deptWork.setLogisticsScopeList(logisticsScopeList);
+                }
+            }
+            if(constrDept.getLogisticsType()!=null && constrDept.getLogisticsType().length>0){//卫生材料医疗器械物流管理模式
+                List<Map<String, Object>> logisticsTypeList = new ArrayList<Map<String,Object>>();
+                for(int m=0;m<constrDept.getLogisticsType().length;m++){
+                    String val = constrDept.getLogisticsType()[m];
+                    Map<String, Object> logisticsTypeMap = new HashMap<String, Object>();
+                    logisticsTypeMap.put("logisticsTypeValue", val);
+                    if("1".equals(val)){
+                        logisticsTypeMap.put("logisticsTypeName", LogisticsType.WLWB);
+                    }else if("2".equals(val)){
+                        logisticsTypeMap.put("logisticsTypeName", LogisticsType.CKWB);
+                    }else if("3".equals(val)){
+                        logisticsTypeMap.put("logisticsTypeName", LogisticsType.LKC);
+                    }else if("4".equals(val)){
+                        logisticsTypeMap.put("logisticsTypeName", LogisticsType.DSFTG);
+                    }else if("5".equals(val)){
+                        logisticsTypeMap.put("logisticsTypeName", LogisticsType.EJKG);
+                    }else{
+                        logisticsTypeMap.put("logisticsTypeName", constrDept.getLogisticsTypeOther());
+                    }
+                    logisticsTypeList.add(logisticsTypeMap);
+                }
+                if(logisticsTypeList!=null && !logisticsTypeList.isEmpty()){
+                    deptWork.setLogisticsTypeList(logisticsTypeList);
+                }
+            }
+            if(deptWork!=null){
+                constrDept.setDeptWork(deptWork);
+            }
+            if(constrDept.getUserCount()!=null && constrDept.getUserCount()>0){//循环取部门人员信息，并存入列表
+               List<ConstrDeptUser> userList = new ArrayList<ConstrDeptUser>();
+               for(int i=0;i<constrDept.getUserCount();i++){
+                   ConstrDeptUser deptUser = new ConstrDeptUser();
+                   deptUser.setFname((jo.get("fname-"+i)==null || jo.get("fname-"+i).isJsonNull())?"":jo.get("fname-"+i).getAsString());
+                   deptUser.setGender((jo.get("gender-"+i)==null || jo.get("gender-"+i).isJsonNull())?"":jo.get("gender-"+i).getAsString());
+                   deptUser.setBirthChar((jo.get("birthChar-"+i)==null || jo.get("birthChar-"+i).isJsonNull())?"":jo.get("birthChar-"+i).getAsString());
+                   deptUser.setTechnicalTitlesA((jo.get("technicalTitlesA-"+i)==null || jo.get("technicalTitlesA-"+i).isJsonNull())?"":jo.get("technicalTitlesA-"+i).getAsString());
+                   deptUser.setTechnicalTitlesB((jo.get("technicalTitlesB-"+i)==null || jo.get("technicalTitlesB-"+i).isJsonNull())?"":jo.get("technicalTitlesB-"+i).getAsString());
+                   deptUser.setPostName((jo.get("postName-"+i)==null || jo.get("postName-"+i).isJsonNull())?"":jo.get("postName-"+i).getAsString());
+                   deptUser.setPostAge((jo.get("postAge-"+i)==null || jo.get("postAge-"+i).isJsonNull())?null:jo.get("postAge-"+i).getAsShort());
+                   deptUser.setHighestEducation((jo.get("highestEducation-"+i)==null || jo.get("highestEducation-"+i).isJsonNull())?"":jo.get("highestEducation-"+i).getAsString());
+                   deptUser.setMajorName((jo.get("majorName-"+i)==null || jo.get("majorName-"+i).isJsonNull())?"":jo.get("majorName-"+i).getAsString());
+                   userList.add(deptUser);
+               }
+               if(userList!=null && !userList.isEmpty()){//将部门人员信息列表存入实体类中
+                   constrDept.setUserList(userList);
+               }
+            }
+            if(constrDept.getMeetingCount()!=null && constrDept.getMeetingCount()>0){//循环取部门培训信息，并存入列表
+                List<ConstrDeptMeeting> meetingList = new ArrayList<ConstrDeptMeeting>();
+                for(int j=0;j<constrDept.getMeetingCount();j++){
+                    ConstrDeptMeeting deptMeeting = new ConstrDeptMeeting();//
+                    deptMeeting.setMeetingName((jo.get("meetingName-"+j)==null || jo.get("meetingName-"+j).isJsonNull())?"":jo.get("meetingName-"+j).getAsString());
+                    deptMeeting.setMeetingType((jo.get("meetingType-"+j)==null || jo.get("meetingType-"+j).isJsonNull())?"":jo.get("meetingType-"+j).getAsString());
+                    deptMeeting.setMeetingTime((jo.get("meetingTime-"+j)==null || jo.get("meetingTime-"+j).isJsonNull())?"":jo.get("meetingTime-"+j).getAsString());
+                    deptMeeting.setMeetingAddress((jo.get("meetingAddress-"+j)==null || jo.get("meetingAddress-"+j).isJsonNull())?"":jo.get("meetingAddress-"+j).getAsString());
+                    deptMeeting.setMeetingSponsor((jo.get("meetingSponsor-"+j)==null || jo.get("meetingSponsor-"+j).isJsonNull())?"":jo.get("meetingSponsor-"+j).getAsString());
+                    deptMeeting.setMeetingAllUserSum((jo.get("meetingAllUserSum-"+j)==null || jo.get("meetingAllUserSum-"+j).isJsonNull())?null:jo.get("meetingAllUserSum-"+j).getAsLong());
+                    deptMeeting.setMeetingDeptUserSum((jo.get("meetingDeptUserSum-"+j)==null || jo.get("meetingDeptUserSum-"+j).isJsonNull())?null:jo.get("meetingDeptUserSum-"+j).getAsLong());
+                    deptMeeting.setTfRemark((jo.get("tfRemark-"+j)==null || jo.get("tfRemark-"+j).isJsonNull())?"":jo.get("tfRemark-"+j).getAsString());
+                    meetingList.add(deptMeeting);
+                }
+                if(meetingList!=null && !meetingList.isEmpty()){//将部门培训信息列表存入实体类中
+                    constrDept.setMeetingList(meetingList);
+                }
+            }
+        }
+        
         Assert.notNull(constrDept, "请填写科室上报信息!");
         LocalAssert.notBlank(constrDept.getpYear(), "请选择上报周期");
         Assert.notNull(constrDept.getSchedule(), "完成度不能为空!");

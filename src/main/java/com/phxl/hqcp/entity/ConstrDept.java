@@ -48,6 +48,56 @@ public class ConstrDept {
 
     private BigDecimal schedule;
     
+    /*部门基本情况*/
+    private String deptName;
+
+    private String deptTypeName;
+
+    private String deptTypeOther;
+
+    private String deptParentName;
+    
+    private String deptParentOther;
+
+    private String[] workScope;//部门业务管理范围-多选
+    
+    private String workScopeOther;
+
+    private String[] workOther;//部门承担的其它工作-多选
+    
+    private String workMassName;
+    
+    private String workOtherName;
+    
+    /*部门相关业务*/
+    private Long equipmentSum;
+
+    private Long equipmentValue;
+
+    private Long abEquipmentSum;
+
+    private Long abEquipmentValue;
+
+    private Long consuSum;
+
+    private Long consuValue;
+
+    private Long highConsuSum;
+
+    private Long highConsuValue;
+    
+    private String[] logisticsScope;//医疗器械物流管理开展范围-多选
+
+    private String[] logisticsType;//卫生材料医疗器械物流管理模式-多选
+    
+    private String logisticsTypeOther;
+    
+    /*部门人员、部门培训的数量*/
+    private Integer userCount;
+    
+    private Integer meetingCount;
+    
+    /*关联的实体类*/
     private ConstrDeptInfo deptInfo;//建设科室-科室基本信息
     
     private ConstrDeptWork deptWork;//建设科室-科室业务
@@ -246,5 +296,190 @@ public class ConstrDept {
 
     public void setMeetingList(List<ConstrDeptMeeting> meetingList) {
         this.meetingList = meetingList;
+    }
+    
+    /*附加的属性get/set方法*/
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public String getDeptTypeName() {
+        return deptTypeName;
+    }
+
+    public void setDeptTypeName(String deptTypeName) {
+        this.deptTypeName = deptTypeName;
+    }
+
+    public String getDeptTypeOther() {
+        return deptTypeOther;
+    }
+
+    public void setDeptTypeOther(String deptTypeOther) {
+        this.deptTypeOther = deptTypeOther;
+    }
+
+    public String getDeptParentName() {
+        return deptParentName;
+    }
+
+    public void setDeptParentName(String deptParentName) {
+        this.deptParentName = deptParentName;
+    }
+
+    public String getDeptParentOther() {
+        return deptParentOther;
+    }
+
+    public void setDeptParentOther(String deptParentOther) {
+        this.deptParentOther = deptParentOther;
+    }
+
+    public String[] getWorkScope() {
+        return workScope;
+    }
+
+    public void setWorkScope(String[] workScope) {
+        this.workScope = workScope;
+    }
+
+    public String getWorkScopeOther() {
+        return workScopeOther;
+    }
+
+    public void setWorkScopeOther(String workScopeOther) {
+        this.workScopeOther = workScopeOther;
+    }
+
+    public String[] getWorkOther() {
+        return workOther;
+    }
+
+    public void setWorkOther(String[] workOther) {
+        this.workOther = workOther;
+    }
+
+    public String getWorkMassName() {
+        return workMassName;
+    }
+
+    public void setWorkMassName(String workMassName) {
+        this.workMassName = workMassName;
+    }
+
+    public String getWorkOtherName() {
+        return workOtherName;
+    }
+
+    public void setWorkOtherName(String workOtherName) {
+        this.workOtherName = workOtherName;
+    }
+
+    public Long getEquipmentSum() {
+        return equipmentSum;
+    }
+
+    public void setEquipmentSum(Long equipmentSum) {
+        this.equipmentSum = equipmentSum;
+    }
+
+    public Long getEquipmentValue() {
+        return equipmentValue;
+    }
+
+    public void setEquipmentValue(Long equipmentValue) {
+        this.equipmentValue = equipmentValue;
+    }
+
+    public Long getAbEquipmentSum() {
+        return abEquipmentSum;
+    }
+
+    public void setAbEquipmentSum(Long abEquipmentSum) {
+        this.abEquipmentSum = abEquipmentSum;
+    }
+
+    public Long getAbEquipmentValue() {
+        return abEquipmentValue;
+    }
+
+    public void setAbEquipmentValue(Long abEquipmentValue) {
+        this.abEquipmentValue = abEquipmentValue;
+    }
+
+    public Long getConsuSum() {
+        return consuSum;
+    }
+
+    public void setConsuSum(Long consuSum) {
+        this.consuSum = consuSum;
+    }
+
+    public Long getConsuValue() {
+        return consuValue;
+    }
+
+    public void setConsuValue(Long consuValue) {
+        this.consuValue = consuValue;
+    }
+
+    public Long getHighConsuSum() {
+        return highConsuSum;
+    }
+
+    public void setHighConsuSum(Long highConsuSum) {
+        this.highConsuSum = highConsuSum;
+    }
+
+    public Long getHighConsuValue() {
+        return highConsuValue;
+    }
+
+    public void setHighConsuValue(Long highConsuValue) {
+        this.highConsuValue = highConsuValue;
+    }
+
+    public String[] getLogisticsScope() {
+        return logisticsScope;
+    }
+
+    public void setLogisticsScope(String[] logisticsScope) {
+        this.logisticsScope = logisticsScope;
+    }
+
+    public String[] getLogisticsType() {
+        return logisticsType;
+    }
+
+    public void setLogisticsType(String[] logisticsType) {
+        this.logisticsType = logisticsType;
+    }
+
+    public String getLogisticsTypeOther() {
+        return logisticsTypeOther;
+    }
+
+    public void setLogisticsTypeOther(String logisticsTypeOther) {
+        this.logisticsTypeOther = logisticsTypeOther;
+    }
+
+    public Integer getUserCount() {
+        return userCount;
+    }
+
+    public void setUserCount(Integer userCount) {
+        this.userCount = userCount;
+    }
+
+    public Integer getMeetingCount() {
+        return meetingCount;
+    }
+
+    public void setMeetingCount(Integer meetingCount) {
+        this.meetingCount = meetingCount;
     }
 }
