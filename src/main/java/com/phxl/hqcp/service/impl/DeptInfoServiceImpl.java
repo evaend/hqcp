@@ -33,6 +33,7 @@ import com.phxl.hqcp.entity.ConstrDeptUser;
 import com.phxl.hqcp.entity.ConstrDeptWork;
 import com.phxl.hqcp.entity.QcScope;
 import com.phxl.hqcp.service.DeptInfoService;
+import com.phxl.hqcp.service.FormulaService;
 
 @Service
 public class DeptInfoServiceImpl extends BaseService implements DeptInfoService {
@@ -43,6 +44,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	QcScopeMapper qcScopeMapper;
     @Autowired
 	CallProcedureMapper callProcedureMapper;
+    @Autowired
+    FormulaService formulaService;
 
     @Override
     public List<Map<String, Object>> getPyearList(Pager pager) {
@@ -137,6 +140,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
           constrDept.setModefileUserId(sessionUserId);
           constrDept.setModefileUserNmae(sessionUserName);
           super.insertInfo(constrDept);
+          //添加质量上报信息
+          formulaService.insertForMula(sessionOrgId,sessionUserId, sessionUserName);
         }else{
           //编辑科室上报信息
             ConstrDept dept = super.find(ConstrDept.class, constrDept.getConstrDeptGuid());
