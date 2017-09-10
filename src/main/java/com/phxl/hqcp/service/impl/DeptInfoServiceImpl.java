@@ -654,7 +654,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		if(list!=null && !list.isEmpty()){
 			resultMap = list.get(0);
-			if(resultMap!=null && !resultMap.isEmpty()){
+			if(resultMap!=null && !resultMap.isEmpty() && StringUtils.isNotBlank((String)resultMap.get("constrDeptGuid"))){
 				if(resultMap.get("deptTypeName")!=null && StringUtils.isNotBlank((String)resultMap.get("deptTypeName"))){//部门级别
 					if(DeptTypeName.BU.equals((String)resultMap.get("deptTypeName"))){
 						resultMap.put("deptTypeName", "1");
