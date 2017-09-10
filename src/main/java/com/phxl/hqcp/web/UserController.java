@@ -236,6 +236,7 @@ public class UserController {
 		if(!user.getConfirmPwd().equals(user.getPwd())){
 			throw new ValidationException("两遍密码输入不一致，请检查");
 		}
+		user.setPwd(MD5Util1.MD5Encrypt(user.getPwd()));
 		//检查: 登陆账号，不能重复
 		if(userService.existedUserno(user.getUserNo(), null)){
 			throw new ValidationException("该账号已经存在，不能添加!");

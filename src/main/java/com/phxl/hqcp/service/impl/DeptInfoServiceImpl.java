@@ -20,6 +20,7 @@ import com.phxl.core.base.exception.ServiceException;
 import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.service.impl.BaseService;
 import com.phxl.core.base.util.IdentifieUtil;
+import com.phxl.core.base.util.LocalAssert;
 import com.phxl.hqcp.common.constant.CustomConst.DeptParentName;
 import com.phxl.hqcp.common.constant.CustomConst.DeptTypeName;
 import com.phxl.hqcp.dao.CallProcedureMapper;

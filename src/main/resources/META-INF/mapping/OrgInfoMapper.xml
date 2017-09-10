@@ -64,6 +64,7 @@
 		  oi.Tf_Province || oi.Tf_City || oi.Tf_District  "orgAddress",
 		  oi.AUDIT_FSTATE "auditFstate",
 		  cdo.Hospital_Level "hospitalLevel",cdo.HOSPITAL_PROPERTY "hospitalProperty",
+		  cdo.Hospital_Type "hospitalType",cdo.HOSPITAL_Teaching "hospitalTeaching",
 		  cdo.p_year "pYear",
 		  qoi.org_name "qcOrgName",
 		  cdo.plan_bed_sum "planBedSum",

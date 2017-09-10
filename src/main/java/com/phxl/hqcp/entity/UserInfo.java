@@ -54,6 +54,10 @@ public class UserInfo {
     private String confirmPwd;
     private String auditOrgCode;
     private String auditTfAccessory;
+    
+    private String orgCode;
+    private String tfAccessory;
+
 
     public String getUserId() {
         return userId;
@@ -253,6 +257,22 @@ public class UserInfo {
 
 	public void setAuditTfAccessory(String auditTfAccessory) {
 		this.auditTfAccessory = auditTfAccessory;
+	}
+
+	public String getOrgCode() {
+		return orgCode;
+	}
+
+	public void setOrgCode(String orgCode) {
+		this.orgCode = orgCode;
+	}
+
+	public String getTfAccessory() {
+		return tfAccessory;
+	}
+
+	public void setTfAccessory(String tfAccessory) {
+		this.tfAccessory = tfAccessory;
 	}
 	
 }
