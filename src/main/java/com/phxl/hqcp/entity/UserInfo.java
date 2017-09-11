@@ -2,7 +2,6 @@ package com.phxl.hqcp.entity;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.phxl.core.base.annotation.BaseSql;
 @BaseSql(tableName="TS_USER_INFO", resultName="com.phxl.hqcp.dao.UserInfoMapper.BaseResultMap")
 public class UserInfo {
@@ -10,7 +9,6 @@ public class UserInfo {
 
     private String userNo;
 
-    @JsonIgnore
     private String pwd;
 
     private String userName;

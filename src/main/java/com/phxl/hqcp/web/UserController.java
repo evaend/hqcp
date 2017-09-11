@@ -111,6 +111,12 @@ public class UserController {
 		LocalAssert.notNull(orgInfo, "机构不存在!");
 		user.setOrgType(orgInfo.getOrgType());//机构类型
 		
+		
+		if(StringUtils.isBlank(orgInfo.getTfAccessory()) 
+				|| StringUtils.isBlank(orgInfo.getOrgCode()) ){
+			throw new ValidationException("机构组织机构代码或机构附件为空，不允许新增用户，请先去机构管理维护");
+		}
+		
 		//检查UserInfo数据项长度
 		validateFieldLength(user);
 		
@@ -236,7 +242,6 @@ public class UserController {
 		if(!user.getConfirmPwd().equals(user.getPwd())){
 			throw new ValidationException("两遍密码输入不一致，请检查");
 		}
-		user.setPwd(MD5Util1.MD5Encrypt(user.getPwd()));
 		//检查: 登陆账号，不能重复
 		if(userService.existedUserno(user.getUserNo(), null)){
 			throw new ValidationException("该账号已经存在，不能添加!");

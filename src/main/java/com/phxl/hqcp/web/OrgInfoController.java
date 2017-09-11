@@ -82,19 +82,19 @@ public class OrgInfoController{
     }
     
     /**
-     * searchParentOrgInfoList:(查询上级机构列表). <br/> 
+     * searchOrgInfo:(查询机构详细信息). <br/> 
      */
     @ResponseBody
-    @RequestMapping("/searchParentOrgInfoList")
-    public List<Map<String, Object>> searchParentOrgInfoList(@RequestParam(value = "orgId", required = false)Long orgId, 
-        @RequestParam(value = "searchName", required = false) String searchName,
+    @RequestMapping("/searchOrgInfo")
+    public Map<String, Object> searchOrgInfo(@RequestParam(value = "orgId", required = false)Long orgId, 
+    	@RequestParam(value = "pYear", required = false)String pYear,
         HttpServletRequest request) throws JsonProcessingException{
         request.setAttribute(ResResultBindingInterceptor.IGNORE_STD_RESULT, true);//忽略标准结果
         Pager pager1 = new Pager(false);
         pager1.addQueryParam("orgId", orgId);
-        pager1.addQueryParam("searchName", searchName);
-        List<Map<String, Object>> resultMap = orgInfoService.searchParentOrgInfoList(pager1);
-        return resultMap;
+        pager1.addQueryParam("pYear", pYear);
+        List<Map> resultMap = orgInfoService.searchOrgInfoList(pager1);       
+        return resultMap.get(0);
     }
     
     /**
@@ -158,6 +158,9 @@ public class OrgInfoController{
 			ooi.setModefileUserNmae(username);
 			ooi.setModifyTime(new Date());
 			ooi.setAuditFstate(orginfo.getAuditFstate());
+			ooi.setTfProvince(orginfo.getTfProvince());
+			ooi.setTfCity(orginfo.getTfCity());
+			ooi.setTfDistrict(orginfo.getTfDistrict());
 			orgInfoService.addUpdateOrgInfo(orginfo,ooi);//ooi原机构
 		}
     }
@@ -190,12 +193,13 @@ public class OrgInfoController{
      */
     @RequestMapping("/findOrgs")
 	@ResponseBody
-	public List<Map<String, Object>> findOrgs(String searchName,
+	public List<Map<String, Object>> findOrgs(String searchName, String orgType,
 									 			   HttpServletRequest request) {
 		request.setAttribute(ResResultBindingInterceptor.IGNORE_STD_RESULT, true);//忽略标准结果
 		Pager<Map<String, Object>> pager = new Pager<Map<String, Object>>(false);
 		
 		pager.addQueryParam("searchName", searchName);
+		pager.addQueryParam("orgTypes", StringUtils.isBlank(orgType) ? new String[]{OrgType.HOSPITAL}:new String[]{orgType});
 		
 		return orgInfoService.findOrgs(pager);
 	}
