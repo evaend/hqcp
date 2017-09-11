@@ -132,16 +132,15 @@
   	
  	<!-- 查询质量指标详情 -->
  	<select id="selectFormulaInfo" resultMap="FormulaInfo" parameterType="java.util.HashMap">
- 		select * from v_qc_score where qc_org_id = #{qcOrgId} 
-			and index_p_code = #{indexPCode}
+ 		select * from v_qc_score where index_p_code = #{indexPCode}
 			and org_id = #{orgId}
 			order by ymd desc
  	</select>
  	
  	<!-- 查询质量指标列表 -->
  	<select id="selectFormulaInfoList" resultMap="FormulaInfo" parameterType="com.phxl.core.base.entity.Pager">
- 		select * from v_qc_score where qc_org_id = #{conditiions.qcOrgId, jdbcType=DECIMAL} 
-			<![CDATA[ and ymd <= #{conditiions.ymd, jdbcType=DECIMAL} 
+ 		select * from v_qc_score 
+			<![CDATA[ where ymd <= #{conditiions.ymd, jdbcType=DECIMAL} 
 				and index_p_code = #{conditiions.indexPCode, jdbcType=VARCHAR} ]]>
 			order by ymd desc
  	</select>

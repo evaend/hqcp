@@ -93,19 +93,19 @@ public class FormulaDetailController {
 			String [] tips = {"定义："+map.get("indexDefine") , "意义："+map.get("indexMeaning"),
 					"公式："+map.get("indexHelp")};
 //			String [] mapList = {
-//					"{ lable: '"+map.get("numberName").toString()+"', "
+//					"{ label: '"+map.get("numberName").toString()+"', "
 //					+" value: '"+map.get("numeratorValue").toString()+"', "
 //					+" rules: [{ required:false}], "
 //					+" key: '"+map.get("numeratorPCode").toString()+"', "
 //					+" readonly: "+flag+ "},     ",
 //					
-//					"{ lable: '"+map.get("denominatorName").toString()+"', "
+//					"{ label: '"+map.get("denominatorName").toString()+"', "
 //					+" value: '"+map.get("denominatorValue").toString()+"', "
 //					+" rules: [{ required:false}], "
 //					+" key: '"+map.get("denominatorPCode").toString()+"', "
 //					+" readonly: "+flag+ "},     ",
 //					
-//					"{ lable: '"+map.get("indexName").toString()+"', "
+//					"{ label: '"+map.get("indexName").toString()+"', "
 //					+" value: '"+map.get("indexValue").toString()+"', "
 //					+" rules: [{ required:false}], "
 //					+" key: '"+map.get("indexPCode").toString()+"', "
@@ -113,21 +113,21 @@ public class FormulaDetailController {
 //			};
 
 			Map<String, Object> map1 = new HashMap<String, Object>();
-			map1.put("lable", map.get("numberName").toString());
+			map1.put("label", map.get("numberName").toString());
 			map1.put("value", map.get("numeratorValue").toString());
 			map1.put("required", false);
 			map1.put("key",map.get("numeratorPCode").toString());
 			map1.put("readonly",flag);
 			
 			Map<String, Object> map2 = new HashMap<String, Object>();
-			map2.put("lable", map.get("denominatorName").toString());
+			map2.put("label", map.get("denominatorName").toString());
 			map2.put("value", map.get("denominatorValue").toString());
 			map2.put("required", false);
 			map2.put("key",map.get("denominatorPCode").toString());
 			map2.put("readonly",flag);
 			
 			Map<String, Object> map3 = new HashMap<String, Object>();
-			map3.put("lable", map.get("indexName").toString());
+			map3.put("label", map.get("indexName").toString());
 			map3.put("value", map.get("indexValue").toString());
 			map3.put("required", false);
 			map3.put("key",map.get("indexPCode").toString());
@@ -138,13 +138,13 @@ public class FormulaDetailController {
 			mapList.add(map2);
 			mapList.add(map3);
 			
-			Map<String, Object> lableMap = new HashMap<String, Object>();
-			lableMap.put("fsort", fsort);
-			lableMap.put("title", title);
-			lableMap.put("indexDetailGuid", indexDetailGuid);
-			lableMap.put("tips", tips);
-			lableMap.put("mapList", mapList);
-			resultList.add(lableMap);
+			Map<String, Object> labelMap = new HashMap<String, Object>();
+			labelMap.put("fsort", fsort);
+			labelMap.put("title", title);
+			labelMap.put("indexDetailGuid", indexDetailGuid);
+			labelMap.put("tips", tips);
+			labelMap.put("mapList", mapList);
+			resultList.add(labelMap);
 		}
 		
 		return resultList;
@@ -167,22 +167,8 @@ public class FormulaDetailController {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//配置项:忽略未知属性
 		Map<String, FormulaDetail []> formulaDetails = (Map<String, FormulaDetail[]>) mapper.readValue(request.getReader(), FormulaDetail.class);
 		
-		FormulaDetail [] formulaDetailList = formulaDetails.get("formulaDetail");
-		
-		//修改质量上报信息
-		for (FormulaDetail formulaDetail : formulaDetailList) {
-			formulaService.updateInfo(formulaDetail);
-		}
-		
-		//获得质量上报主表
-		Formula formula = formulaService.find(Formula.class, formulaDetailList [0].getIndexGuid());
-		if (isCommit==0) {
-			formula.setAuditFstate("10");
-		}else{
-			formula.setAuditFstate("00");
-		}
-		//修改主表信息
-		formulaService.updateInfo(formula);
+		FormulaDetail [] formulaDetailList = formulaDetails.get("formulaDetails");
+		formulaDetailService.updateFormulaDetail(formulaDetailList, isCommit);
 		
 		result = "success";
 		return result;
@@ -206,7 +192,7 @@ public class FormulaDetailController {
 		Formula formula = formulaService.find(Formula.class, indexGuid);
 		Assert.notNull(formula, "该指标信息审核不存在");
 		if (!formula.getAuditFstate().equals("10")) {
-			throw new ValidationException("该指标信息审核不符合状态");
+			throw new ValidationException("该指标已经审核过了，不允许重复审核");
 		}else{
 			//通过审核
 			if (isTransat==0) {
