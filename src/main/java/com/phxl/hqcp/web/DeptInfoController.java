@@ -890,13 +890,11 @@ public class DeptInfoController {
 	@ResponseBody
     @RequestMapping("/getOrgInfoTb")
     public Map<String, Object> getOrgInfoTb(
-            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "ymd", required = false) String ymd,
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
-        Assert.notNull(orgId, "机构ID，不能为空");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd);
         Map<String, Object> result = deptInfoService.getOrgInfoTb(pager);
         return result;
@@ -919,13 +917,11 @@ public class DeptInfoController {
 	@ResponseBody
     @RequestMapping("/getOrgDeptInfoByGender")
     public Map<String, Object> getOrgDeptInfoByGender(
-            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "ymd", required = false) String ymd,
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
-        Assert.notNull(orgId, "机构ID，不能为空");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd);
         Map<String, Object> result = deptInfoService.getOrgDeptInfoByGender(pager);
         return result;
@@ -949,13 +945,11 @@ public class DeptInfoController {
 	@ResponseBody
     @RequestMapping("/getOrgEducation")
     public Map<String, Object> getOrgEducation(
-            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "ymd", required = false) String ymd,
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
-        Assert.notNull(orgId, "机构ID，不能为空");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd);
         Map<String, Object> result = deptInfoService.getOrgEducation(pager);
         return result;
@@ -978,13 +972,11 @@ public class DeptInfoController {
 	@ResponseBody
     @RequestMapping("/getAdverseEvents")
     public Map<String, Object> getAdverseEvents(
-            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "ymd", required = false) String ymd,
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
-        Assert.notNull(orgId, "机构ID，不能为空");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd);
         Map<String, Object> result = deptInfoService.getAdverseEvents(pager);
         return result;
@@ -1007,13 +999,11 @@ public class DeptInfoController {
 	@ResponseBody
     @RequestMapping("/getMaterialTraceability")
     public Map<String, Object> getMaterialTraceability(
-            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "ymd", required = false) String ymd,
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
-        Assert.notNull(orgId, "机构ID，不能为空");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd);
         Map<String, Object> result = deptInfoService.getMaterialTraceability(pager);
         return result;
@@ -1036,13 +1026,11 @@ public class DeptInfoController {
 	@ResponseBody
     @RequestMapping("/getOrgAllLevel")
     public Map<String, Object> getOrgAllLevel(
-            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "ymd", required = false) String ymd,
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
-        Assert.notNull(orgId, "机构ID，不能为空");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", orgId);
+        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd);
         Map<String, Object> result = deptInfoService.getOrgAllLevel(pager);
         return result;
