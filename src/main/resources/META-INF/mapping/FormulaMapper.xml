@@ -54,16 +54,17 @@
       (tb_constr_dept.org_id = td_org_info.org_id)
       left join tb_constr_dept_info on
       (tb_constr_dept_info.constr_dept_guid = tb_constr_dept.constr_dept_guid )
-			where tb_formula.qc_org_id = #{conditiions.orgId, jdbcType = DECIMAL}
-		<if test="conditiions.orgName!=null and conditiions.orgName!=''">
-			<![CDATA[ and regexp_like(td_org_info.org_name, #{conditiions.orgName, jdbcType=VARCHAR}) ]]>
-		</if>
-		<if test="conditiions.auditFstate!=null and conditiions.auditFstate!=''">
-			and tb_formula.audit_fstate = #{conditiions.auditFstate, jdbcType=VARCHAR}
-		</if>
-		<if test="conditiions.pYear!=null and conditiions.pYear!=''">
-			and tb_formula.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
-		</if>
+	      <where>
+			<if test="conditiions.orgName!=null and conditiions.orgName!=''">
+				<![CDATA[ and regexp_like(td_org_info.org_name, #{conditiions.orgName, jdbcType=VARCHAR}) ]]>
+			</if>
+			<if test="conditiions.auditFstate!=null and conditiions.auditFstate!=''">
+				and tb_formula.audit_fstate = #{conditiions.auditFstate, jdbcType=VARCHAR}
+			</if>
+			<if test="conditiions.pYear!=null and conditiions.pYear!=''">
+				and tb_formula.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+			</if>
+		  </where>
  	</select>
  
  	<!-- 查询建设科室信息 -->
@@ -88,10 +89,6 @@
 		<if test="month != null and month !=''">
 			<![CDATA[ where start_date <= to_date(#{month},'yyyy-MM-dd') ]]>
 			and end_date >= to_date(#{month},'yyyy-MM-dd') )
-		</if>
-		<if test="month == null or month ==''">
-			<![CDATA[ where start_date <= sysdate ]]>
-			and end_date >= sysdate )
 		</if>
 	</select>
  

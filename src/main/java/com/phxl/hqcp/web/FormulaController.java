@@ -128,11 +128,11 @@ public class FormulaController {
 			HttpServletRequest request){
 		Map<String, Object> map = new HashMap<String, Object>();
 		//获取当前日期的第五个字符（上半年、下半年）
-		char c = yearMonth.trim().charAt(5);
+		char c = yearMonth.trim().charAt(4);
 		if (c == '1') {
-			map.put("month", yearMonth.trim().substring(0, 5)+"-3-15");
+			map.put("month", yearMonth.trim().substring(0, 4)+"-3-15");
 		}else{
-			map.put("month", yearMonth.trim().substring(0, 5)+"-9-15");
+			map.put("month", yearMonth.trim().substring(0, 4)+"-9-15");
 		}
 		
 		List<Map<String, Object>> list = formulaService.selectTemplateDetail(map);
