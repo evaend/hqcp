@@ -30,7 +30,7 @@
   </sql>
   
    <!-- 查询科室上报信息 -->
-	<select id="searchConstrDeptAuditList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
+	<select id="searchConstrDept" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.org_id "orgId",t.p_year "pYear",round(t.schedule,2) "schedule",t.constr_dept_guid "constrDeptGuid",t.audit_fstate "auditFstate",i.dept_name "deptName",
 		i.dept_type_name "deptTypeName",i.dept_parent_name "deptParentName",w.equipment_sum "equipmentSum",w.equipment_value "equipmentValue",w.ab_equipment_sum "abEquipmentSum",
 		w.ab_equipment_value "abEquipmentValue",w.consu_sum "consuSum",w.consu_value "consuValue",w.high_consu_sum "highConsuSum",w.high_consu_value "highConsuValue"

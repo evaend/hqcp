@@ -663,8 +663,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	                }else if(DeptTypeName.ZU.equals((String)resultMap.get("deptTypeName"))){
 	                	resultMap.put("deptTypeName", "3");
 	                }else{
+	                    resultMap.put("deptTypeOther", (String)resultMap.get("deptTypeName"));
 	                	resultMap.put("deptTypeName", "4");
-	                	resultMap.put("deptTypeOther", (String)resultMap.get("deptTypeName"));
 	                }
 				}
 				if(resultMap.get("deptParentName")!=null && StringUtils.isNotBlank((String)resultMap.get("deptParentName"))){//上级管理部门
@@ -677,8 +677,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	                }else if(DeptParentName.DL.equals((String)resultMap.get("deptParentName"))){
 	                	resultMap.put("deptParentName", "4");
 	                }else{
+	                    resultMap.put("deptParentOther", (String)resultMap.get("deptParentName"));
 	                	resultMap.put("deptParentName", "5");
-	                	resultMap.put("deptParentOther", (String)resultMap.get("deptTypeName"));
 	                }
 				}
 				//部门业务管理范围、部门承担的其它工作
@@ -687,19 +687,19 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 					Set<String> workScope = new HashSet<String>();
 					Set<String> workOther = new HashSet<String>();
 					for(Map<String, Object> infoMap:infoList){
-						if(infoMap!=null && infoMap.get("FSORT")!=null && StringUtils.isNotBlank((String)infoMap.get("FSORT"))){
+						if(infoMap!=null && infoMap.get("FSORT")!=null && StringUtils.isNotBlank(infoMap.get("FSORT").toString())){
 							if(infoMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_INFO.DEPT_WORK_SCOPE".equals(infoMap.get("CHECKBOX_TYPE").toString())){
-								workScope.add((String)infoMap.get("FSORT"));
-								if("7".equals((String)infoMap.get("FSORT"))){
+								workScope.add(infoMap.get("FSORT").toString());
+								if("7".equals(infoMap.get("FSORT").toString())){
 									resultMap.put("workScopeOther", infoMap.get("TF_VALUE"));
 								}
 							}
 							if(infoMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_INFO.DEPT_WORK_OTHER".equals(infoMap.get("CHECKBOX_TYPE").toString())){
-								workOther.add((String)infoMap.get("FSORT"));
-								if("3".equals((String)infoMap.get("FSORT"))){
+								workOther.add(infoMap.get("FSORT").toString());
+								if("3".equals(infoMap.get("FSORT").toString())){
 									resultMap.put("workMassName", infoMap.get("TF_VALUE"));
 								}
-								if("4".equals((String)infoMap.get("FSORT"))){
+								if("4".equals(infoMap.get("FSORT").toString())){
 									resultMap.put("workOtherName", infoMap.get("TF_VALUE"));
 								}
 							}
@@ -713,14 +713,14 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 				if(workList!=null && !workList.isEmpty()){
 					Set<String> logisticsScope = new HashSet<String>();
 					Set<String> logisticsType = new HashSet<String>();
-					for(Map<String, Object> workMap:infoList){
-						if(workMap!=null && workMap.get("FSORT")!=null && StringUtils.isNotBlank((String)workMap.get("FSORT"))){
+					for(Map<String, Object> workMap:workList){
+						if(workMap!=null && workMap.get("FSORT")!=null && StringUtils.isNotBlank(workMap.get("FSORT").toString())){
 							if(workMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_WORK.LOGISTICS_SCOPE".equals(workMap.get("CHECKBOX_TYPE").toString())){
-								logisticsScope.add((String)workMap.get("FSORT"));
+								logisticsScope.add(workMap.get("FSORT").toString());
 							}
 							if(workMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_WORK.LOGISTICS_TYPE".equals(workMap.get("CHECKBOX_TYPE").toString())){
-								logisticsType.add((String)workMap.get("FSORT"));
-								if("6".equals((String)workMap.get("FSORT"))){
+								logisticsType.add(workMap.get("FSORT").toString());
+								if("6".equals(workMap.get("FSORT").toString())){
 									resultMap.put("logisticsTypeOther", workMap.get("TF_VALUE"));
 								}
 							}
