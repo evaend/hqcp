@@ -9,32 +9,20 @@
   
 package com.phxl.hqcp.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.phxl.core.base.constant.ysynet.YsynetServiceConst.CertType;
 import com.phxl.core.base.entity.Pager;
-import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.service.impl.BaseService;
 import com.phxl.core.base.util.DateUtils;
 import com.phxl.core.base.util.FTPUtils;
@@ -42,14 +30,13 @@ import com.phxl.core.base.util.IdentifieUtil;
 import com.phxl.core.base.util.PinyinUtil;
 import com.phxl.core.base.util.SystemConfig;
 import com.phxl.hqcp.common.constant.CustomConst.AuditFstate;
-import com.phxl.hqcp.common.constant.CustomConst.Fstate;
-import com.phxl.hqcp.common.constant.CustomConst.OrgType;
 import com.phxl.hqcp.common.util.Base64FileHelper;
 import com.phxl.hqcp.dao.OrgInfoMapper;
 import com.phxl.hqcp.entity.ConstrDeptOrg;
 import com.phxl.hqcp.entity.HospitalInfo;
 import com.phxl.hqcp.entity.OrgInfo;
 import com.phxl.hqcp.entity.QcScope;
+import com.phxl.hqcp.entity.SelectScope;
 import com.phxl.hqcp.service.OrgInfoService;
 
 /** 
@@ -120,17 +107,25 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 			makeConstrDeptOrg(orginfo);
 		}else{
 			if(StringUtils.isNotBlank(orginfo.getTfAccessory()) 
-					&& StringUtils.isNotBlank(oldOrg.getTfAccessory())){//本次有上传且之前没有上传过
+					&& StringUtils.isBlank(oldOrg.getTfAccessory())){//本次有上传且之前没有上传过
 				uploadAccessory(orginfo);
 				oldOrg.setTfAccessory(orginfo.getTfAccessory());
-			}else{//只能提交新的上报信息
-				//新增上报信息
-				makeConstrDeptOrg(orginfo);
 			}
+//			else{//只能提交新的上报信息
+//				//新增上报信息
+//				makeConstrDeptOrg(orginfo);
+//			}
 			this.updateInfo(oldOrg);
 			//编辑医院信息
 			makeHospitalInfo(orginfo);		
-			//编辑或新增上报信息		
+			//编辑或新增上报信息
+			ConstrDeptOrg constrDeptOrg = new ConstrDeptOrg();
+			constrDeptOrg.setOrgId(orginfo.getOrgId());
+			constrDeptOrg.setpYear(orginfo.getpYear());
+			ConstrDeptOrg constrDeptOrg1 = this.searchEntity(constrDeptOrg);
+			if(constrDeptOrg1 == null){
+				makeConstrDeptOrg(orginfo);
+			}
 		}	
 	}
 	
@@ -143,7 +138,7 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 		hospitalInfo.setPlanBedSum(orginfo.getPlanBedSum());
 		hospitalInfo.setActualBedSum(orginfo.getActualBedSum());
 		hospitalInfo.setStaffSum(orginfo.getStaffSum());
-		hospitalInfo.setHospitalLevel(orginfo.getHospitalLevel());
+		hospitalInfo.setHospitalType(orginfo.getHospitalType());
 		HospitalInfo hi = this.find(HospitalInfo.class, orginfo.getOrgId());
 		if(hi == null){
 			this.insertInfo(hospitalInfo);
@@ -152,13 +147,17 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 		}
 	}
 	
-	public void makeConstrDeptOrg(OrgInfo orginfo){
+	public void makeConstrDeptOrg(OrgInfo orginfo) throws ParseException{
+		//新增机构上报信息之前，先把监管范围和选择范围增加进去
+		QcScope qcScope = insertQcScope(orginfo);
+		insertSelectScope(orginfo);
 		ConstrDeptOrg constrDeptOrg = new ConstrDeptOrg();
 		constrDeptOrg.setConstrDeptOrgGuid(IdentifieUtil.getGuId());
 		constrDeptOrg.setpYear(orginfo.getpYear());
 		constrDeptOrg.setpYmd("P_YEAR");
 		constrDeptOrg.setAuditFstate(AuditFstate.PASSED);
-		constrDeptOrg.setQcOrgId(findQcOrgId(orginfo.getOrgId(),orginfo.getpYear()));
+		constrDeptOrg.setQcOrgId(qcScope.getQcOrgId());//现在先写死
+//		constrDeptOrg.setQcOrgId(findQcOrgId(orginfo.getOrgId(),orginfo.getpYear()));
 		constrDeptOrg.setOrgId(orginfo.getOrgId());
 		constrDeptOrg.setHospitalLevel(orginfo.getHospitalLevel());
 		constrDeptOrg.setHospitalProperty(orginfo.getHospitalProperty());
@@ -166,11 +165,44 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 		constrDeptOrg.setPlanBedSum(orginfo.getPlanBedSum());
 		constrDeptOrg.setActualBedSum(orginfo.getActualBedSum());
 		constrDeptOrg.setStaffSum(orginfo.getStaffSum());
-		constrDeptOrg.setHospitalLevel(orginfo.getHospitalLevel());
-		constrDeptOrg.setQcScopeType("02");
+		constrDeptOrg.setHospitalType(orginfo.getHospitalType());;
+		constrDeptOrg.setStartTime(qcScope.getStartDate());
+		constrDeptOrg.setEndTime(qcScope.getEndDate());
+		constrDeptOrg.setQcScopeType(qcScope.getQcScopeType());
+		constrDeptOrg.setTfProvince(orginfo.getTfProvince());
+		constrDeptOrg.setTfCity(orginfo.getTfCity());
+		constrDeptOrg.setTfDistrict(orginfo.getTfDistrict());
 		this.insertInfo(constrDeptOrg);
 	}
 	
+	private void insertSelectScope(OrgInfo orginfo) throws ParseException {
+		SelectScope selectScope = new SelectScope();
+		selectScope.setSelectScopeGuid(IdentifieUtil.getGuId());
+		selectScope.setOrgId(orginfo.getOrgId());
+		selectScope.setSelectOrgId(Long.valueOf(10001));
+		selectScope.setpYear(orginfo.getpYear());
+		selectScope.setpYmd("P_YEAR");
+		selectScope.setSelectScopeSubType("01");
+		selectScope.setStartDate(DateUtils.convertDate(orginfo.getpYear()+"01-01", "yyyy-MM-dd"));
+		selectScope.setEndDate(DateUtils.convertDate(orginfo.getpYear()+"12-31", "yyyy-MM-dd"));
+		this.insertInfo(selectScope);
+	}
+
+	private QcScope insertQcScope(OrgInfo orginfo) throws ParseException {
+		QcScope qcScope = new QcScope();
+		qcScope.setQcScopeGuid(IdentifieUtil.getGuId());
+		qcScope.setOrgId(orginfo.getOrgId());
+		qcScope.setQcOrgId(Long.valueOf(10001));
+		qcScope.setQcScopeType("02");
+		qcScope.setpYear(orginfo.getpYear());
+		qcScope.setpYmd("P_YEAR");
+		qcScope.setQcScopeSubType("01");
+		qcScope.setStartDate(DateUtils.convertDate(orginfo.getpYear()+"01-01", "yyyy-MM-dd"));
+		qcScope.setEndDate(DateUtils.convertDate(orginfo.getpYear()+"12-31", "yyyy-MM-dd"));
+		this.insertInfo(qcScope);
+		return qcScope;
+	}
+
 	public void uploadAccessory(OrgInfo orginfo) throws Exception{
 		String var0 =  String.valueOf(orginfo.getOrgId());
 		String timestamp = DateUtils.format(new Date(), "yyMMddHHmmssSSS");
