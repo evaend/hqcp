@@ -140,8 +140,6 @@ public class DeptInfoController {
         }
         if (StringUtils.isNotBlank(fstate)) {
             pager.addQueryParam("fstate", fstate);
-        }else{
-            pager.addQueryParam("fstate", "00,10,20");
         }
         pager.addQueryParam("selectScopeSubType", "01");
         pager.addQueryParam("pYmd", "P_YEAR");
