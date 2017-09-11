@@ -167,22 +167,8 @@ public class FormulaDetailController {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//配置项:忽略未知属性
 		Map<String, FormulaDetail []> formulaDetails = (Map<String, FormulaDetail[]>) mapper.readValue(request.getReader(), FormulaDetail.class);
 		
-		FormulaDetail [] formulaDetailList = formulaDetails.get("formulaDetail");
-		
-		//修改质量上报信息
-		for (FormulaDetail formulaDetail : formulaDetailList) {
-			formulaService.updateInfo(formulaDetail);
-		}
-		
-		//获得质量上报主表
-		Formula formula = formulaService.find(Formula.class, formulaDetailList [0].getIndexGuid());
-		if (isCommit==0) {
-			formula.setAuditFstate("10");
-		}else{
-			formula.setAuditFstate("00");
-		}
-		//修改主表信息
-		formulaService.updateInfo(formula);
+		FormulaDetail [] formulaDetailList = formulaDetails.get("formulaDetails");
+		formulaDetailService.updateFormulaDetail(formulaDetailList, isCommit);
 		
 		result = "success";
 		return result;
@@ -206,7 +192,7 @@ public class FormulaDetailController {
 		Formula formula = formulaService.find(Formula.class, indexGuid);
 		Assert.notNull(formula, "该指标信息审核不存在");
 		if (!formula.getAuditFstate().equals("10")) {
-			throw new ValidationException("该指标信息审核不符合状态");
+			throw new ValidationException("该指标已经审核过了，不允许重复审核");
 		}else{
 			//通过审核
 			if (isTransat==0) {

@@ -166,12 +166,9 @@ public class FormulaController {
 		
 		//参数
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("qcOrgId", 10001);
-//		map.put("qcOrgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
 		
 		map.put("indexPCode", indexValue);
 		map.put("orgId", orgId);
-//		map.put("ymd", yearMonth);
 		
 		//当前医院的以往指标信息 以及 同级、同省指标信息
 		List<Map<String, Object>> selectFormulaInfo = formulaService.selectFormulaInfo(map);
@@ -184,17 +181,11 @@ public class FormulaController {
 		String [] xAxisData = new String [selectFormulaInfo.size()];
 		String [] legendData = {"时间","同级医院平均水平","全省医院平均配置水平对比"};
 
-//		//柱状图
-//		String seriesName = "时间";
-//		String type = "bar";
+		//柱状图
 		String [] seriesDate = new String [selectFormulaInfo.size()];
-//		//线型（同级医院）
-//		String seriesName1 = "同级医院平均水平";
-//		String type1 = "line";
+		//线型（同级医院）
 		String [] seriesLevel = new String [selectFormulaInfo.size()];
-//		//线型（同级医院）
-//		String seriesName2 = "全省医院平均水平";
-//		String type2 = "line";
+		//线型（同级医院）
 		String [] seriesAll = new String [selectFormulaInfo.size()];
 				
 		for (int i = 0 ; i < selectFormulaInfo.size() ; i++) {
@@ -243,8 +234,6 @@ public class FormulaController {
 		pager.setPageNum(page == null ? 1 : page);
 		pager.addQueryParam("ymd", yearMonth);
 		pager.addQueryParam("indexPCode", indexValue);
-//		pager.addQueryParam("qcOrgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
-		pager.addQueryParam("qcOrgId", 10001);
 
 		Map<String, Object> titleMap = new HashMap<String, Object>();
 		
@@ -277,8 +266,6 @@ public class FormulaController {
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
 		pager.addQueryParam("ymd", yearMonth);
 		pager.addQueryParam("indexPCode", indexValue);
-//		pager.addQueryParam("qcOrgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
-		pager.addQueryParam("qcOrgId", 10001);
 
 		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
 		//如果没有查询数据
