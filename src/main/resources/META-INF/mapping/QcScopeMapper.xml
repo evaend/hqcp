@@ -53,46 +53,46 @@
 	    </if>
 	</select>
 	
-	<!-- 按年度查询监管机构下的机构总数、三甲机构数、二甲机构数、及同比 -->
+	<!-- 按年度查询监管机构下的机构总数、三甲机构数、二甲机构数、及同比  备注：,目前只支持单机构，不支持多机构 -->
 	<select id="getOrgInfoTb" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.total_org "totalOrg",case when t.total_hospital_level3 is null then 0 else t.total_hospital_level3 end "totalLevel3",
 		case when t.total_hospital_level2 is null then 0 else t.total_hospital_level2 end "totalLevel2",t.tb_total_org "tbTotalOrg",
 		t.tb_total_hospital_level3 "tbTotalLevel3",t.tb_total_hospital_level2 "tbTotalLevel2"
 		from v_org_info_tb t 
-		where t.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
+		where t.qc_org_id = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
 	</select>
 	
-	<!-- 按年度查询监管机构下医工人数男女比例 -->
+	<!-- 按年度查询监管机构下医工人数男女比例  备注：,目前只支持单机构，不支持多机构 -->
 	<select id="getOrgDeptInfoByGender" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.ORG_ID,o.ORG_NAME,t.GENDER,t.YG_NUM from v_org_dept_info t
 		left join td_org_info o on o.org_id = t.org_id
-		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and t.P_YMD = 'P_HALF_YEAR' order by t.org_id asc
+		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001 and t.P_YMD = 'P_HALF_YEAR' order by t.org_id asc
 	</select>
 	
-	<!-- 按年度查询医工人员学历情况 -->
+	<!-- 按年度查询医工人员学历情况  备注：,目前只支持单机构，不支持多机构 -->
 	<select id="getOrgEducation" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select brand4.tf_clo_name "name",t.total_no "value" from v_org_education t 
 		left join td_static_info brand3 on brand3.TF_CLO='XL'
 		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.highest_education
-		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and t.P_YMD = 'P_HALF_YEAR'
+		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001 and t.P_YMD = 'P_HALF_YEAR'
 	</select>
 	
-	<!-- 按年度查询不良事件上报率 -->
+	<!-- 按年度查询不良事件上报率  备注：,目前只支持单机构，不支持多机构 -->
 	<select id="getAdverseEvents" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.ORG_ID,t.f_org_name,t.INDEX_VALUE,t.index_value_all from v_qc_score t 
-        where t.QC_ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL} and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.QC_NAME_ZB = '医疗器械不良事件上报率' and t.P_YMD = 'P_HALF_YEAR'
+        where t.QC_ORG_ID = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.QC_NAME_ZB = '医疗器械不良事件上报率' and t.P_YMD = 'P_HALF_YEAR'
 	</select>
 	
-	<!-- 按年度查询耗材追溯分析 --> 
+	<!-- 按年度查询耗材追溯分析  备注：,目前只支持单机构，不支持多机构 --> 
 	<select id="getMaterialTraceability" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.ORG_ID,t.f_org_name,t.INDEX_VALUE,t.index_value_all from v_qc_score t 
-        where t.QC_ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL} and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.QC_NAME_ZB = '医用高值耗材溯源率' and t.P_YMD = 'P_HALF_YEAR'
+        where t.QC_ORG_ID = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.QC_NAME_ZB = '医用高值耗材溯源率' and t.P_YMD = 'P_HALF_YEAR'
 	</select>
 	
-	<!-- 按年度查询机构分布-->
+	<!-- 按年度查询机构分布  备注：,目前只支持单机构，不支持多机构-->
 	<select id="getOrgAllLevel" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.tf_city "name",t.total_hospital_level "value" from v_org_all_level t 
-		where t.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
+		where t.qc_org_id = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
 		<if test="conditiions!=null and conditiions.level != null and conditiions.level != ''">
 		  and t.hospital_level = #{conditiions.level,jdbcType=VARCHAR}
 	    </if>
