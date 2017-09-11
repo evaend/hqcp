@@ -45,7 +45,7 @@ public class FormulaDetailController {
 	@ResponseBody
 	@RequestMapping("/selectFormulaDetail")
 	public List<Map<String, Object>> selectFormulaDetail(
-			@RequestParam(value="yearMonth",required=false)String yearMonth,
+			@RequestParam(value="pYear",required=false)String yearMonth,
 			@RequestParam(value="orgId",required=false)String orgId,
 			HttpServletRequest request) throws ValidationException{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
