@@ -140,8 +140,6 @@ public class DeptInfoController {
         }
         if (StringUtils.isNotBlank(fstate)) {
             pager.addQueryParam("fstate", fstate);
-        }else{
-            pager.addQueryParam("fstate", "00,10,20");
         }
         pager.addQueryParam("selectScopeSubType", "01");
         pager.addQueryParam("pYmd", "P_YEAR");
@@ -895,7 +893,7 @@ public class DeptInfoController {
         LocalAssert.notBlank(ymd, "请选择时间!");
         Pager pager = new Pager(false);
         pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
-        pager.addQueryParam("ymd", ymd);
+        pager.addQueryParam("ymd", ymd.substring(0,4));
         Map<String, Object> result = deptInfoService.getOrgInfoTb(pager);
         return result;
     }
@@ -922,7 +920,7 @@ public class DeptInfoController {
         LocalAssert.notBlank(ymd, "请选择时间!");
         Pager pager = new Pager(false);
         pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
-        pager.addQueryParam("ymd", ymd);
+        pager.addQueryParam("ymd", ymd.substring(0,4));
         Map<String, Object> result = deptInfoService.getOrgDeptInfoByGender(pager);
         return result;
     }
@@ -950,7 +948,7 @@ public class DeptInfoController {
         LocalAssert.notBlank(ymd, "请选择时间!");
         Pager pager = new Pager(false);
         pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
-        pager.addQueryParam("ymd", ymd);
+        pager.addQueryParam("ymd", ymd.substring(0,4));
         Map<String, Object> result = deptInfoService.getOrgEducation(pager);
         return result;
     }
@@ -1031,7 +1029,7 @@ public class DeptInfoController {
         LocalAssert.notBlank(ymd, "请选择时间!");
         Pager pager = new Pager(false);
         pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
-        pager.addQueryParam("ymd", ymd);
+        pager.addQueryParam("ymd", ymd.substring(0,4));
         Map<String, Object> result = deptInfoService.getOrgAllLevel(pager);
         return result;
     }

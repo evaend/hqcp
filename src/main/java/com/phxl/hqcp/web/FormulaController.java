@@ -46,8 +46,8 @@ public class FormulaController {
 	@ResponseBody
 	@RequestMapping("/selectFormulaList")
 	public Pager<Map<String, Object>> selectFormulaList(
-			@RequestParam(value="orgName",required = false ) String orgName,
-			@RequestParam(value="auditFstate",required = false) String auditFstate,
+			@RequestParam(value="searchName",required = false ) String orgName,
+			@RequestParam(value="fstate",required = false) String auditFstate,
 			@RequestParam(value="pYear",required = false) String pYear,
 			@RequestParam(value="fstateType",required = false) Integer fstateType,
 			@RequestParam(value="page",required = false) Integer page,
@@ -124,15 +124,15 @@ public class FormulaController {
 	@ResponseBody
 	@RequestMapping("/selectTemplateDetail")
 	public List<Map<String, Object>> selectTemplateDetail(
-			@RequestParam(value = "yearMonth", required = false ) String yearMonth,
+			@RequestParam(value = "pYear", required = false ) String yearMonth,
 			HttpServletRequest request){
 		Map<String, Object> map = new HashMap<String, Object>();
 		//获取当前日期的第五个字符（上半年、下半年）
-		char c = yearMonth.trim().charAt(5);
+		char c = yearMonth.trim().charAt(4);
 		if (c == '1') {
-			map.put("month", yearMonth.trim().substring(0, 5)+"-3-15");
+			map.put("month", yearMonth.trim().substring(0, 4)+"-3-15");
 		}else{
-			map.put("month", yearMonth.trim().substring(0, 5)+"-9-15");
+			map.put("month", yearMonth.trim().substring(0, 4)+"-9-15");
 		}
 		
 		List<Map<String, Object>> list = formulaService.selectTemplateDetail(map);
@@ -152,7 +152,7 @@ public class FormulaController {
 	@ResponseBody
 	@RequestMapping("/selectAllYearFornla")
 	public Map<String, Object> selectAllYearFornla(
-			@RequestParam(value="yearMonth",required = false ) String yearMonth,
+			@RequestParam(value="pYear",required = false ) String yearMonth,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			@RequestParam(value="orgId",required = false ) String orgId,
 			@RequestParam(value="page",required=false) Integer page,
@@ -260,7 +260,7 @@ public class FormulaController {
 	@ResponseBody
 	@RequestMapping("/exporAllYearFornla")
 	public void exporAllYearFornla(
-			@RequestParam(value="yearMonth",required = false ) String yearMonth,
+			@RequestParam(value="pYear",required = false ) String yearMonth,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			HttpServletRequest request,HttpServletResponse response) throws Exception{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);

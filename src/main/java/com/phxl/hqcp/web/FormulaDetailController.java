@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phxl.core.base.entity.Pager;
 import com.phxl.core.base.exception.ValidationException;
+import com.phxl.hqcp.common.constant.CustomConst.LoginUser;
 import com.phxl.hqcp.entity.Formula;
 import com.phxl.hqcp.entity.FormulaDetail;
 import com.phxl.hqcp.service.FormulaDetailService;
@@ -36,6 +37,8 @@ public class FormulaDetailController {
 	FormulaService formulaService;
 	@Autowired
 	FormulaDetailService formulaDetailService;
+	@Autowired
+	HttpSession session;
 	
 	/**
 	 * 查询当前质量上报信息
@@ -45,13 +48,10 @@ public class FormulaDetailController {
 	@ResponseBody
 	@RequestMapping("/selectFormulaDetail")
 	public List<Map<String, Object>> selectFormulaDetail(
-			@RequestParam(value="yearMonth",required=false)String yearMonth,
+			@RequestParam(value="pYear",required=false)String yearMonth,
 			@RequestParam(value="orgId",required=false)String orgId,
 			HttpServletRequest request) throws ValidationException{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
-		if (StringUtils.isBlank(orgId)) {
-			throw new ValidationException("当前没有选择机构");
-		}
 		//如果当前没有选择时间，默认最接近现在的时间
 		if (StringUtils.isBlank(yearMonth)) {
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -73,7 +73,13 @@ public class FormulaDetailController {
 		}else{
 			pager.addQueryParam("month", yearMonth.substring(0, 4)+"-9-15");
 		}
-		pager.addQueryParam("orgId", orgId);
+		
+		if (StringUtils.isBlank(orgId)) {
+			pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
+		}else {
+			pager.addQueryParam("orgId", orgId);
+		}
+		
 		
 		List<Map<String, Object>> list = formulaDetailService.selectFormulaDetail(pager);
 		
@@ -92,25 +98,6 @@ public class FormulaDetailController {
 			String indexDetailGuid = map.get("indexDetailGuid").toString();
 			String [] tips = {"定义："+map.get("indexDefine") , "意义："+map.get("indexMeaning"),
 					"公式："+map.get("indexHelp")};
-//			String [] mapList = {
-//					"{ label: '"+map.get("numberName").toString()+"', "
-//					+" value: '"+map.get("numeratorValue").toString()+"', "
-//					+" rules: [{ required:false}], "
-//					+" key: '"+map.get("numeratorPCode").toString()+"', "
-//					+" readonly: "+flag+ "},     ",
-//					
-//					"{ label: '"+map.get("denominatorName").toString()+"', "
-//					+" value: '"+map.get("denominatorValue").toString()+"', "
-//					+" rules: [{ required:false}], "
-//					+" key: '"+map.get("denominatorPCode").toString()+"', "
-//					+" readonly: "+flag+ "},     ",
-//					
-//					"{ label: '"+map.get("indexName").toString()+"', "
-//					+" value: '"+map.get("indexValue").toString()+"', "
-//					+" rules: [{ required:false}], "
-//					+" key: '"+map.get("indexPCode").toString()+"', "
-//					+" readonly: "+flag+ "},     "
-//			};
 
 			Map<String, Object> map1 = new HashMap<String, Object>();
 			map1.put("label", map.get("numberName").toString());
