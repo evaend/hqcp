@@ -93,19 +93,19 @@ public class FormulaDetailController {
 			String [] tips = {"定义："+map.get("indexDefine") , "意义："+map.get("indexMeaning"),
 					"公式："+map.get("indexHelp")};
 //			String [] mapList = {
-//					"{ lable: '"+map.get("numberName").toString()+"', "
+//					"{ label: '"+map.get("numberName").toString()+"', "
 //					+" value: '"+map.get("numeratorValue").toString()+"', "
 //					+" rules: [{ required:false}], "
 //					+" key: '"+map.get("numeratorPCode").toString()+"', "
 //					+" readonly: "+flag+ "},     ",
 //					
-//					"{ lable: '"+map.get("denominatorName").toString()+"', "
+//					"{ label: '"+map.get("denominatorName").toString()+"', "
 //					+" value: '"+map.get("denominatorValue").toString()+"', "
 //					+" rules: [{ required:false}], "
 //					+" key: '"+map.get("denominatorPCode").toString()+"', "
 //					+" readonly: "+flag+ "},     ",
 //					
-//					"{ lable: '"+map.get("indexName").toString()+"', "
+//					"{ label: '"+map.get("indexName").toString()+"', "
 //					+" value: '"+map.get("indexValue").toString()+"', "
 //					+" rules: [{ required:false}], "
 //					+" key: '"+map.get("indexPCode").toString()+"', "
@@ -113,21 +113,21 @@ public class FormulaDetailController {
 //			};
 
 			Map<String, Object> map1 = new HashMap<String, Object>();
-			map1.put("lable", map.get("numberName").toString());
+			map1.put("label", map.get("numberName").toString());
 			map1.put("value", map.get("numeratorValue").toString());
 			map1.put("required", false);
 			map1.put("key",map.get("numeratorPCode").toString());
 			map1.put("readonly",flag);
 			
 			Map<String, Object> map2 = new HashMap<String, Object>();
-			map2.put("lable", map.get("denominatorName").toString());
+			map2.put("label", map.get("denominatorName").toString());
 			map2.put("value", map.get("denominatorValue").toString());
 			map2.put("required", false);
 			map2.put("key",map.get("denominatorPCode").toString());
 			map2.put("readonly",flag);
 			
 			Map<String, Object> map3 = new HashMap<String, Object>();
-			map3.put("lable", map.get("indexName").toString());
+			map3.put("label", map.get("indexName").toString());
 			map3.put("value", map.get("indexValue").toString());
 			map3.put("required", false);
 			map3.put("key",map.get("indexPCode").toString());
@@ -138,13 +138,13 @@ public class FormulaDetailController {
 			mapList.add(map2);
 			mapList.add(map3);
 			
-			Map<String, Object> lableMap = new HashMap<String, Object>();
-			lableMap.put("fsort", fsort);
-			lableMap.put("title", title);
-			lableMap.put("indexDetailGuid", indexDetailGuid);
-			lableMap.put("tips", tips);
-			lableMap.put("mapList", mapList);
-			resultList.add(lableMap);
+			Map<String, Object> labelMap = new HashMap<String, Object>();
+			labelMap.put("fsort", fsort);
+			labelMap.put("title", title);
+			labelMap.put("indexDetailGuid", indexDetailGuid);
+			labelMap.put("tips", tips);
+			labelMap.put("mapList", mapList);
+			resultList.add(labelMap);
 		}
 		
 		return resultList;
