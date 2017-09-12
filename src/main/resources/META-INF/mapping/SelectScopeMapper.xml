@@ -36,7 +36,7 @@
 	<!-- 查询医院列表（科室建设） -->
 	<select id="searchSelectScopeList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select s.select_scope_guid "selectScopeGuid",t.constr_dept_guid "constrDeptGuid",s.org_id "orgId",o.org_name "orgName",d.DEPT_NAME "deptName",
-		       s.p_year "pYear",(CASE WHEN t.schedule is null THEN '0%' ELSE t.schedule*100.0||'%' END) "schedule",t.audit_fstate "auditFstate"
+		       s.p_year "pYear",(CASE WHEN t.schedule is null THEN 0 ELSE t.schedule END) "schedule",t.audit_fstate "auditFstate"
 		from td_select_scope s 
 		left join tb_constr_dept t on s.org_id = t.org_id and t.p_year = #{conditiions.pYear, jdbcType=VARCHAR} and t.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} 
 		                                                  and t.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR}

@@ -648,19 +648,6 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                 }
             }
         }
-        /*if(list!=null && !list.isEmpty()){
-            for(Map<String, Object> map:list){
-                if(map!=null && !map.isEmpty() && map.get("ORG_ID")!=null){
-                    orgList.add((String)map.get("ORG_NAME"));
-                    if(map.get("GENDER")!=null && StringUtils.isNotBlank(map.get("GENDER").toString()) && "1".equals(map.get("GENDER").toString())){//男
-                        maleList.add(map.get("YG_NUM")==null?"0":map.get("YG_NUM").toString());
-                    }
-                    if(map.get("GENDER")!=null && StringUtils.isNotBlank(map.get("GENDER").toString()) && "2".equals(map.get("GENDER").toString())){//女
-                        femaleList.add(map.get("YG_NUM")==null?"0":map.get("YG_NUM").toString());
-                    }
-                }
-            }
-        }*/
         Map<String, Object> orgs = new HashMap<String, Object>();
         orgs.put("data", orgList.toArray());
         resultMap.put("xAxis", orgs);
