@@ -54,22 +54,34 @@
 	
 	<!-- 查询科室人员列表（科室建设） -->
 	<select id="searchConstrDeptUserList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select t.constr_dept_user_guid "constrDeptUserGuid",t.fname "fname",brand2.tf_clo_name "gender",brand4.tf_clo_name "birthChar",t.post_name "postName",t.post_age "postAge",brand6.tf_clo_name "highestEducation",
-		brand8.tf_clo_name "majorName",brand10.tf_clo_name "technicalTitlesA",brand12.tf_clo_name "technicalTitlesB"
-		from tb_constr_dept_user t
-		left join td_static_info brand on brand.TF_CLO='GENDER'
-		left join td_static_data brand2 on brand.STATIC_ID=brand2.STATIC_ID and brand2.TF_CLO_CODE=t.gender
-		left join td_static_info brand3 on brand3.TF_CLO='BIRTH_CHAR'
-		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.birth_char
-		left join td_static_info brand5 on brand5.TF_CLO='XL'
-		left join td_static_data brand6 on brand5.STATIC_ID=brand6.STATIC_ID and brand6.TF_CLO_CODE=t.highest_education
-		left join td_static_info brand7 on brand7.TF_CLO='ZY'
-		left join td_static_data brand8 on brand7.STATIC_ID=brand8.STATIC_ID and brand8.TF_CLO_CODE=t.major_name
-		left join td_static_info brand9 on brand9.TF_CLO='TECHNICAL_TITLES_A'
-		left join td_static_data brand10 on brand9.STATIC_ID=brand10.STATIC_ID and brand10.TF_CLO_CODE=t.technical_titles_a
-		left join td_static_info brand11 on brand11.TF_CLO='TECHNICAL_TITLES_B'
-		left join td_static_data brand12 on brand11.STATIC_ID=brand12.STATIC_ID and brand12.TF_CLO_CODE=t.technical_titles_b
-		where t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+		select tt.constr_dept_user_guid "constrDeptUserGuid",tt.fname "fname",brand2.tf_clo_name "gender",brand4.tf_clo_name "birthChar",tt.post_name "postName",tt.post_age "postAge",brand6.tf_clo_name "highestEducation",
+        brand8.tf_clo_name "majorName",brand10.tf_clo_name "technicalTitlesA",brand12.tf_clo_name "technicalTitlesB"
+	    from (select t.constr_dept_user_guid,t.fname,t.gender,t.birth_char,t.highest_education,t.major_name,t.technical_titles_a,t.technical_titles_b,t.post_age,t.post_name
+	          from tb_constr_dept_user t,tb_constr_dept d 
+	          where d.constr_dept_guid = t.constr_dept_guid
+	          <if test="conditiions!=null and conditiions.constrDeptGuid != null and conditiions.constrDeptGuid != ''">
+			    and t.constr_dept_guid = #{conditiions.constrDeptGuid, jdbcType=VARCHAR}
+		      </if>
+		      <if test="conditiions!=null and conditiions.orgId != null and conditiions.orgId > 0">
+			    and d.org_id = #{conditiions.orgId, jdbcType=VARCHAR}
+		      </if>
+		      <if test="conditiions!=null and conditiions.pYear != null and conditiions.pYear != ''">
+			    and d.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+		      </if>
+	         ) tt
+	    left join td_static_info brand on brand.TF_CLO='GENDER'
+	    left join td_static_data brand2 on brand.STATIC_ID=brand2.STATIC_ID and brand2.TF_CLO_CODE=tt.gender
+	    left join td_static_info brand3 on brand3.TF_CLO='BIRTH_CHAR'
+	    left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=tt.birth_char
+	    left join td_static_info brand5 on brand5.TF_CLO='XL'
+	    left join td_static_data brand6 on brand5.STATIC_ID=brand6.STATIC_ID and brand6.TF_CLO_CODE=tt.highest_education
+	    left join td_static_info brand7 on brand7.TF_CLO='ZY'
+	    left join td_static_data brand8 on brand7.STATIC_ID=brand8.STATIC_ID and brand8.TF_CLO_CODE=tt.major_name
+	    left join td_static_info brand9 on brand9.TF_CLO='TECHNICAL_TITLES_A'
+	    left join td_static_data brand10 on brand9.STATIC_ID=brand10.STATIC_ID and brand10.TF_CLO_CODE=tt.technical_titles_a
+	    left join td_static_info brand11 on brand11.TF_CLO='TECHNICAL_TITLES_B'
+	    left join td_static_data brand12 on brand11.STATIC_ID=brand12.STATIC_ID and brand12.TF_CLO_CODE=tt.technical_titles_b
+		
 	</select>
 	
 	<!-- 按年度查询机构的床位数、机构员工总数、医工人员总数、医工培训总数（科室建设） -->

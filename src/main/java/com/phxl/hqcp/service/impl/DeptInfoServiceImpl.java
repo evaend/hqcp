@@ -619,6 +619,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                 }
             }
         }
+        
         List<String> orgList = new ArrayList<String>();//机构
         List<String> maleList = new ArrayList<String>();//男
         List<String> femaleList = new ArrayList<String>();//女
