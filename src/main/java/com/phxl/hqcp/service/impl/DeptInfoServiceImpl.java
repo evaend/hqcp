@@ -545,7 +545,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("color", "#bfbfbf");
             Map<String, Object> map1 = new HashMap<String, Object>();
-            map.put("normal", map);
+            map1.put("normal", map);
             lineMap.put("itemStyle", map1);
             lineMap.put("data", aver);
             adverList.add(lineMap);
@@ -592,7 +592,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("color", "#bfbfbf");
             Map<String, Object> map1 = new HashMap<String, Object>();
-            map.put("normal", map);
+            map1.put("normal", map);
             lineMap.put("itemStyle", map1);
             lineMap.put("data", aver);
             traceList.add(lineMap);
