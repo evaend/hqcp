@@ -205,6 +205,11 @@ public class FormulaController {
 		xAxis.put("data", xAxisData);
 		legend.put("data",legendData);
 		
+		Map<String, Object> itemStyle = new HashMap<String, Object>();
+		Map<String, Object> color = new HashMap<String, Object>();
+		color.put("color", "#bfbfbf");
+		itemStyle.put("normal", color);
+		
 		//时间（柱）
 		Map<String, Object> series1 = new HashMap<String, Object>();
 		series1.put("name","时间");
@@ -216,11 +221,16 @@ public class FormulaController {
 		series2.put("name","同级医院平均水平");
 		series2.put("type","line");
 		series2.put("data",seriesLevel);
+		series2.put("showSymbol",false);
+		series2.put("itemStyle",itemStyle);
+		
 		//全省（线）
 		Map<String, Object> series3 = new HashMap<String, Object>();
 		series3.put("name","全省医院平均配置水平对比");
 		series3.put("type","line");
 		series3.put("data",seriesAll);
+		series3.put("showSymbol",false);
+		series3.put("itemStyle",itemStyle);
 		//值
 		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
 		series.add(series1);
