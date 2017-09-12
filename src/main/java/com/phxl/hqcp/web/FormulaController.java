@@ -53,6 +53,7 @@ public class FormulaController {
 			@RequestParam(value="page",required = false) Integer page,
 			@RequestParam(value="pagesize",required = false) Integer pagesize,
 			HttpServletRequest request) {
+		Assert.notNull(pYear, "当前没有选择时间！");
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
 		pager.setPageSize(pagesize == null ? 15 : pagesize);
 		pager.setPageNum(page == null ? 1 : page);
@@ -141,7 +142,7 @@ public class FormulaController {
 	
 	/**
 	 * 查询当前选择的医院机构的当前选择类型的公式明细，以及同级机构，同省机构的平均值(按所选时间排序，选择哪个时间段，哪个排前面)
-	 * @param yearMonth 当前选择的时间（如2016下半年）
+	 * @param pYear 当前选择的时间（如2016下半年）
 	 * @param indexValue 当前选择类型（如医学工程人员配置水平）
 	 * @param orgId 当前选择机构
 	 * @param page 当前页
@@ -152,7 +153,7 @@ public class FormulaController {
 	@ResponseBody
 	@RequestMapping("/selectAllYearFornla")
 	public Map<String, Object> selectAllYearFornla(
-			@RequestParam(value="pYear",required = false ) String yearMonth,
+			@RequestParam(value="pYear",required = false ) String pYear,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			@RequestParam(value="orgId",required = false ) String orgId,
 			@RequestParam(value="page",required=false) Integer page,
@@ -232,7 +233,7 @@ public class FormulaController {
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
 		pager.setPageSize(pagesize == null ? 5 : pagesize);
 		pager.setPageNum(page == null ? 1 : page);
-		pager.addQueryParam("ymd", yearMonth);
+		pager.addQueryParam("ymd", pYear);
 		pager.addQueryParam("indexPCode", indexValue);
 
 		Map<String, Object> titleMap = new HashMap<String, Object>();
@@ -254,17 +255,17 @@ public class FormulaController {
 	
 	/**
 	 * 导出质量指标详情
-	 * @param yearMonth 当前选择的时间（如2016下半年）
+	 * @param pYear 当前选择的时间（如2016下半年）
 	 * @param indexValue 当前选择类型（如医学工程人员配置水平）
 	 */
 	@ResponseBody
 	@RequestMapping("/exporAllYearFornla")
 	public void exporAllYearFornla(
-			@RequestParam(value="pYear",required = false ) String yearMonth,
+			@RequestParam(value="pYear",required = false ) String pYear,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			HttpServletRequest request,HttpServletResponse response) throws Exception{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
-		pager.addQueryParam("ymd", yearMonth);
+		pager.addQueryParam("ymd", pYear);
 		pager.addQueryParam("indexPCode", indexValue);
 
 		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
@@ -278,11 +279,11 @@ public class FormulaController {
 		final String qcNameZb = selectFormulaInfoList.get(0).get("qcNameZb").toString();
 		
 		String date = "";
-		char m = yearMonth.trim().charAt(4);
+		char m = pYear.trim().charAt(4);
 		if (m == '1') {
-			date = yearMonth.substring(0,4).toString().trim()+"上半年";
+			date = pYear.substring(0,4).toString().trim()+"上半年";
 		}else{
-			date = yearMonth.substring(0,4).toString().trim()+"下半年";
+			date = pYear.substring(0,4).toString().trim()+"下半年";
 		}
 
 		// 导出的excel列头，和数据库查询的结果一致
