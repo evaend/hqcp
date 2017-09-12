@@ -1,6 +1,7 @@
 package com.phxl.hqcp.web;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,10 +153,21 @@ public class FormulaDetailController {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));//配置项:默认日期格式
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//配置项:忽略未知属性
-		Map<String, FormulaDetail []> formulaDetails = (Map<String, FormulaDetail[]>) mapper.readValue(request.getReader(), FormulaDetail.class);
 		
-		FormulaDetail [] formulaDetailList = formulaDetails.get("formulaDetails");
-		formulaDetailService.updateFormulaDetail(formulaDetailList, isCommit);
+		Map<String, String []> formulaDetails = mapper.readValue(request.getReader(), Map.class);
+		
+		List<FormulaDetail> list = new ArrayList<FormulaDetail>();
+		
+		//获取要修改的值
+		for (String str : formulaDetails.keySet()) {
+			FormulaDetail formulaDetail = formulaService.find(FormulaDetail.class, str);
+			formulaDetail.setNumeratorValue(Long.valueOf(formulaDetails.get(str)[0]));
+			formulaDetail.setDenominatorValue(Long.valueOf(formulaDetails.get(str)[1]));
+			formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(formulaDetails.get(str)[2])));
+			list.add(formulaDetail);
+		}
+		
+		formulaDetailService.updateFormulaDetail(list, isCommit);
 		
 		result = "success";
 		return result;
