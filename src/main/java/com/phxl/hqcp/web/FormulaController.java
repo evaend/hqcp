@@ -57,8 +57,6 @@ public class FormulaController {
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
 		pager.setPageSize(pagesize == null ? 15 : pagesize);
 		pager.setPageNum(page == null ? 1 : page);
-//		pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
-		pager.addQueryParam("orgId", 10001);
 		pager.addQueryParam("orgName", orgName);
 		//设置审核状态参数
 		if (fstateType!=null) {
@@ -126,7 +124,10 @@ public class FormulaController {
 	@RequestMapping("/selectTemplateDetail")
 	public List<Map<String, Object>> selectTemplateDetail(
 			@RequestParam(value = "pYear", required = false ) String pYear,
-			HttpServletRequest request){
+			HttpServletRequest request) throws ValidationException{
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		//获取当前日期的第五个字符（上半年、下半年）
 		char c = pYear.trim().charAt(4);
@@ -158,12 +159,18 @@ public class FormulaController {
 			@RequestParam(value="orgId",required = false ) String orgId,
 			@RequestParam(value="page",required=false) Integer page,
 			@RequestParam(value="pagesize",required=false) Integer pagesize,
-			HttpServletRequest request){
+			HttpServletRequest request) throws ValidationException{
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
+		if (StringUtils.isBlank(indexValue)) {
+			throw new ValidationException("指标类型不允许为空");
+		}
+		if (StringUtils.isBlank(orgId)) {
+			throw new ValidationException("机构ID不允许为空");
+		}
 		//返回的数据
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		
-		//柱状图
-		Map<String, Object> majorSeries = new HashMap<String, Object>();
 		
 		//参数
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -276,14 +283,16 @@ public class FormulaController {
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			HttpServletRequest request,HttpServletResponse response) throws Exception{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
+		if (StringUtils.isBlank(indexValue)) {
+			throw new ValidationException("指标类型不允许为空");
+		}
 		pager.addQueryParam("ymd", pYear);
 		pager.addQueryParam("indexPCode", indexValue);
 
 		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
-		//如果没有查询数据
-		if (selectFormulaInfoList == null || selectFormulaInfoList.size() == 0) {
-			throw new ValidationException("当前没有查询结果，不允许导出");
-		}
 		
 		final String qcNameFz = selectFormulaInfoList.get(0).get("qcNameFz").toString();
 		final String qcNameFm = selectFormulaInfoList.get(0).get("qcNameFm").toString();

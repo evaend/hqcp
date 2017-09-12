@@ -52,6 +52,12 @@ public class FormulaDetailController {
 			@RequestParam(value="pYear",required=false)String pYear,
 			@RequestParam(value="orgId",required=false)String orgId,
 			HttpServletRequest request) throws ValidationException{
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
+		if (StringUtils.isBlank(orgId)) {
+			throw new ValidationException("机构ID不允许为空");
+		}
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
 		//如果当前没有选择时间，默认最接近现在的时间
 		if (StringUtils.isBlank(pYear)) {
@@ -194,6 +200,7 @@ public class FormulaDetailController {
 			@RequestParam(value="isTransat",required=false)Integer isTransat,
 			HttpServletRequest request) throws ValidationException {
 		String result = "error";
+		Assert.notNull(indexGuid, "质量上报ID不允许为空");
 		
 		Formula formula = formulaService.find(Formula.class, indexGuid);
 		Assert.notNull(formula, "该指标信息审核不存在");
