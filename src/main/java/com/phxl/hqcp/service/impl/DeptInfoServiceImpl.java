@@ -500,6 +500,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             majorMap.put("data", majorName);
             numMap.put("data", num);
             numMap.put("type", "bar");
+            numMap.put("barMaxWidth", "30px");
             numMap.put("name", "专业人数");
             resultMap.put("xAxis", majorMap);
             resultMap.put("series", numMap);
@@ -535,10 +536,17 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             majorMap.put("data", orgName);
             numMap.put("data", num);
             numMap.put("type", "bar");
+            numMap.put("barMaxWidth", "30px");
             numMap.put("name", "不良事件上报率");
             adverList.add(numMap);
             lineMap.put("name", "不良事件上报率");
             lineMap.put("type", "line");
+            lineMap.put("showSymbol", "false");
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("color", "#bfbfbf");
+            Map<String, Object> map1 = new HashMap<String, Object>();
+            map.put("normal", map);
+            lineMap.put("itemStyle", map1);
             lineMap.put("data", aver);
             adverList.add(lineMap);
             resultMap.put("xAxis", majorMap);
@@ -575,10 +583,17 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             majorMap.put("data", orgName);
             numMap.put("data", num);
             numMap.put("type", "bar");
+            numMap.put("barMaxWidth", "30px");
             numMap.put("name", "医用高值耗材溯源率");
             traceList.add(numMap);
             lineMap.put("name", "医用高值耗材溯源率");
             lineMap.put("type", "line");
+            lineMap.put("showSymbol", "false");
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("color", "#bfbfbf");
+            Map<String, Object> map1 = new HashMap<String, Object>();
+            map.put("normal", map);
+            lineMap.put("itemStyle", map1);
             lineMap.put("data", aver);
             traceList.add(lineMap);
             resultMap.put("xAxis", majorMap);
@@ -596,11 +611,44 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         Map<String, Object> legendMap = new HashMap<String, Object>();
         legendMap.put("data", legendData);
         resultMap.put("legend", legendMap);
-        Set<String> orgList = new HashSet<String>();//机构
+        List<String> orgIdList = new ArrayList<String>();//机构Id
+        if(list!=null && !list.isEmpty()){
+            for(Map<String, Object> map:list){
+                if(map!=null && !map.isEmpty() && map.get("ORG_ID")!=null && !orgIdList.contains(map.get("ORG_ID").toString())){
+                    orgIdList.add(map.get("ORG_ID").toString());
+                }
+            }
+        }
+        List<String> orgList = new ArrayList<String>();//机构
         List<String> maleList = new ArrayList<String>();//男
         List<String> femaleList = new ArrayList<String>();//女
         List<Map<String, Object>> genders = new ArrayList<Map<String,Object>>();
-        if(list!=null && !list.isEmpty()){
+        if(orgIdList!=null && !orgIdList.isEmpty()){
+            for(String orgId:orgIdList){
+                pager.addQueryParam("orgId", orgId);
+                list = qcScopeMapper.getOrgDeptInfoByGender(pager);
+                if(list!=null && !list.isEmpty()){
+                    String man = "0";
+                    String woman = "0";
+                    for(Map<String, Object> map:list){
+                        if(map!=null && !map.isEmpty() && map.get("ORG_ID")!=null){
+                            if(!orgList.contains(map.get("ORG_NAME").toString())){
+                                orgList.add((String)map.get("ORG_NAME"));
+                            }
+                            if(map.get("GENDER")!=null && StringUtils.isNotBlank(map.get("GENDER").toString()) && "1".equals(map.get("GENDER").toString())){//男
+                                man = map.get("YG_NUM")==null?"0":map.get("YG_NUM").toString();
+                            }
+                            if(map.get("GENDER")!=null && StringUtils.isNotBlank(map.get("GENDER").toString()) && "2".equals(map.get("GENDER").toString())){//女
+                                woman = map.get("YG_NUM")==null?"0":map.get("YG_NUM").toString();
+                            }
+                        }
+                    }
+                    maleList.add(man);
+                    femaleList.add(woman);
+                }
+            }
+        }
+        /*if(list!=null && !list.isEmpty()){
             for(Map<String, Object> map:list){
                 if(map!=null && !map.isEmpty() && map.get("ORG_ID")!=null){
                     orgList.add((String)map.get("ORG_NAME"));
@@ -612,19 +660,21 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                     }
                 }
             }
-        }
+        }*/
         Map<String, Object> orgs = new HashMap<String, Object>();
         orgs.put("data", orgList.toArray());
         resultMap.put("xAxis", orgs);
         Map<String, Object> males = new HashMap<String, Object>();
         males.put("name", "男");
         males.put("type", "bar");
+        males.put("barMaxWidth", "30px");
         males.put("stack", "医工人数");
         males.put("data", maleList.toArray());
         genders.add(males);
         Map<String, Object> females = new HashMap<String, Object>();
         females.put("name", "女");
         females.put("type", "bar");
+        females.put("barMaxWidth", "30px");
         females.put("stack", "医工人数");
         females.put("data", femaleList.toArray());
         genders.add(females);
@@ -634,20 +684,72 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 
     @Override
     public Map<String, Object> getOrgAllLevel(Pager pager) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        map1.put("十堰市", "0");
+        map1.put("襄阳市", "0");
+        map1.put("随州市", "0");
+        map1.put("孝感市", "0");
+        map1.put("黄冈市", "0");
+        map1.put("武汉市", "0");
+        map1.put("鄂州市", "0");
+        map1.put("黄石市", "0");
+        map1.put("咸宁市", "0");
+        map1.put("荆州市", "0");
+        map1.put("仙桃市", "0");
+        map1.put("天门市", "0");
+        map1.put("潜江市", "0");
+        map1.put("荆门市", "0");
+        map1.put("宜昌市", "0");
+        map1.put("神农架林区", "0");
+        map1.put("恩施土家族苗族自治州十堰", "0");
         pager.addQueryParam("level", "3");
         List<Map<String, Object>> threeList = qcScopeMapper.getOrgAllLevel(pager);
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        Map<String, Object> threeMap = new HashMap<String, Object>();
-        threeMap.put("data", threeList);
-        resultMap.put("level3", threeMap);
+        Map<String, Object> level3Map = new HashMap<String, Object>();
+        level3Map.putAll(map1);
+        if(threeList!=null && !threeList.isEmpty()){
+            for(Map<String, Object> cityMap:threeList){
+                level3Map.put(cityMap.get("name").toString(), cityMap.get("value"));
+            }
+        }
+        List<Map<String, Object>> threeMap = new ArrayList<Map<String,Object>>();
+        if(level3Map!=null && !level3Map.isEmpty()){
+            Set<String> set = level3Map.keySet(); //取出所有的key值
+            for (String key:set) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("name", key);
+                map.put("value", level3Map.get(key));
+                threeMap.add(map);
+            }
+        }
+        Map<String, Object> thirdMap = new HashMap<String, Object>();
+        thirdMap.put("data", threeMap);
+        resultMap.put("level3", thirdMap);
         pager.addQueryParam("level", "2");
         List<Map<String, Object>> twoList = qcScopeMapper.getOrgAllLevel(pager);
+        Map<String, Object> level2Map = new HashMap<String, Object>();
+        level2Map.putAll(map1);
+        if(twoList!=null && !twoList.isEmpty()){
+            for(Map<String, Object> cityMap:twoList){
+                level2Map.put(cityMap.get("name").toString(), cityMap.get("value"));
+            }
+        }
+        List<Map<String, Object>> secondMap = new ArrayList<Map<String,Object>>();
+        if(level2Map!=null && !level2Map.isEmpty()){
+            Set<String> set = level2Map.keySet(); //取出所有的key值
+            for (String key:set) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("name", key);
+                map.put("value", level2Map.get(key));
+                secondMap.add(map);
+            }
+        }
         Map<String, Object> twoMap = new HashMap<String, Object>();
-        twoMap.put("data", twoList);
+        twoMap.put("data", secondMap);
         resultMap.put("level2", twoMap);
-        return null;
+        return resultMap;
     }
-
+    
 	@Override
 	public Map<String, Object> searchConstrDept(Pager pager) {
 		List<Map<String, Object>> list = constrDeptMapper.searchConstrDept(pager);
