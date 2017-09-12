@@ -210,6 +210,7 @@ public class FormulaController {
 		series1.put("name","时间");
 		series1.put("type","bar");
 		series1.put("data",seriesDate);
+		series1.put("barMaxWidth","30px");
 		//同级（线）
 		Map<String, Object> series2 = new HashMap<String, Object>();
 		series2.put("name","同级医院平均水平");
