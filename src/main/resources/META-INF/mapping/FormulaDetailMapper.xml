@@ -68,4 +68,11 @@
 		order by tb_formula_detail.fsort 
   </select>
   
+  <update id="updateFormulaDetail" parameterType="java.util.HashMap">
+  	 update tb_formula_detail set numerator_value = #{numeratorValue} , 
+	   denominator_value = #{denominatorValue} , 
+	   index_value = #{indexValue} 
+	   where index_detail_guid = #{guid} 
+  </update>
+  
 </mapper>

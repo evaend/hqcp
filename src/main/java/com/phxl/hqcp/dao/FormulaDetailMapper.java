@@ -10,4 +10,7 @@ import com.phxl.hqcp.entity.FormulaTemplateDetail;
 public interface FormulaDetailMapper {
 	//查询当前质量上报信息
 	List<Map<String, Object>> selectFormulaDetail(Pager<Map<String, Object>> pager);
+	
+	//质量上报
+	void updateFormulaDetail(Map<String, Object> map);
 }

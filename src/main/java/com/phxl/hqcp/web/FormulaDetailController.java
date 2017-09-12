@@ -140,7 +140,7 @@ public class FormulaDetailController {
 	
 	/**
 	 * 质量上报
-	 * @param isCommit 是提交还是暂存(0提交，1暂存)
+	 * @param isCommit 是提交还是暂存(1提交，2暂存)
 	 * @return
 	 */
 	@ResponseBody
@@ -154,17 +154,19 @@ public class FormulaDetailController {
 		mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));//配置项:默认日期格式
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//配置项:忽略未知属性
 		
-		Map<String, String []> formulaDetails = mapper.readValue(request.getReader(), Map.class);
+		Map<String, List<Double>> formulaDetails = mapper.readValue(request.getReader(), Map.class);
 		
-		List<FormulaDetail> list = new ArrayList<FormulaDetail>();
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		
 		//获取要修改的值
 		for (String str : formulaDetails.keySet()) {
-			FormulaDetail formulaDetail = formulaService.find(FormulaDetail.class, str);
-			formulaDetail.setNumeratorValue(Long.valueOf(formulaDetails.get(str)[0]));
-			formulaDetail.setDenominatorValue(Long.valueOf(formulaDetails.get(str)[1]));
-			formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(formulaDetails.get(str)[2])));
-			list.add(formulaDetail);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("guid", str);
+			List<Double> ob = formulaDetails.get(str);
+			map.put("numeratorValue",ob.get(0));
+			map.put("denominatorValue",ob.get(1));
+			map.put("indexValue",ob.get(2));
+			list.add(map);
 		}
 		
 		formulaDetailService.updateFormulaDetail(list, isCommit);
