@@ -42,36 +42,36 @@ public class FormulaDetailController {
 	
 	/**
 	 * 查询当前质量上报信息
-	 * @param yearMonth 上报年份
+	 * @param pYear 上报年份
 	 * @param orgId 机构ID
 	 */
 	@ResponseBody
 	@RequestMapping("/selectFormulaDetail")
 	public List<Map<String, Object>> selectFormulaDetail(
-			@RequestParam(value="pYear",required=false)String yearMonth,
+			@RequestParam(value="pYear",required=false)String pYear,
 			@RequestParam(value="orgId",required=false)String orgId,
 			HttpServletRequest request) throws ValidationException{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
 		//如果当前没有选择时间，默认最接近现在的时间
-		if (StringUtils.isBlank(yearMonth)) {
+		if (StringUtils.isBlank(pYear)) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			List<Map<String, Object>> list = formulaService.selectAllDate(map);
 			Map<String, Object> dateMap = list.get(0);
 			//获取当前日期的第五个字符（月份）
 			char m = dateMap.get("startDate").toString().trim().charAt(5);
 			if (m == '1') {
-				yearMonth = dateMap.get("pYear").toString().trim()+"1";
+				pYear = dateMap.get("pYear").toString().trim()+"1";
 			}else{
-				yearMonth = dateMap.get("pYear").toString().trim()+"2";
+				pYear = dateMap.get("pYear").toString().trim()+"2";
 			}
 		}
 		
 		//获取当前日期的第五个字符（上、下） 半年
-		char month = yearMonth.trim().charAt(4);
+		char month = pYear.trim().charAt(4);
 		if (month == '1') {
-			pager.addQueryParam("month", yearMonth.substring(0, 4)+"-3-15");
+			pager.addQueryParam("month", pYear.substring(0, 4)+"-3-15");
 		}else{
-			pager.addQueryParam("month", yearMonth.substring(0, 4)+"-9-15");
+			pager.addQueryParam("month", pYear.substring(0, 4)+"-9-15");
 		}
 		
 		if (StringUtils.isBlank(orgId)) {
