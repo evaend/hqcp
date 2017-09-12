@@ -146,7 +146,6 @@ public class FormulaDetailController {
 	@ResponseBody
 	@RequestMapping("/updateFormulaDetail")
 	public String updateFormulaDetail(
-			@RequestParam(value="isCommit",required=false)Integer isCommit,
 			HttpServletRequest request , HttpSession session
 			) throws JsonParseException, JsonMappingException, IOException{
 		String result = "error";
@@ -154,19 +153,25 @@ public class FormulaDetailController {
 		mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));//配置项:默认日期格式
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);//配置项:忽略未知属性
 		
-		Map<String, List<Double>> formulaDetails = mapper.readValue(request.getReader(), Map.class);
+		Map<String, List<Object>> formulaDetails = mapper.readValue(request.getReader(), Map.class);
 		
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		
+		Integer isCommit = null;
 		//获取要修改的值
 		for (String str : formulaDetails.keySet()) {
+			List<Object> ob = formulaDetails.get(str);
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("guid", str);
-			List<Double> ob = formulaDetails.get(str);
-			map.put("numeratorValue",ob.get(0));
-			map.put("denominatorValue",ob.get(1));
-			map.put("indexValue",ob.get(2));
-			list.add(map);
+			if (str.trim().equals("isCommit")) {
+				isCommit = Integer.valueOf(ob.get(0).toString());
+			}else if (str.trim().equals("pYear")) {
+				
+			} else {
+				map.put("guid", str);
+				map.put("numeratorValue",ob.get(0));
+				map.put("denominatorValue",ob.get(1));
+				map.put("indexValue",ob.get(2));
+				list.add(map);
+			}
 		}
 		
 		formulaDetailService.updateFormulaDetail(list, isCommit);
