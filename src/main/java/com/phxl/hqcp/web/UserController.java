@@ -258,8 +258,14 @@ public class UserController {
 		user.setAuditFstate(AuditFstate.AWAIT_AUDIT);//注册用户状态待审核
 		
 		String newTfAccessoryFile = null;//新附件
-		if(StringUtils.isNotBlank(user.getAuditTfAccessory()) && user.getAuditTfAccessory().indexOf(";base64,")!=-1){//新附件
+		if(StringUtils.isBlank(orgInfo.getTfAccessory()) && StringUtils.isNotBlank(user.getAuditTfAccessory()) && user.getAuditTfAccessory().indexOf(";base64,")!=-1){//新附件
 			newTfAccessoryFile = user.getAuditTfAccessory();//新附件
+		}else{
+			user.setAuditTfAccessory(null);
+		}
+		
+		if(StringUtils.isNotBlank(orgInfo.getOrgCode())){
+			user.setAuditOrgCode(null);
 		}
 		
 		//没有机构组织代码和证件提交，且系统中也不存在 不容许提交注册信息

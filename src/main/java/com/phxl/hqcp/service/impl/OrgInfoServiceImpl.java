@@ -183,8 +183,8 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 		selectScope.setpYear(orginfo.getpYear());
 		selectScope.setpYmd("P_YEAR");
 		selectScope.setSelectScopeSubType("01");
-		selectScope.setStartDate(DateUtils.convertDate(orginfo.getpYear()+"01-01", "yyyy-MM-dd"));
-		selectScope.setEndDate(DateUtils.convertDate(orginfo.getpYear()+"12-31", "yyyy-MM-dd"));
+		selectScope.setStartDate(DateUtils.convertDate(orginfo.getpYear()+"-01-01", "yyyy-MM-dd"));
+		selectScope.setEndDate(DateUtils.convertDate(orginfo.getpYear()+"-12-31", "yyyy-MM-dd"));
 		this.insertInfo(selectScope);
 	}
 
@@ -197,8 +197,8 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 		qcScope.setpYear(orginfo.getpYear());
 		qcScope.setpYmd("P_YEAR");
 		qcScope.setQcScopeSubType("01");
-		qcScope.setStartDate(DateUtils.convertDate(orginfo.getpYear()+"01-01", "yyyy-MM-dd"));
-		qcScope.setEndDate(DateUtils.convertDate(orginfo.getpYear()+"12-31", "yyyy-MM-dd"));
+		qcScope.setStartDate(DateUtils.convertDate(orginfo.getpYear()+"-01-01", "yyyy-MM-dd"));
+		qcScope.setEndDate(DateUtils.convertDate(orginfo.getpYear()+"-12-31", "yyyy-MM-dd"));
 		this.insertInfo(qcScope);
 		return qcScope;
 	}
