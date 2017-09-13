@@ -614,6 +614,7 @@ public class DeptInfoController {
         if(constrDept.getSchedule().compareTo(new BigDecimal(0))==0){
             throw new ValidationException("完成度为0，请填写上报信息!");
         }
+        constrDept.setSchedule(constrDept.getSchedule().divide(new BigDecimal(100),2,BigDecimal.ROUND_HALF_UP));//将进度百分比转成小数格式
         if("10".equals(constrDept.getAuditFstate()) && constrDept.getSchedule().compareTo(new BigDecimal(100))==-1){//待审核
             throw new ValidationException("完成度小于100，无法提交改上报信息!");
         }
