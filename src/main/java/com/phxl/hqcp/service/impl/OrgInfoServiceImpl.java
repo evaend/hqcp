@@ -92,14 +92,14 @@ public class OrgInfoServiceImpl extends BaseService implements OrgInfoService{
 	@Override
 	public void addUpdateOrgInfo(OrgInfo orginfo, OrgInfo oldOrg) throws Exception {
 		if(oldOrg == null){
-			if(StringUtils.isNotBlank(orginfo.getTfAccessory())){
-				uploadAccessory(orginfo);
-			}
 			 //新增机构信息
 	        Long numMax = super.funcMax(OrgInfo.class, "orgId");//获取orgId字段的最大值
 	        numMax = numMax==null?(long)1:numMax+1;
 	        orginfo.setOrgId(numMax);
 	        orginfo.setFqun(PinyinUtil.getFirstSpell(orginfo.getOrgName()));
+			if(StringUtils.isNotBlank(orginfo.getTfAccessory())){
+				uploadAccessory(orginfo);
+			}		
 			this.insertInfo(orginfo);
 			//新增医院信息
 			makeHospitalInfo(orginfo);		
