@@ -113,7 +113,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 							formulaDetail.setTfRemark(formulaTemplateDetail.getTfRemark());
 							//添加   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
 							if (hospitalInfo!=null) {
-								if (i==1) {
+								if (formulaTemplateDetail.getIndexPCode().equals("05INDEX")) {
 									formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
 									formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
 									if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
@@ -124,7 +124,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 									}
 								}
 								//添加  医学工程人员业务培训率
-								if (i==2) {
+								if (formulaTemplateDetail.getIndexPCode().equals("06INDEX")) {
 									formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
 									formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
 									formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
@@ -283,7 +283,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 			formulaDetail.setTfRemark(formulaTemplateDetail.getTfRemark());
 			//添加   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
 			if (hospitalInfo!=null) {
-				if (i==1) {
+				if (formulaTemplateDetail.getIndexPCode().equals("05INDEX")) {
 					formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
 					formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
 					if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
@@ -294,7 +294,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 					}
 				}
 				//添加  医学工程人员业务培训率
-				if (i==2) {
+				if (formulaTemplateDetail.getIndexPCode().equals("06INDEX")) {
 					formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
 					formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
 					formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
