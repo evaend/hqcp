@@ -7,8 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.ArrayUtils;
@@ -24,6 +29,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -372,6 +378,21 @@ public class DeptInfoController {
         JsonElement pje = parser.parse(body);
         if(pje.isJsonObject()){
             JsonObject jo = pje.getAsJsonObject();
+            Set<Entry<String, JsonElement>> entrySet = jo.entrySet();
+            Set<String> userSet = new HashSet<String>();
+            Set<String> meetingSet = new HashSet<String>();
+            if(entrySet!=null && !entrySet.isEmpty()){
+                for (Iterator<Entry<String, JsonElement>> iter = entrySet.iterator(); iter.hasNext(); ){
+                    Entry<String, JsonElement> entry = iter.next();
+                    String key = entry.getKey();
+                    if(StringUtils.isNotBlank(key) && key.indexOf("fname")!=-1){
+                        userSet.add(key.substring(key.length()-1));
+                    }else if(StringUtils.isNotBlank(key) && key.indexOf("meetingName")!=-1){
+                        meetingSet.add(key.substring(key.length()-1));
+                    }
+                }
+            }
+            
             constrDept = JSONUtils.toBean(body, ConstrDept.class);
             Assert.notNull(constrDept, "科室上报的信息，不能为空!");
             //部门基本情况
@@ -515,32 +536,62 @@ public class DeptInfoController {
             if(deptWork!=null){
                 constrDept.setDeptWork(deptWork);
             }
-            if(constrDept.getUserCount()!=null && constrDept.getUserCount()>0){//循环取部门人员信息，并存入列表
+            if(userSet!=null && !userSet.isEmpty()){//循环取部门人员信息，并存入列表
                List<ConstrDeptUser> userList = new ArrayList<ConstrDeptUser>();
-               for(int i=0;i<constrDept.getUserCount();i++){
+               for(String i:userSet){
                    ConstrDeptUser deptUser = new ConstrDeptUser();
                    deptUser.setFname((jo.get("fname-"+i)==null || jo.get("fname-"+i).isJsonNull())?"":jo.get("fname-"+i).getAsString());
-                   deptUser.setGender((jo.get("gender-"+i)==null || jo.get("gender-"+i).isJsonNull())?"":jo.get("gender-"+i).getAsString());
-                   deptUser.setBirthChar((jo.get("birthChar-"+i)==null || jo.get("birthChar-"+i).isJsonNull())?"":jo.get("birthChar-"+i).getAsString());
-                   deptUser.setTechnicalTitlesA((jo.get("technicalTitlesA-"+i)==null || jo.get("technicalTitlesA-"+i).isJsonNull())?"":jo.get("technicalTitlesA-"+i).getAsString());
-                   deptUser.setTechnicalTitlesB((jo.get("technicalTitlesB-"+i)==null || jo.get("technicalTitlesB-"+i).isJsonNull())?"":jo.get("technicalTitlesB-"+i).getAsString());
+                   String gender = (jo.get("gender-"+i)==null || jo.get("gender-"+i).isJsonNull())?"":jo.get("gender-"+i).getAsString();
+                   if(StringUtils.isNotBlank(gender)){
+                       deptUser.setGender(deptInfoService.findDictCode("GENDER", gender));
+                   }
+                   String birthChar = (jo.get("birthChar-"+i)==null || jo.get("birthChar-"+i).isJsonNull())?"":jo.get("birthChar-"+i).getAsString();
+                   if(StringUtils.isNotBlank(birthChar)){
+                       deptUser.setBirthChar(deptInfoService.findDictCode("BIRTH_CHAR", birthChar));
+                   }
+                   JsonArray Jarray = (jo.get("technicalTitles-"+i)==null || jo.get("technicalTitles-"+i).isJsonNull())?null:jo.get("technicalTitles-"+i).getAsJsonArray();
+                   String technicalTitlesA = "";
+                   String technicalTitlesB = "";
+                   if(Jarray!=null && Jarray.size()>0){
+                       technicalTitlesA = Jarray.get(0).getAsString();
+                       technicalTitlesB = Jarray.get(1).getAsString();
+                   }
+                   if(StringUtils.isNotBlank(technicalTitlesA)){
+                       deptUser.setTechnicalTitlesA(deptInfoService.findDictCode("TECHNICAL_TITLES_A", technicalTitlesA));
+                   }
+                   if(StringUtils.isNotBlank(technicalTitlesB)){
+                       deptUser.setTechnicalTitlesB(deptInfoService.findDictCode("TECHNICAL_TITLES_B", technicalTitlesB));
+                   }
                    deptUser.setPostName((jo.get("postName-"+i)==null || jo.get("postName-"+i).isJsonNull())?"":jo.get("postName-"+i).getAsString());
                    deptUser.setPostAge((jo.get("postAge-"+i)==null || jo.get("postAge-"+i).isJsonNull())?null:jo.get("postAge-"+i).getAsShort());
-                   deptUser.setHighestEducation((jo.get("highestEducation-"+i)==null || jo.get("highestEducation-"+i).isJsonNull())?"":jo.get("highestEducation-"+i).getAsString());
-                   deptUser.setMajorName((jo.get("majorName-"+i)==null || jo.get("majorName-"+i).isJsonNull())?"":jo.get("majorName-"+i).getAsString());
+                   String highestEducation = (jo.get("highestEducation-"+i)==null || jo.get("highestEducation-"+i).isJsonNull())?"":jo.get("highestEducation-"+i).getAsString();
+                   if(StringUtils.isNotBlank(highestEducation)){
+                       deptUser.setHighestEducation(deptInfoService.findDictCode("XL", highestEducation));
+                   }
+                   String majorName = (jo.get("majorName-"+i)==null || jo.get("majorName-"+i).isJsonNull())?"":jo.get("majorName-"+i).getAsString();
+                   if(StringUtils.isNotBlank(majorName)){
+                       deptUser.setMajorName(deptInfoService.findDictCode("ZY", majorName));
+                   }
                    userList.add(deptUser);
                }
                if(userList!=null && !userList.isEmpty()){//将部门人员信息列表存入实体类中
                    constrDept.setUserList(userList);
                }
             }
-            if(constrDept.getMeetingCount()!=null && constrDept.getMeetingCount()>0){//循环取部门培训信息，并存入列表
+            if(meetingSet!=null && !meetingSet.isEmpty()){//循环取部门培训信息，并存入列表
                 List<ConstrDeptMeeting> meetingList = new ArrayList<ConstrDeptMeeting>();
-                for(int j=0;j<constrDept.getMeetingCount();j++){
+                for(String j:meetingSet){
                     ConstrDeptMeeting deptMeeting = new ConstrDeptMeeting();//
                     deptMeeting.setMeetingName((jo.get("meetingName-"+j)==null || jo.get("meetingName-"+j).isJsonNull())?"":jo.get("meetingName-"+j).getAsString());
-                    deptMeeting.setMeetingType((jo.get("meetingType-"+j)==null || jo.get("meetingType-"+j).isJsonNull())?"":jo.get("meetingType-"+j).getAsString());
-                    deptMeeting.setMeetingTime((jo.get("meetingTime-"+j)==null || jo.get("meetingTime-"+j).isJsonNull())?"":jo.get("meetingTime-"+j).getAsString());
+                    String meetingType = (jo.get("meetingType-"+j)==null || jo.get("meetingType-"+j).isJsonNull())?"":jo.get("meetingType-"+j).getAsString();
+                    if(StringUtils.isNotBlank(meetingType)){
+                        deptMeeting.setMeetingType(deptInfoService.findDictCode("HYLX", meetingType));
+                    }
+                    String meetingTime = (jo.get("meetingTime-"+j)==null || jo.get("meetingTime-"+j).isJsonNull())?"":jo.get("meetingTime-"+j).getAsString();
+                    if(StringUtils.isNotBlank(meetingTime)){
+                        meetingTime = meetingTime.substring(0, 10);
+                        deptMeeting.setMeetingTime(meetingTime);
+                    }
                     deptMeeting.setMeetingAddress((jo.get("meetingAddress-"+j)==null || jo.get("meetingAddress-"+j).isJsonNull())?"":jo.get("meetingAddress-"+j).getAsString());
                     deptMeeting.setMeetingSponsor((jo.get("meetingSponsor-"+j)==null || jo.get("meetingSponsor-"+j).isJsonNull())?"":jo.get("meetingSponsor-"+j).getAsString());
                     deptMeeting.setMeetingAllUserSum((jo.get("meetingAllUserSum-"+j)==null || jo.get("meetingAllUserSum-"+j).isJsonNull())?null:jo.get("meetingAllUserSum-"+j).getAsLong());

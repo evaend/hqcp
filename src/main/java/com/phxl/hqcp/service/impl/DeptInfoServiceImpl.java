@@ -27,6 +27,7 @@ import com.phxl.hqcp.dao.CallProcedureMapper;
 import com.phxl.hqcp.dao.ConstrDeptMapper;
 import com.phxl.hqcp.dao.QcScopeMapper;
 import com.phxl.hqcp.dao.SelectScopeMapper;
+import com.phxl.hqcp.dao.StaticDataMapper;
 import com.phxl.hqcp.entity.ConstrDept;
 import com.phxl.hqcp.entity.ConstrDeptCheckbox;
 import com.phxl.hqcp.entity.ConstrDeptInfo;
@@ -51,6 +52,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
     FormulaService formulaService;
     @Autowired
     ConstrDeptMapper constrDeptMapper;
+    @Autowired
+    StaticDataMapper staticDataMapper;
 
     @Override
     public List<Map<String, Object>> getPyearList(Pager pager) {
@@ -828,14 +831,38 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 					for(int i=0;i<users.size();i++){
 						deptUser = users.get(i);
 						resultMap.put("fname-"+i, deptUser.getFname());
-						resultMap.put("gender-"+i, deptUser.getGender());
-						resultMap.put("birthChar-"+i, deptUser.getBirthChar());
-						resultMap.put("technicalTitlesA-"+i, deptUser.getTechnicalTitlesA());
-						resultMap.put("technicalTitlesB-"+i, deptUser.getTechnicalTitlesB());
+						String gender = "";
+						if(StringUtils.isNotBlank(deptUser.getGender())){
+						    gender = staticDataMapper.findDictName("GENDER", deptUser.getGender());
+						}
+						resultMap.put("gender-"+i, gender);
+						String birthChar = "";
+                        if(StringUtils.isNotBlank(deptUser.getBirthChar())){
+                            birthChar = staticDataMapper.findDictName("BIRTH_CHAR", deptUser.getBirthChar());
+                        }
+						resultMap.put("birthChar-"+i, birthChar);
+						String technicalTitlesA = "";
+                        if(StringUtils.isNotBlank(deptUser.getTechnicalTitlesA())){
+                            technicalTitlesA = staticDataMapper.findDictName("TECHNICAL_TITLES_A", deptUser.getTechnicalTitlesA());
+                        }
+						String technicalTitlesB = "";
+                        if(StringUtils.isNotBlank(deptUser.getTechnicalTitlesB())){
+                            technicalTitlesB = staticDataMapper.findDictName("TECHNICAL_TITLES_B", deptUser.getTechnicalTitlesB());
+                        }
+                        String[] technicalTitles = {technicalTitlesA,technicalTitlesB};
+						resultMap.put("technicalTitles-"+i, technicalTitles);
 						resultMap.put("postName-"+i, deptUser.getPostName());
 						resultMap.put("postAge-"+i, deptUser.getPostAge());
-						resultMap.put("highestEducation-"+i, deptUser.getHighestEducation());
-						resultMap.put("majorName-"+i, deptUser.getMajorName());
+						String highestEducation = "";
+                        if(StringUtils.isNotBlank(deptUser.getHighestEducation())){
+                            highestEducation = staticDataMapper.findDictName("XL", deptUser.getHighestEducation());
+                        }
+						resultMap.put("highestEducation-"+i, highestEducation);
+						String majorName = "";
+                        if(StringUtils.isNotBlank(deptUser.getMajorName())){
+                            majorName = staticDataMapper.findDictName("ZY", deptUser.getMajorName());
+                        }
+						resultMap.put("majorName-"+i, majorName);
 					}
 				}
 				//部门培训
@@ -847,7 +874,11 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 					for(int j=0;j<meetings.size();j++){
 						deptMeeting = meetings.get(j);
 						resultMap.put("meetingName-"+j, deptMeeting.getMeetingName());
-						resultMap.put("meetingType-"+j, deptMeeting.getMeetingType());
+						String meetingType = "";
+                        if(StringUtils.isNotBlank(deptMeeting.getMeetingType())){
+                            meetingType = staticDataMapper.findDictName("HYLX", deptMeeting.getMeetingType());
+                        }
+						resultMap.put("meetingType-"+j, meetingType);
 						if(deptMeeting.getMeetingDate()!=null){
 							SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 							resultMap.put("meetingTime-"+j, sdf.format(deptMeeting.getMeetingDate()));
@@ -863,5 +894,11 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 		}
 		return resultMap;
 	}
+
+    @Override
+    public String findDictCode(String dictType, String dictName) {
+        String code = staticDataMapper.findDictCode(dictType, dictName);
+        return StringUtils.isBlank(code)?"":code;
+    }
 
 }
