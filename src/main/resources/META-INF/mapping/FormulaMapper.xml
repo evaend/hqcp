@@ -135,7 +135,7 @@
 			order by ymd desc
  	</select>
  	
- 	<!-- 查询质量指标列表 -->
+ 	<!-- 查询全部医院，某段时期的某个指标信息 -->
  	<select id="selectFormulaInfoList" resultMap="FormulaInfo" parameterType="com.phxl.core.base.entity.Pager">
  		select * from v_qc_score 
 			<![CDATA[ where ymd <= #{conditiions.ymd, jdbcType=DECIMAL} 

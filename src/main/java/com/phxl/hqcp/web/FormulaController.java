@@ -271,6 +271,119 @@ public class FormulaController {
 		return resultMap;
 	}
 	
+	
+	/**
+	 * 查询当前选择时间的医院机构的当前选择类型的公式明细，同省机构的平均值(按所选时间排序，选择哪个时间段，哪个排前面)
+	 * @param pYear 当前选择的时间（如2016下半年）
+	 * @param indexValue 当前选择类型（如医学工程人员配置水平）
+	 * @param page 当前页
+	 * @param pagesize 每页条数
+	 * @param request
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/selectAllFornla")
+	public Map<String, Object> selectAllFornla(
+			@RequestParam(value="pYear",required = false ) String pYear,
+			@RequestParam(value="indexValue",required = false ) String indexValue,
+			@RequestParam(value="page",required=false) Integer page,
+			@RequestParam(value="pagesize",required=false) Integer pagesize,
+			HttpServletRequest request) throws ValidationException{
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
+		if (StringUtils.isBlank(indexValue)) {
+			throw new ValidationException("指标类型不允许为空");
+		}
+		//返回的数据
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		Pager<Map<String, Object>> pager1 = new Pager<Map<String,Object>>(false);
+		pager1.setPageSize(pagesize == null ? 5 : pagesize);
+		pager1.setPageNum(page == null ? 1 : page);
+		pager1.addQueryParam("ymd", pYear);
+		pager1.addQueryParam("indexPCode", indexValue);
+		
+		//当前医院的以往指标信息 以及 同级、同省指标信息
+		List<Map<String, Object>> selectFormulaInfo = formulaService.selectFormulaInfoList(pager1);
+		
+		Map<String, Object> titleMap = new HashMap<String, Object>();
+		
+		if (selectFormulaInfo.size()<1) {
+			
+		}else {
+			titleMap.put("qcNameFz", selectFormulaInfo.get(0).get("qcNameFz"));
+			titleMap.put("qcNameFm", selectFormulaInfo.get(0).get("qcNameFm"));
+			titleMap.put("qcNameZb", selectFormulaInfo.get(0).get("qcNameZb"));
+		}
+		
+		//横坐标
+		Map<String, Object> xAxis = new HashMap<String, Object>();
+		//纵坐标
+		Map<String, Object> legend = new HashMap<String, Object>();
+		
+		String [] xAxisData = new String [selectFormulaInfo.size()];
+		String [] legendData = {titleMap.get("qcNameFz").toString(),"全省医院平均配置水平对比"};
+
+		//柱状图
+		String [] seriesDate = new String [selectFormulaInfo.size()];
+		
+		//线型（同级医院）
+		String [] seriesAll = new String [selectFormulaInfo.size()];
+				
+		for (int i = 0 ; i < selectFormulaInfo.size() ; i++) {
+			Map<String, Object> map2 = selectFormulaInfo.get(i);
+			//获取横坐标的值(医院名称)
+			xAxisData[i] = map2.get("fOrgName").toString();
+			seriesDate[i] = map2.get("indexValue").toString();
+			seriesAll[i] = map2.get("indexValueAll").toString();			
+		}
+		xAxis.put("data", xAxisData);
+		legend.put("data",legendData);
+		
+		Map<String, Object> itemStyle = new HashMap<String, Object>();
+		Map<String, Object> color = new HashMap<String, Object>();
+		color.put("color", "#bfbfbf");
+		itemStyle.put("normal", color);
+		
+		//时间（柱）
+		Map<String, Object> series1 = new HashMap<String, Object>();
+		series1.put("name",titleMap.get("qcNameFz"));
+		series1.put("type","bar");
+		series1.put("data",seriesDate);
+		series1.put("barMaxWidth","30px");
+		
+		//全省（线）
+		Map<String, Object> series3 = new HashMap<String, Object>();
+		series3.put("name","全省医院平均配置水平对比");
+		series3.put("type","line");
+		series3.put("data",seriesAll);
+		series3.put("showSymbol",false);
+		series3.put("itemStyle",itemStyle);
+		//值
+		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
+		series.add(series1);
+		series.add(series3);
+		
+		resultMap.put("xAxis", xAxis);
+		resultMap.put("legend", legend);
+		resultMap.put("series", series);
+		
+		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
+		pager.setPageSize(pagesize == null ? 5 : pagesize);
+		pager.setPageNum(page == null ? 1 : page);
+		pager.addQueryParam("ymd", pYear);
+		pager.addQueryParam("indexPCode", indexValue);
+
+		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
+		
+		pager.setRows(selectFormulaInfoList);
+		
+		resultMap.put("pager", pager);
+		resultMap.put("titleMap", titleMap);
+		return resultMap;
+	}
+	
 	/**
 	 * 导出质量指标详情
 	 * @param pYear 当前选择的时间（如2016下半年）
