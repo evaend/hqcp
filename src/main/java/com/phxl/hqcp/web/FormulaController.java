@@ -76,6 +76,12 @@ public class FormulaController {
 		if (pYear!=null) {
 			pager.addQueryParam("pYear", pYear.trim().substring(0, 4));
 		}
+		char c = pYear.trim().charAt(4);
+		if (c == '1') {
+			pager.addQueryParam("month", pYear.trim().substring(0, 4)+"-3-15");
+		}else{
+			pager.addQueryParam("month", pYear.trim().substring(0, 4)+"-9-15");
+		}
 		List<Map<String, Object>> list = formulaService.selectFormulaList(pager);
 		
 		//计算百分比
@@ -83,7 +89,8 @@ public class FormulaController {
 			double schedule = Double.valueOf(map.get("indexValue").toString()) / Double.valueOf(map.get("indexCount").toString());
 			map.put("schedule", schedule);
 			String month = map.get("startTime").toString().trim();
-			if (month.charAt(6) == 1 ) {
+			char m = month.charAt(6);
+			if (m == '1' ) {
 				map.put("pYearValue", map.get("pYear").toString().trim()+"1");
 				map.put("pYearText", map.get("pYear").toString().trim()+"上半年");
 			}else {
