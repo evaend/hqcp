@@ -146,7 +146,8 @@
  	
  	<!-- 查询当前机构，有没有质量上报信息 -->
  	<select id="selectFormulaIsNull" resultMap="BaseResultMap" parameterType="java.util.HashMap">
- 		select * from tb_formula where org_id = #{orgId}
+ 		select * from tb_formula where org_id = #{orgId} 
+ 		and p_year = #{pYear}
  	</select>
  
 </mapper>

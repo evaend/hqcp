@@ -483,7 +483,7 @@ public class FormulaController {
 	 * 添加质量上报信息
 	 * @param orgId 要上报的机构
 	 * @return
-	 */
+	 *//*
 	@ResponseBody
 	@RequestMapping("/insertForMula")
 	public String insertForMula(
@@ -499,5 +499,5 @@ public class FormulaController {
 		formulaService.insertForMula(orgId, createUserId, createUserName);
 		result = "success";
 		return result;
-	}
+	}*/
 }
