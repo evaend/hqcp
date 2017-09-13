@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,13 +61,13 @@ public class FormulaController {
 		pager.addQueryParam("orgName", orgName);
 		//设置审核状态参数
 		if (fstateType!=null) {
-			if (StringUtils.isBlank(auditFstate)) {
+			if (auditFstate==null) {
 				pager.addQueryParam("auditFstate", "20");
 			}else {
 				pager.addQueryParam("auditFstate", auditFstate);
 			}
 		}else{
-			if (StringUtils.isBlank(auditFstate)) {
+			if (auditFstate==null) {
 				pager.addQueryParam("auditFstate", "10");
 			}else {
 				pager.addQueryParam("auditFstate", auditFstate);
@@ -220,9 +221,9 @@ public class FormulaController {
 			}else{
 				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年";
 			}
-			seriesDate[i] = map2.get("indexValue").toString();
-			seriesLevel[i] = map2.get("indexValueLevel").toString();
-			seriesAll[i] = map2.get("indexValueAll").toString();			
+			seriesDate[i] = map2.get("indexValue")==null ? "0" : map2.get("indexValue").toString();
+			seriesLevel[i] = map2.get("indexValueLevel")==null ? "0" : map2.get("indexValueLevel").toString();
+			seriesAll[i] = map2.get("indexValueAll")==null ? "0" : map2.get("indexValueAll").toString();			
 		}
 		xAxis.put("data", xAxisData);
 		legend.put("data",legendData);

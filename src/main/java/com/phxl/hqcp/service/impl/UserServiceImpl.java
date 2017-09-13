@@ -297,11 +297,14 @@ public class UserServiceImpl extends BaseService implements UserService {
 	public void auditUserInfo(UserInfo userInfo) throws Exception {
 		if(AuditFstate.PASSED.equals(userInfo.getAuditFstate())){//审核通过，如果有机构的信息，需要填到机构表
 			OrgInfo orgInfo = this.find(OrgInfo.class, userInfo.getOrgId());
-			if(StringUtils.isNotBlank(userInfo.getAuditOrgCode())){
+			if(StringUtils.isNotBlank(userInfo.getAuditOrgCode()) 
+					&& StringUtils.isBlank(orgInfo.getAuditOrgCode())){
 				orgInfo.setOrgCode(userInfo.getAuditOrgCode());
+				orgInfo.setAuditFstate(AuditFstate.PASSED);
 				this.updateInfo(orgInfo);
 			}
-			if(StringUtils.isNotBlank(userInfo.getAuditTfAccessory())){
+			if(StringUtils.isNotBlank(userInfo.getAuditTfAccessory())
+					&& StringUtils.isBlank(orgInfo.getAuditTfAccessory())){
 				String var0 =  String.valueOf(userInfo.getOrgId());
 				String timestamp = DateUtils.format(new Date(), "yyMMddHHmmssSSS");
 				//定位存储路径
@@ -313,10 +316,12 @@ public class UserServiceImpl extends BaseService implements UserService {
 				if(StringUtils.isNotBlank(orgInfo.getTfAccessory())){
 					FTPUtils.deleteFile(orgInfo.getTfAccessory());
 				}
+				String prefix=userInfo.getAuditTfAccessory().substring(userInfo.getAuditTfAccessory().lastIndexOf("."));
 				//复制文件
-				FTPUtils.copyFileRemote(userInfo.getAuditTfAccessory(), filePath.toString());
+				FTPUtils.copyFileRemote(userInfo.getAuditTfAccessory(), filePath.toString()+prefix);
 				//确定文件保存位置
-				orgInfo.setTfAccessory(filePath.toString());
+				orgInfo.setTfAccessory(filePath.toString()+prefix);
+				orgInfo.setAuditFstate(AuditFstate.PASSED);
 				this.updateInfo(orgInfo);
 			}
 		}

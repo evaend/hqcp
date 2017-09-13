@@ -194,11 +194,13 @@ public class OrgInfoController{
     @RequestMapping("/findOrgs")
 	@ResponseBody
 	public List<Map<String, Object>> findOrgs(String searchName, String orgType,
+											  String orgId,
 									 			   HttpServletRequest request) {
 		request.setAttribute(ResResultBindingInterceptor.IGNORE_STD_RESULT, true);//忽略标准结果
 		Pager<Map<String, Object>> pager = new Pager<Map<String, Object>>(false);
 		
 		pager.addQueryParam("searchName", searchName);
+		pager.addQueryParam("orgId", orgId);
 		pager.addQueryParam("orgTypes", StringUtils.isBlank(orgType) ? new String[]{OrgType.HOSPITAL}:new String[]{orgType});
 		
 		return orgInfoService.findOrgs(pager);

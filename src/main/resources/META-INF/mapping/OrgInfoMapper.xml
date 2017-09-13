@@ -162,6 +162,9 @@
 						#{conditiions.orgTypes[${index}], jdbcType=VARCHAR}
 					</foreach>
 				</if>
+				 <if test="conditiions.orgId != null and conditiions.orgId !=''">
+				  	and o.ORG_ID = #{conditiions.orgId, jdbcType=DECIMAL}
+			 	 </if>
 				<if test="conditiions.searchName!=null and conditiions.searchName!=''">
 					and regexp_like(o.ORG_NAME, #{conditiions.searchName, jdbcType=VARCHAR})
 				</if>
