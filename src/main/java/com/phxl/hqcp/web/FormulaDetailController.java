@@ -30,7 +30,6 @@ import com.phxl.hqcp.entity.Formula;
 import com.phxl.hqcp.entity.FormulaDetail;
 import com.phxl.hqcp.service.FormulaDetailService;
 import com.phxl.hqcp.service.FormulaService;
-import com.sun.tools.corba.se.idl.constExpr.And;
 
 @Controller
 @RequestMapping("/formulaDetailController")

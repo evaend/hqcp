@@ -3,6 +3,8 @@ package com.phxl.hqcp.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.phxl.core.base.entity.Pager;
 import com.phxl.core.base.exception.ServiceException;
 import com.phxl.core.base.service.IBaseService;
@@ -232,4 +234,18 @@ public interface DeptInfoService extends IBaseService{
      * @throws
      */
     Map<String, Object> searchConstrDept(Pager pager);
+    
+    /**
+     * 
+     * findDictCode:(根据字典类型和名称，查询CODE). <br/> 
+     * 
+     * @Title: findDictCode
+     * @Description: TODO
+     * @param dictType
+     * @param dictName
+     * @return    设定参数
+     * @return String    返回类型
+     * @throws
+     */
+    String findDictCode(String dictType, String dictName);
 }

@@ -65,4 +65,9 @@ public interface StaticDataMapper {
 	 */
 	String[] filterNoExistCodes(@Param("dictCode")String dictName, @Param("names")Object[] names);
 	
+	/**
+     * 根据字典类型和名称，查询CODE
+     */
+	String findDictCode(@Param("dictType")String dictType, @Param("dictName")String dictName);
+	
 }

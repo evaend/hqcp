@@ -139,5 +139,14 @@
 		where 
 		cn.TF_CLO = #{dictType, jdbcType=VARCHAR} and cd.TF_CLO_CODE = #{dictCode, jdbcType=VARCHAR}
 	</select>
+	
+	<!-- 根据字典类型和名称，查询CODE -->
+	<select id="findDictCode" resultType="string">
+		select cd.TF_CLO_CODE
+	    from td_static_info cn
+	    join td_static_data cd ON cn.STATIC_ID=cd.STATIC_ID
+	    where 
+	    cn.TF_CLO = #{dictType, jdbcType=VARCHAR} and cd.TF_CLO_NAME = #{dictName, jdbcType=VARCHAR}
+	</select>
 
 </mapper>
