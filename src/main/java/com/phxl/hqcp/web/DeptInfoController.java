@@ -38,6 +38,7 @@ import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.interceptor.ResResultBindingInterceptor;
 import com.phxl.core.base.util.JSONUtils;
 import com.phxl.core.base.util.LocalAssert;
+import com.phxl.hqcp.common.constant.CustomConst.AuditFstate;
 import com.phxl.hqcp.common.constant.CustomConst.DeptParentName;
 import com.phxl.hqcp.common.constant.CustomConst.DeptTypeName;
 import com.phxl.hqcp.common.constant.CustomConst.DeptWorkOther;
@@ -356,7 +357,7 @@ public class DeptInfoController {
 	 */
 	@ResponseBody
     @RequestMapping("/insertEditConstrDept")
-    public void insertEditConstrDept(
+    public String insertEditConstrDept(
             HttpServletRequest request,
             HttpSession session) throws Exception{
 
@@ -406,7 +407,7 @@ public class DeptInfoController {
                 }else if("3".equals(constrDept.getDeptTypeName())){
                     deptInfo.setDeptTypeName(DeptTypeName.ZU);
                 }else{
-                    deptInfo.setDeptTypeName(constrDept.getDeptTypeOther());
+                    deptInfo.setDeptTypeName(constrDept.getDeptTypeNameOther());
                 }
             }
             if(StringUtils.isNotBlank(constrDept.getDeptParentName())){//上级管理部门
@@ -419,7 +420,7 @@ public class DeptInfoController {
                 }else if("4".equals(constrDept.getDeptParentName())){
                     deptInfo.setDeptParentName(DeptParentName.DL);
                 }else{
-                    deptInfo.setDeptParentName(constrDept.getDeptParentOther());
+                    deptInfo.setDeptParentName(constrDept.getDeptParentNameOther());
                 }
             }
             if(constrDept.getWorkScope()!=null && constrDept.getWorkScope().length>0){//部门业务管理范围
@@ -441,6 +442,7 @@ public class DeptInfoController {
                     }else if("6".equals(val)){
                         scopeMap.put("workScopeName", DeptWorkScope.ZW);
                     }else{
+                        scopeMap.put("workScopeValue", "7");
                         scopeMap.put("workScopeName", constrDept.getWorkScopeOther());
                     }
                     workScope.add(scopeMap);
@@ -525,6 +527,7 @@ public class DeptInfoController {
                     }else if("5".equals(val)){
                         logisticsTypeMap.put("logisticsTypeName", LogisticsType.EJKG);
                     }else{
+                        logisticsTypeMap.put("logisticsTypeValue", "6");
                         logisticsTypeMap.put("logisticsTypeName", constrDept.getLogisticsTypeOther());
                     }
                     logisticsTypeList.add(logisticsTypeMap);
@@ -611,8 +614,9 @@ public class DeptInfoController {
         if(constrDept.getSchedule().compareTo(new BigDecimal(0))==0){
             throw new ValidationException("完成度为0，请填写上报信息!");
         }
-        if(StringUtils.isNotBlank(constrDept.getAuditFstate()) && ("10".equals(constrDept.getAuditFstate()) || "20".equals(constrDept.getAuditFstate()))){
-            throw new ValidationException("已提交过的数据不可编辑!");
+        constrDept.setSchedule(constrDept.getSchedule().divide(new BigDecimal(100),2,BigDecimal.ROUND_HALF_UP));//将进度百分比转成小数格式
+        if("10".equals(constrDept.getAuditFstate()) && constrDept.getSchedule().compareTo(new BigDecimal(100))==-1){//待审核
+            throw new ValidationException("完成度小于100，无法提交改上报信息!");
         }
         if(StringUtils.isBlank(constrDept.getConstrDeptGuid())){
             //新增科室上报,验证当前机构同一个上报周期是否已经上报过数据
@@ -625,6 +629,11 @@ public class DeptInfoController {
             if(list!=null && !list.isEmpty()){//当前机构同一个上报周期已经上报过数据,则不可重复上报
                 throw new ValidationException("改机构已上报过"+constrDept.getpYear()+"年的数据，不可重复上报!");
             }
+        }else{
+            ConstrDept con = deptInfoService.find(ConstrDept.class, constrDept.getConstrDeptGuid());
+            if(StringUtils.isNotBlank(con.getAuditFstate()) && ("10".equals(con.getAuditFstate()) || "20".equals(con.getAuditFstate()))){
+                throw new ValidationException("已提交过的数据不可编辑!");
+            }
         }
         if(constrDept.getMeetingList()!=null && !constrDept.getMeetingList().isEmpty()){
             for(ConstrDeptMeeting meeting:constrDept.getMeetingList()){
@@ -634,7 +643,7 @@ public class DeptInfoController {
             }
         }
         //新增或编辑科室上报信息
-        deptInfoService.insertEditConstrDept(constrDept,sessionUserId,sessionUserName,sessionOrgId);
+        return deptInfoService.insertEditConstrDept(constrDept,sessionUserId,sessionUserName,sessionOrgId);
     }
 
 	/**
@@ -694,9 +703,11 @@ public class DeptInfoController {
             pager.addQueryParam("pYear", pYear);
         }
         if (StringUtils.isNotBlank(fstate)) {
-            pager.addQueryParam("fstate", fstate);
+            pager.addQueryParam("fstate", new String[]{fstate});
         }else{
-            pager.addQueryParam("fstate", "00,10,20");
+            pager.addQueryParam("fstate", new String[]{
+                AuditFstate.DRAFT,AuditFstate.AWAIT_AUDIT,AuditFstate.PASSED
+            });
         }
         pager.addQueryParam("qcScopeSubType", "01");
         pager.addQueryParam("pYmd", "P_YEAR");

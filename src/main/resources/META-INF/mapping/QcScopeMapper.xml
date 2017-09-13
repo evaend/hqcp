@@ -37,20 +37,23 @@
 	
 	<!-- 科室信息审核列表 -->
 	<select id="searchConstrDeptAuditList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select cd.constr_dept_guid "constrDeptGuid",cd.p_year "pYear",o.org_name "orgName",d.dept_name "deptName",o.lxr "lxr",o.lxdh "lxdh",cd.audit_fstate "auditFstate",
-		       (CASE WHEN cd.schedule is null THEN 0 ELSE cd.schedule END) "schedule" 
-		from TD_QC_SCOPE qc,TB_CONSTR_DEPT cd
-		left join td_org_info o on o.org_id = cd.org_id
-		left join tb_constr_dept_info d on d.constr_dept_guid = cd.constr_dept_guid 
-		where qc.org_id = cd.org_id and qc.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and qc.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR} and qc.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
-		and qc.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} and qc.qc_scope_sub_type = #{conditiions.qcScopeSubType, jdbcType=VARCHAR} and cd.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR} and cd.p_year = #{conditiions.pYear, jdbcType=VARCHAR} 
-		and cd.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR}
+		select cd.qc_org_id,cd.org_id,cd.constr_dept_guid "constrDeptGuid",cd.p_year "pYear",o.org_name "orgName",d.dept_name "deptName",o.lxr "lxr",o.lxdh "lxdh",cd.audit_fstate "auditFstate",
+           (CASE WHEN cd.schedule is null THEN 0 ELSE cd.schedule END) "schedule" 
+	    from TD_QC_SCOPE qc join TB_CONSTR_DEPT cd on qc.qc_org_id = cd.qc_org_id and qc.org_id = cd.org_id
+	    left join td_org_info o on o.org_id = cd.org_id
+	    left join tb_constr_dept_info d on d.constr_dept_guid = cd.constr_dept_guid
+	    where qc.qc_org_id = #{conditiions.orgId, jdbcType=DECIMAL} and qc.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR} and qc.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+	    and qc.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR} and qc.qc_scope_sub_type = #{conditiions.qcScopeSubType, jdbcType=VARCHAR} and cd.qc_scope_type = #{conditiions.qcScopeType, jdbcType=VARCHAR} and cd.p_year = #{conditiions.pYear, jdbcType=VARCHAR} 
+	    and cd.p_ymd = #{conditiions.pYmd, jdbcType=VARCHAR}
 		<if test="conditiions!=null and conditiions.orgName != null and conditiions.orgName != ''">
 		  and regexp_like(o.org_name, #{conditiions.orgName,jdbcType=VARCHAR})
 	    </if>
-	    <if test="conditiions!=null and conditiions.fstate != null and conditiions.fstate != ''">
-		  and cd.audit_fstate in (#{conditiions.fstate,jdbcType=VARCHAR})
-	    </if>
+	    <if test="conditiions!=null and conditiions.fstate!=null and conditiions.fstate.length>0">
+						and cd.audit_fstate in
+						<foreach collection="conditiions.fstate" index="index" open="(" close=")" separator=",">
+							#{conditiions.fstate[${index}], jdbcType=VARCHAR}
+						</foreach>
+		</if>
 	</select>
 	
 	<!-- 按年度查询监管机构下的机构总数、三甲机构数、二甲机构数、及同比  备注：,目前只支持单机构，不支持多机构 -->

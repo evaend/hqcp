@@ -80,22 +80,31 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
             deptOrg.setpYear((String)pager.getQueryParam("pYear"));
             deptOrg.setpYmd("P_YEAR");
             List<ConstrDeptOrg> orgList = super.searchList(deptOrg);//根据监管机构、上报年限查询科室机构信息
-            if(orgList==null || orgList.isEmpty()){
-                //若查询不到信息，则调用存储过程
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("qcOrgId",pager.getQueryParam("orgId"));//申请单库房id
-                params.put("pYear", pager.getQueryParam("pYear"));
-                params.put("pYmd", "P_YEAR");
-                callProcedureMapper.SP_DEPT_ORG(params);
-                List<Map> cursorList1 = params.get("ret_cursor") == null ? null : (List<Map>)params.get("ret_cursor");
-                if(cursorList1 != null && !cursorList1.isEmpty()){
-                    Map map = cursorList1.get(0);
-                    Integer ret = map.get("RET") == null ? 0 :Integer.parseInt( map.get("RET").toString());
-                    if(ret > 0){
-                        String error = map.get("ERROR") == null ? "" : (String)map.get("ERROR");
-                    }else{
-                        String error1 = map.get("ERROR") == null ? "" : (String)map.get("ERROR");
-                        throw new ServiceException(error1);
+            if(orgList!=null && !orgList.isEmpty()){
+                Boolean msg = false;
+                for(ConstrDeptOrg deptOrginfo:orgList){
+                    if(deptOrginfo!=null && StringUtils.isBlank(deptOrginfo.getConstrDeptGuid())){
+                        msg = true;
+                        break;
+                    }
+                }
+                if(msg){
+                    //若查询不到信息，则调用存储过程
+                    Map<String, Object> params = new HashMap<String, Object>();
+                    params.put("qcOrgId",pager.getQueryParam("orgId"));//申请单库房id
+                    params.put("pYear", pager.getQueryParam("pYear"));
+                    params.put("pYmd", "P_YEAR");
+                    callProcedureMapper.SP_DEPT_ORG(params);
+                    List<Map> cursorList1 = params.get("ret_cursor") == null ? null : (List<Map>)params.get("ret_cursor");
+                    if(cursorList1 != null && !cursorList1.isEmpty()){
+                        Map map = cursorList1.get(0);
+                        Integer ret = map.get("RET") == null ? 0 :Integer.parseInt( map.get("RET").toString());
+                        if(ret > 0){
+                            String error = map.get("ERROR") == null ? "" : (String)map.get("ERROR");
+                        }else{
+                            String error1 = map.get("ERROR") == null ? "" : (String)map.get("ERROR");
+                            throw new ServiceException(error1);
+                        }
                     }
                 }
             }
@@ -104,7 +113,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
     }
 
     @Override
-    public void insertEditConstrDept(ConstrDept constrDept, String sessionUserId, String sessionUserName, Long sessionOrgId) throws Exception {
+    public String insertEditConstrDept(ConstrDept constrDept, String sessionUserId, String sessionUserName, Long sessionOrgId) throws Exception {
         Assert.notNull(constrDept, "请填写科室上报信息!");
         LocalAssert.notBlank(constrDept.getpYear(), "请选择上报周期");
         LocalAssert.notBlank(constrDept.getAuditFstate(), "上报信息状态，不能为空");
@@ -214,6 +223,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         if(constrDept.getMeetingList()!=null && !constrDept.getMeetingList().isEmpty()){
             insertConstrDeptMeeting(constrDept);
         }
+        return constrDept.getConstrDeptGuid();
     }
 
     private void insertConstrDeptInfo(ConstrDept constrDept) throws Exception {
@@ -756,8 +766,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	                }else if(DeptTypeName.ZU.equals((String)resultMap.get("deptTypeName"))){
 	                	resultMap.put("deptTypeName", "3");
 	                }else{
-	                    resultMap.put("deptTypeOther", (String)resultMap.get("deptTypeName"));
-	                	resultMap.put("deptTypeName", "4");
+	                    resultMap.put("deptTypeNameOther", (String)resultMap.get("deptTypeName"));
+	                	resultMap.put("deptTypeName", "其他");
 	                }
 				}
 				if(resultMap.get("deptParentName")!=null && StringUtils.isNotBlank((String)resultMap.get("deptParentName"))){//上级管理部门
@@ -770,8 +780,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 	                }else if(DeptParentName.DL.equals((String)resultMap.get("deptParentName"))){
 	                	resultMap.put("deptParentName", "4");
 	                }else{
-	                    resultMap.put("deptParentOther", (String)resultMap.get("deptParentName"));
-	                	resultMap.put("deptParentName", "5");
+	                    resultMap.put("deptParentNameOther", (String)resultMap.get("deptParentName"));
+	                	resultMap.put("deptParentName", "其他");
 	                }
 				}
 				//部门业务管理范围、部门承担的其它工作
@@ -782,9 +792,11 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 					for(Map<String, Object> infoMap:infoList){
 						if(infoMap!=null && infoMap.get("FSORT")!=null && StringUtils.isNotBlank(infoMap.get("FSORT").toString())){
 							if(infoMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_INFO.DEPT_WORK_SCOPE".equals(infoMap.get("CHECKBOX_TYPE").toString())){
-								workScope.add(infoMap.get("FSORT").toString());
 								if("7".equals(infoMap.get("FSORT").toString())){
+								    workScope.add("其他");
 									resultMap.put("workScopeOther", infoMap.get("TF_VALUE"));
+								}else{
+								    workScope.add(infoMap.get("FSORT").toString());
 								}
 							}
 							if(infoMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_INFO.DEPT_WORK_OTHER".equals(infoMap.get("CHECKBOX_TYPE").toString())){
@@ -812,9 +824,11 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 								logisticsScope.add(workMap.get("FSORT").toString());
 							}
 							if(workMap.get("CHECKBOX_TYPE")!=null && "TB_CONSTR_DEPT_WORK.LOGISTICS_TYPE".equals(workMap.get("CHECKBOX_TYPE").toString())){
-								logisticsType.add(workMap.get("FSORT").toString());
 								if("6".equals(workMap.get("FSORT").toString())){
+								    logisticsType.add("其他");
 									resultMap.put("logisticsTypeOther", workMap.get("TF_VALUE"));
+								}else{
+								    logisticsType.add(workMap.get("FSORT").toString());
 								}
 							}
 						}
