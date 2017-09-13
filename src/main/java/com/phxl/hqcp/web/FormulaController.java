@@ -82,6 +82,14 @@ public class FormulaController {
 		for (Map<String, Object> map : list) {
 			double schedule = Double.valueOf(map.get("indexValue").toString()) / Double.valueOf(map.get("indexCount").toString());
 			map.put("schedule", schedule);
+			String month = map.get("startTime").toString().trim();
+			if (month.charAt(5) == 1 ) {
+				map.put("pYearValue", map.get("pYear").toString().trim()+"1");
+				map.put("pYearText", map.get("pYear").toString().trim()+"上半年");
+			}else {
+				map.put("pYearValue", map.get("pYear").toString().trim()+"2");
+				map.put("pYearText", map.get("pYear").toString().trim()+"下半年");
+			}
 		}
 		pager.setRows(list);
 		return pager;
