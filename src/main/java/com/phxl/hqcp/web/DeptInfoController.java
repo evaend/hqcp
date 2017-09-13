@@ -575,6 +575,13 @@ public class DeptInfoController {
                 throw new ValidationException("改机构已上报过"+constrDept.getpYear()+"年的数据，不可重复上报!");
             }
         }
+        if(constrDept.getMeetingList()!=null && !constrDept.getMeetingList().isEmpty()){
+            for(ConstrDeptMeeting meeting:constrDept.getMeetingList()){
+                if(meeting!=null && StringUtils.isNotBlank(meeting.getMeetingTime()) && !constrDept.getpYear().equals(meeting.getMeetingTime().substring(0, 4))){
+                    throw new ValidationException("培训时间不在上报周期内，请重新填写!");
+                }
+            }
+        }
         //新增或编辑科室上报信息
         deptInfoService.insertEditConstrDept(constrDept,sessionUserId,sessionUserName,sessionOrgId);
     }
