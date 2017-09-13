@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.phxl.core.base.entity.Pager;
+import com.phxl.hqcp.entity.Formula;
 
 public interface FormulaMapper {
 	//查询指标信息审核列表
@@ -25,5 +26,5 @@ public interface FormulaMapper {
 	List<Map<String, Object>> selectFormulaInfoList(Pager<Map<String, Object>> pager);
 	
 	//查询当前机构，有没有质量上报信息
-	List<Map<String, Object>> selectFormulaIsNull(Map<String, Object> map);
+	List<Formula> selectFormulaIsNull(Map<String, Object> map);
 }

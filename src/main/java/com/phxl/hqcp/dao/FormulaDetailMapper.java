@@ -13,4 +13,7 @@ public interface FormulaDetailMapper {
 	
 	//质量上报
 	void updateFormulaDetail(Map<String, Object> map);
+	
+	//查询质量上报明细列表
+	List<FormulaDetail> selectFormulaDetailList(String indexGuid);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.phxl.core.base.entity.Pager;
+import com.phxl.core.base.exception.ValidationException;
 import com.phxl.core.base.service.IBaseService;
 
 public interface FormulaService extends IBaseService{
@@ -24,4 +25,7 @@ public interface FormulaService extends IBaseService{
 	
 	//查询质量指标列表
 	List<Map<String, Object>> selectFormulaInfoList(Pager<Map<String, Object>> pager);
+	
+	//添加质量上报信息
+	void insertFormula(String pYear,String orgId)throws ValidationException;
 }

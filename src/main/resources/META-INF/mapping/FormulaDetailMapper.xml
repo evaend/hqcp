@@ -68,6 +68,12 @@
 		order by tb_formula_detail.fsort 
   </select>
   
+  
+  <!-- 查询质量上报明细列表 -->
+  <select id="selectFormulaDetailList" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from tb_formula_detail where index_guid = '${parameter}'
+  </select>
+  
   <update id="updateFormulaDetail" parameterType="java.util.HashMap">
   	 update tb_formula_detail set numerator_value = #{numeratorValue} , 
 	   denominator_value = #{denominatorValue} , 

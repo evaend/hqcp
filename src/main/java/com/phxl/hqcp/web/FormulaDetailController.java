@@ -30,6 +30,7 @@ import com.phxl.hqcp.entity.Formula;
 import com.phxl.hqcp.entity.FormulaDetail;
 import com.phxl.hqcp.service.FormulaDetailService;
 import com.phxl.hqcp.service.FormulaService;
+import com.sun.tools.corba.se.idl.constExpr.And;
 
 @Controller
 @RequestMapping("/formulaDetailController")
@@ -87,8 +88,14 @@ public class FormulaDetailController {
 			pager.addQueryParam("orgId", orgId);
 		}
 		
-		
 		List<Map<String, Object>> list = formulaDetailService.selectFormulaDetail(pager);
+		
+		if (list != null && list.size() > 0) {
+			
+		}else {
+			formulaService.insertFormula(pYear, orgId);
+			list = formulaDetailService.selectFormulaDetail(pager);
+		}
 		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String,Object>>();
 		
@@ -102,29 +109,29 @@ public class FormulaDetailController {
 			}
 			Integer fsort = Integer.valueOf(map.get("fsort").toString());
 			String title = map.get("indexDefine").toString();
-			String indexDetailGuid = map.get("indexDetailGuid").toString();
+			String indexDetailGuid = map.get("indexDetailGuid")==null ? "" : map.get("indexDetailGuid").toString();
 			String [] tips = {"定义："+map.get("indexDefine") , "意义："+map.get("indexMeaning"),
 					"公式："+map.get("indexHelp")};
 
 			Map<String, Object> map1 = new HashMap<String, Object>();
-			map1.put("label", map.get("numberName").toString());
-			map1.put("value", map.get("numeratorValue").toString());
+			map1.put("label",map.get("numberName")==null ? "" :  map.get("numberName").toString());
+			map1.put("value",map.get("numeratorValue")==null ? "" : map.get("numeratorValue").toString());
 			map1.put("required", false);
-			map1.put("key",map.get("numeratorPCode").toString());
+			map1.put("key",map.get("numeratorPCode")==null ? "" :map.get("numeratorPCode").toString());
 			map1.put("readonly",flag);
 			
 			Map<String, Object> map2 = new HashMap<String, Object>();
-			map2.put("label", map.get("denominatorName").toString());
-			map2.put("value", map.get("denominatorValue").toString());
-			map2.put("required", false);
-			map2.put("key",map.get("denominatorPCode").toString());
+			map2.put("label",map.get("denominatorName")==null ? "" : map.get("denominatorName").toString());
+			map2.put("value",map.get("denominatorValue")==null ? "" : map.get("denominatorValue").toString());
+			map2.put("required",map.get("numberName")==null ? "" : false);
+			map2.put("key",map.get("denominatorPCode")==null ? "" : map.get("denominatorPCode").toString());
 			map2.put("readonly",flag);
 			
 			Map<String, Object> map3 = new HashMap<String, Object>();
-			map3.put("label", map.get("indexName").toString());
-			map3.put("value", map.get("indexValue").toString());
+			map3.put("label",map.get("indexName")==null ? "" : map.get("indexName").toString());
+			map3.put("value",map.get("indexValue")==null ? "" : map.get("indexValue").toString());
 			map3.put("required", false);
-			map3.put("key",map.get("indexPCode").toString());
+			map3.put("key",map.get("indexPCode")==null ? "" : map.get("indexPCode").toString());
 			map3.put("readonly",flag);
 			
 			List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();

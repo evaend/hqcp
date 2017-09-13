@@ -17,8 +17,13 @@
   </sql>
   
   <!-- 查询所有质量上报模板 -->
-  <select id="selectAllFormulaTemplate" resultMap="BaseResultMap">
+  <select id="selectAllFormulaTemplate" resultMap="BaseResultMap" parameterType="java.util.HashMap">
   	select * from tb_formula_template
+  	<if test="month != null and month !=''">
+  		<![CDATA[ where start_date <= 
+					to_date(#{month, jdbcType=VARCHAR},'yyyy-MM-dd') ]]>
+				and end_date >= to_date(#{month, jdbcType=VARCHAR},'yyyy-MM-dd' )
+  	</if>
   </select>
   
 </mapper>

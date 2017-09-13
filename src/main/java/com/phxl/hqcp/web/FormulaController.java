@@ -453,7 +453,7 @@ public class FormulaController {
 		String fileName = nowDay + "-质量指标详情";
 		Map<String, String> format = new HashMap<String, String>();
 		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-		for(Object detail: selectFormulaInfoList){
+		for(Map<String, Object> detail: selectFormulaInfoList){
 			Map<String, Object> r = new HashMap<String, Object>();
 			Map<String, Object> entity = (Map<String, Object>) detail;
 			r.put("pYear", entity.get("pYear")==null ? "" : entity.get("pYear").toString());  
@@ -473,7 +473,7 @@ public class FormulaController {
 				+ ",时间：,"+ date
 				);
 		
-		ExportUtil.exportExcel(response, fieldName, dataList, format, "汇 总 单 详 情", conditionBefore,
+		ExportUtil.exportExcel(response, fieldName, dataList, format, "质 控 列 表 详 情", conditionBefore,
 				null, fileName, ApplyDetailExcelMap);	
 		
 	}

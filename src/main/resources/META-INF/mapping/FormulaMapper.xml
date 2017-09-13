@@ -54,7 +54,6 @@
 			        "indexCount"
 			from tb_formula join td_org_info on 
 			(tb_formula.org_id = td_org_info.org_id)
-      
 	      <where>
 			<if test="conditiions.orgName!=null and conditiions.orgName!=''">
 				<![CDATA[ and regexp_like(td_org_info.org_name, #{conditiions.orgName, jdbcType=VARCHAR}) ]]>
@@ -62,8 +61,10 @@
 			<if test="conditiions.auditFstate!=null and conditiions.auditFstate!=''">
 				and tb_formula.audit_fstate = #{conditiions.auditFstate, jdbcType=VARCHAR}
 			</if>
-			<if test="conditiions.pYear!=null and conditiions.pYear!=''">
-				and tb_formula.p_year = #{conditiions.pYear, jdbcType=VARCHAR}
+			<if test="conditiions.month!=null and conditiions.month!=''">
+				<![CDATA[ and tb_formula.start_time <= 
+					to_date(#{conditiions.month, jdbcType=VARCHAR},'yyyy-MM-dd') ]]>
+				and tb_formula.end_time >= to_date(#{conditiions.month, jdbcType=VARCHAR},'yyyy-MM-dd' )
 			</if>
 		  </where>
  	</select>
@@ -72,8 +73,8 @@
 	<select id="selectHospitalInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 		select staff_sum "staffSum" ,plan_bed_sum "planBedSum"
 			,(select sum(meeting_dept_user_sum ) from tb_constr_dept_meeting
-			where meeting_date > to_date(#{startDate},'yyyy-MM-dd')
-			and meeting_date >= to_date(#{endDate},'yyyy-MM-dd')) "meetingDeptUserSum"
+			where meeting_date > #{startDate}
+			and meeting_date >= #{endDate}) "meetingDeptUserSum"
 			from tb_constr_dept_org where 
 			constr_dept_guid = 
 			(select constr_dept_guid from 
@@ -144,7 +145,7 @@
  	</select>
  	
  	<!-- 查询当前机构，有没有质量上报信息 -->
- 	<select id="selectFormulaIsNull" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+ 	<select id="selectFormulaIsNull" resultMap="FormulaInfo" parameterType="java.util.HashMap">
  		select * from tb_formula where org_id = #{orgId}
  	</select>
  
