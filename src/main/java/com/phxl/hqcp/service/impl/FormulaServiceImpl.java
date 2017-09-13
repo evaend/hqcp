@@ -112,23 +112,26 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 							formulaDetail.setGroupSort(formulaTemplateDetail.getGroupSort());
 							formulaDetail.setTfRemark(formulaTemplateDetail.getTfRemark());
 							//添加   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
-							if (i==1) {
-								formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
-								formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-								if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
-									formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
-										Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-								}else {
-									formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+							if (hospitalInfo!=null) {
+								if (i==1) {
+									formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+									formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+									if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+										formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+											Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
+									}else {
+										formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+									}
+								}
+								//添加  医学工程人员业务培训率
+								if (i==2) {
+									formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
+									formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
+									formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
+											Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
 								}
 							}
-							//添加  医学工程人员业务培训率
-							if (i==2) {
-								formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-								formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-										Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
-							}
+							
 							//添加质量上报明细
 							insertInfo(formulaDetail);
 						}
@@ -157,25 +160,27 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 					for (int i = 0; i < FormulaDetailList.size(); i++) {
 						//模板明细
 						FormulaDetail formulaDetail = FormulaDetailList.get(i);
-						
-						//修改   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
-						if (formulaDetail.getIndexPCode().equals("05INDEX")) {
-							formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
-							formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-							if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
-								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
-									Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-							}else {
-								formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+						if (hospitalInfo!=null) {
+							//修改   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
+							if (formulaDetail.getIndexPCode().equals("05INDEX")) {
+								formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+								formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+								if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+									formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+										Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
+								}else {
+									formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+								}
+							}
+							//添加  医学工程人员业务培训率
+							if (formulaDetail.getIndexPCode().equals("06INDEX")) {
+								formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
+								formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
+								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
+										Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
 							}
 						}
-						//添加  医学工程人员业务培训率
-						if (formulaDetail.getIndexPCode().equals("06INDEX")) {
-							formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-							formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-							formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-									Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
-						}
+						
 						//添加质量上报明细
 						updateInfo(formulaDetail);
 					}
@@ -277,22 +282,24 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 			formulaDetail.setGroupSort(formulaTemplateDetail.getGroupSort());
 			formulaDetail.setTfRemark(formulaTemplateDetail.getTfRemark());
 			//添加   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
-			if (i==1) {
-				formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
-				formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-				if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
-					formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
-						Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-				}else {
-					formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+			if (hospitalInfo!=null) {
+				if (i==1) {
+					formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+					formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+					if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+							Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
+					}else {
+						formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+					}
 				}
-			}
-			//添加  医学工程人员业务培训率
-			if (i==2) {
-				formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-				formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-				formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-						Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+				//添加  医学工程人员业务培训率
+				if (i==2) {
+					formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
+					formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
+					formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
+							Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+				}
 			}
 			//添加质量上报明细
 			insertInfo(formulaDetail);
