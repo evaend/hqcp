@@ -191,12 +191,20 @@ public class DeptInfoController {
 	 */
 	@ResponseBody
     @RequestMapping("/searchConstrDept")
-    public ConstrDept searchConstrDept(@RequestParam(value = "pYear", required = false)String pYear,
+    public Map<String, Object> searchConstrDept(@RequestParam(value = "pYear", required = false)String pYear,
                                        @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
         HttpServletRequest request) throws ValidationException{
 	    Long sessionOrgId = (Long)request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID);
 	    Assert.notNull(sessionOrgId, "会话用户机构id，不能为空!");
-	    ConstrDept constrDept = new ConstrDept();
+	    Pager pager = new Pager(false);
+        pager.addQueryParam("pYear", pYear);
+        if(StringUtils.isNotBlank(constrDeptGuid)){
+            pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }else{
+            pager.addQueryParam("orgId", sessionOrgId);
+        }
+        Map<String, Object> result = deptInfoService.searchConstrDept(pager);
+	   /* ConstrDept constrDept = new ConstrDept();
 	    List<ConstrDept> list = new ArrayList<ConstrDept>();
 	    if(StringUtils.isNotBlank(constrDeptGuid)){
 	        constrDept = deptInfoService.find(ConstrDept.class, constrDeptGuid);
@@ -324,8 +332,8 @@ public class DeptInfoController {
 	        }
 	    }else{
 	        constrDept = new ConstrDept();
-	    }
-        return constrDept;
+	    }*/
+        return result;
     }
 	
 	/**
@@ -706,6 +714,8 @@ public class DeptInfoController {
             @RequestParam(value = "sidx", required = false) String sortCol,
             @RequestParam(value = "sord", required = false) String sortType,
             @RequestParam(value = "constrDeptGuid", required = false)String constrDeptGuid,
+            @RequestParam(value = "orgId", required = false) Long orgId,
+            @RequestParam(value = "pYear", required = false) String pYear,
             HttpServletRequest request) {
         Pager pager = new Pager(true);
         if (page == null) {
@@ -729,6 +739,12 @@ public class DeptInfoController {
         }
         if (StringUtils.isNotBlank(constrDeptGuid)) {
             pager.addQueryParam("constrDeptGuid", constrDeptGuid);
+        }
+        if (StringUtils.isNotBlank(pYear)) {
+            pager.addQueryParam("pYear", pYear);
+        }
+        if (orgId!=null) {
+            pager.addQueryParam("orgId", orgId);
         }
         List<Map<String, Object>> result = deptInfoService.searchConstrDeptUserList(pager);
         pager.setRows(result);
@@ -919,7 +935,6 @@ public class DeptInfoController {
             HttpServletRequest request) throws Exception {
         LocalAssert.notBlank(ymd, "请选择时间!");
         Pager pager = new Pager(false);
-        pager.addQueryParam("orgId", request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID));
         pager.addQueryParam("ymd", ymd.substring(0,4));
         Map<String, Object> result = deptInfoService.getOrgDeptInfoByGender(pager);
         return result;
