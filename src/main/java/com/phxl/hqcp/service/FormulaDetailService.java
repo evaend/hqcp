@@ -12,5 +12,5 @@ public interface FormulaDetailService extends IBaseService{
 	List<Map<String, Object>> selectFormulaDetail(Pager<Map<String, Object>> pager);
 	
 	//质量上报
-	void updateFormulaDetail(FormulaDetail [] formulaDetailList,Integer isCommit);
+	void updateFormulaDetail(List<Map<String, Object>> formulaDetailList,Integer isCommit);
 }

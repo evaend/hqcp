@@ -38,7 +38,11 @@
 			tb_formula.p_year "pYear",
 			tb_formula.start_time "startTime",
 			tb_formula.end_time "endTime",
-	    tb_constr_dept_info.dept_name "deptName",
+			    (select dept_name from tb_constr_dept_info
+		      where constr_dept_guid = 
+		      (select constr_dept_guid from tb_constr_dept 
+		      where org_id = tb_formula.org_id and p_year =
+		       #{conditiions.pYear, jdbcType=VARCHAR}) ) "deptName",
 			td_org_info.lxr "lxr",
 			td_org_info.lxdh "lxdh",
 			tb_formula.audit_fstate "auditFstate",
@@ -50,10 +54,7 @@
 			        "indexCount"
 			from tb_formula join td_org_info on 
 			(tb_formula.org_id = td_org_info.org_id)
-      left join tb_constr_dept on
-      (tb_constr_dept.org_id = td_org_info.org_id)
-      left join tb_constr_dept_info on
-      (tb_constr_dept_info.constr_dept_guid = tb_constr_dept.constr_dept_guid )
+      
 	      <where>
 			<if test="conditiions.orgName!=null and conditiions.orgName!=''">
 				<![CDATA[ and regexp_like(td_org_info.org_name, #{conditiions.orgName, jdbcType=VARCHAR}) ]]>

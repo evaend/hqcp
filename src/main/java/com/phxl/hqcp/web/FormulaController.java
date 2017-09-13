@@ -53,11 +53,10 @@ public class FormulaController {
 			@RequestParam(value="page",required = false) Integer page,
 			@RequestParam(value="pagesize",required = false) Integer pagesize,
 			HttpServletRequest request) {
+		Assert.notNull(pYear, "当前没有选择时间！");
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
 		pager.setPageSize(pagesize == null ? 15 : pagesize);
 		pager.setPageNum(page == null ? 1 : page);
-//		pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
-		pager.addQueryParam("orgId", 10001);
 		pager.addQueryParam("orgName", orgName);
 		//设置审核状态参数
 		if (fstateType!=null) {
@@ -125,7 +124,10 @@ public class FormulaController {
 	@RequestMapping("/selectTemplateDetail")
 	public List<Map<String, Object>> selectTemplateDetail(
 			@RequestParam(value = "pYear", required = false ) String pYear,
-			HttpServletRequest request){
+			HttpServletRequest request) throws ValidationException{
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		//获取当前日期的第五个字符（上半年、下半年）
 		char c = pYear.trim().charAt(4);
@@ -141,7 +143,7 @@ public class FormulaController {
 	
 	/**
 	 * 查询当前选择的医院机构的当前选择类型的公式明细，以及同级机构，同省机构的平均值(按所选时间排序，选择哪个时间段，哪个排前面)
-	 * @param yearMonth 当前选择的时间（如2016下半年）
+	 * @param pYear 当前选择的时间（如2016下半年）
 	 * @param indexValue 当前选择类型（如医学工程人员配置水平）
 	 * @param orgId 当前选择机构
 	 * @param page 当前页
@@ -152,17 +154,23 @@ public class FormulaController {
 	@ResponseBody
 	@RequestMapping("/selectAllYearFornla")
 	public Map<String, Object> selectAllYearFornla(
-			@RequestParam(value="pYear",required = false ) String yearMonth,
+			@RequestParam(value="pYear",required = false ) String pYear,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			@RequestParam(value="orgId",required = false ) String orgId,
 			@RequestParam(value="page",required=false) Integer page,
 			@RequestParam(value="pagesize",required=false) Integer pagesize,
-			HttpServletRequest request){
+			HttpServletRequest request) throws ValidationException{
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
+		if (StringUtils.isBlank(indexValue)) {
+			throw new ValidationException("指标类型不允许为空");
+		}
+		if (StringUtils.isBlank(orgId)) {
+			throw new ValidationException("机构ID不允许为空");
+		}
 		//返回的数据
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		
-		//柱状图
-		Map<String, Object> majorSeries = new HashMap<String, Object>();
 		
 		//参数
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -204,21 +212,32 @@ public class FormulaController {
 		xAxis.put("data", xAxisData);
 		legend.put("data",legendData);
 		
+		Map<String, Object> itemStyle = new HashMap<String, Object>();
+		Map<String, Object> color = new HashMap<String, Object>();
+		color.put("color", "#bfbfbf");
+		itemStyle.put("normal", color);
+		
 		//时间（柱）
 		Map<String, Object> series1 = new HashMap<String, Object>();
 		series1.put("name","时间");
 		series1.put("type","bar");
 		series1.put("data",seriesDate);
+		series1.put("barMaxWidth","30px");
 		//同级（线）
 		Map<String, Object> series2 = new HashMap<String, Object>();
 		series2.put("name","同级医院平均水平");
 		series2.put("type","line");
 		series2.put("data",seriesLevel);
+		series2.put("showSymbol",false);
+		series2.put("itemStyle",itemStyle);
+		
 		//全省（线）
 		Map<String, Object> series3 = new HashMap<String, Object>();
 		series3.put("name","全省医院平均配置水平对比");
 		series3.put("type","line");
 		series3.put("data",seriesAll);
+		series3.put("showSymbol",false);
+		series3.put("itemStyle",itemStyle);
 		//值
 		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
 		series.add(series1);
@@ -232,7 +251,7 @@ public class FormulaController {
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
 		pager.setPageSize(pagesize == null ? 5 : pagesize);
 		pager.setPageNum(page == null ? 1 : page);
-		pager.addQueryParam("ymd", yearMonth);
+		pager.addQueryParam("ymd", pYear);
 		pager.addQueryParam("indexPCode", indexValue);
 
 		Map<String, Object> titleMap = new HashMap<String, Object>();
@@ -254,35 +273,37 @@ public class FormulaController {
 	
 	/**
 	 * 导出质量指标详情
-	 * @param yearMonth 当前选择的时间（如2016下半年）
+	 * @param pYear 当前选择的时间（如2016下半年）
 	 * @param indexValue 当前选择类型（如医学工程人员配置水平）
 	 */
 	@ResponseBody
 	@RequestMapping("/exporAllYearFornla")
 	public void exporAllYearFornla(
-			@RequestParam(value="pYear",required = false ) String yearMonth,
+			@RequestParam(value="pYear",required = false ) String pYear,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
 			HttpServletRequest request,HttpServletResponse response) throws Exception{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
-		pager.addQueryParam("ymd", yearMonth);
+		if (StringUtils.isBlank(pYear)) {
+			throw new ValidationException("时间不允许为空");
+		}
+		if (StringUtils.isBlank(indexValue)) {
+			throw new ValidationException("指标类型不允许为空");
+		}
+		pager.addQueryParam("ymd", pYear);
 		pager.addQueryParam("indexPCode", indexValue);
 
 		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
-		//如果没有查询数据
-		if (selectFormulaInfoList == null || selectFormulaInfoList.size() == 0) {
-			throw new ValidationException("当前没有查询结果，不允许导出");
-		}
 		
 		final String qcNameFz = selectFormulaInfoList.get(0).get("qcNameFz").toString();
 		final String qcNameFm = selectFormulaInfoList.get(0).get("qcNameFm").toString();
 		final String qcNameZb = selectFormulaInfoList.get(0).get("qcNameZb").toString();
 		
 		String date = "";
-		char m = yearMonth.trim().charAt(4);
+		char m = pYear.trim().charAt(4);
 		if (m == '1') {
-			date = yearMonth.substring(0,4).toString().trim()+"上半年";
+			date = pYear.substring(0,4).toString().trim()+"上半年";
 		}else{
-			date = yearMonth.substring(0,4).toString().trim()+"下半年";
+			date = pYear.substring(0,4).toString().trim()+"下半年";
 		}
 
 		// 导出的excel列头，和数据库查询的结果一致

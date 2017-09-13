@@ -38,7 +38,7 @@
 	<!-- 科室信息审核列表 -->
 	<select id="searchConstrDeptAuditList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select cd.constr_dept_guid "constrDeptGuid",cd.p_year "pYear",o.org_name "orgName",d.dept_name "deptName",o.lxr "lxr",o.lxdh "lxdh",cd.audit_fstate "auditFstate",
-		       (CASE WHEN cd.schedule is null THEN '0%' ELSE cd.schedule*100.0||'%' END) "schedule" 
+		       (CASE WHEN cd.schedule is null THEN 0 ELSE cd.schedule END) "schedule" 
 		from TD_QC_SCOPE qc,TB_CONSTR_DEPT cd
 		left join td_org_info o on o.org_id = cd.org_id
 		left join tb_constr_dept_info d on d.constr_dept_guid = cd.constr_dept_guid 
@@ -59,14 +59,23 @@
 		case when t.total_hospital_level2 is null then 0 else t.total_hospital_level2 end "totalLevel2",t.tb_total_org "tbTotalOrg",
 		t.tb_total_hospital_level3 "tbTotalLevel3",t.tb_total_hospital_level2 "tbTotalLevel2"
 		from v_org_info_tb t 
-		where t.qc_org_id = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
+		where t.qc_org_id = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getOrgIdByGender" resultType="string">
+		select distinct t.ORG_ID from v_org_dept_info t
+		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001
 	</select>
 	
 	<!-- 按年度查询监管机构下医工人数男女比例  备注：,目前只支持单机构，不支持多机构 -->
 	<select id="getOrgDeptInfoByGender" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
 		select t.ORG_ID,o.ORG_NAME,t.GENDER,t.YG_NUM from v_org_dept_info t
 		left join td_org_info o on o.org_id = t.org_id
-		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001 and t.P_YMD = 'P_HALF_YEAR' order by t.org_id asc
+		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001 
+		<if test="conditiions!=null and conditiions.orgId != null and conditiions.orgId != ''">
+		  and t.ORG_ID = #{conditiions.orgId,jdbcType=DECIMAL}
+	    </if>
+		order by t.org_id asc
 	</select>
 	
 	<!-- 按年度查询医工人员学历情况  备注：,目前只支持单机构，不支持多机构 -->
@@ -74,7 +83,7 @@
 		select brand4.tf_clo_name "name",t.total_no "value" from v_org_education t 
 		left join td_static_info brand3 on brand3.TF_CLO='XL'
 		left join td_static_data brand4 on brand3.STATIC_ID=brand4.STATIC_ID and brand4.TF_CLO_CODE=t.highest_education
-		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001 and t.P_YMD = 'P_HALF_YEAR'
+		where t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.qc_org_id = 10001
 	</select>
 	
 	<!-- 按年度查询不良事件上报率  备注：,目前只支持单机构，不支持多机构 -->
@@ -91,8 +100,8 @@
 	
 	<!-- 按年度查询机构分布  备注：,目前只支持单机构，不支持多机构-->
 	<select id="getOrgAllLevel" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select t.tf_city "name",t.total_hospital_level "value" from v_org_all_level t 
-		where t.qc_org_id = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR} and t.P_YMD = 'P_HALF_YEAR'
+		select <![CDATA[(case when t.tf_city <> '神农架林区' and t.tf_city <> '恩施土家族苗族自治州' then t.tf_city || '市' else t.tf_city end) "name",t.total_hospital_level "value"]]> from v_org_all_level t 
+		where t.qc_org_id = 10001 and t.ymd = #{conditiions.ymd, jdbcType=VARCHAR}
 		<if test="conditiions!=null and conditiions.level != null and conditiions.level != ''">
 		  and t.hospital_level = #{conditiions.level,jdbcType=VARCHAR}
 	    </if>

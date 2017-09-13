@@ -25,15 +25,16 @@ public class FormulaDetailServiceImpl extends BaseService implements FormulaDeta
 	}
 
 	//质量上报
-	public void updateFormulaDetail(FormulaDetail[] formulaDetailList,Integer isCommit) {
+	public void updateFormulaDetail(List<Map<String, Object>> formulaDetailList,Integer isCommit) {
 		//修改质量上报信息
-		for (FormulaDetail formulaDetail : formulaDetailList) {
-			updateInfo(formulaDetail);
+		for (Map<String, Object> map : formulaDetailList) {
+			formulaDetailMapper.updateFormulaDetail(map);
 		}
 		
 		//获得质量上报主表
-		Formula formula = find(Formula.class, formulaDetailList [0].getIndexGuid());
-		if (isCommit==0) {
+		FormulaDetail formulaDetail = find(FormulaDetail.class, formulaDetailList.get(0).get("guid"));
+		Formula formula = find(Formula.class, formulaDetail.getIndexGuid());
+		if (isCommit == 1) {
 			formula.setAuditFstate("10");
 		}else{
 			formula.setAuditFstate("00");
