@@ -71,7 +71,7 @@
   
   <!-- 查询质量上报明细列表 -->
   <select id="selectFormulaDetailList" resultMap="BaseResultMap" parameterType="java.lang.String">
-  	select * from tb_formula_detail where index_guid = '${parameter}'
+  	select * from tb_formula_detail where index_guid = '${_parameter}'
   </select>
   
   <update id="updateFormulaDetail" parameterType="java.util.HashMap">

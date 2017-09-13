@@ -159,7 +159,7 @@ public class FormulaDetailController {
 	@RequestMapping("/updateFormulaDetail")
 	public String updateFormulaDetail(
 			HttpServletRequest request , HttpSession session
-			) throws JsonParseException, JsonMappingException, IOException{
+			) throws JsonParseException, JsonMappingException, IOException, ValidationException{
 		String result = "error";
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));//配置项:默认日期格式

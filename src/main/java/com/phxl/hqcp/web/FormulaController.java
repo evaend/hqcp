@@ -60,13 +60,13 @@ public class FormulaController {
 		pager.addQueryParam("orgName", orgName);
 		//设置审核状态参数
 		if (fstateType!=null) {
-			if (StringUtils.isBlank(auditFstate)) {
+			if (auditFstate==null) {
 				pager.addQueryParam("auditFstate", "20");
 			}else {
 				pager.addQueryParam("auditFstate", auditFstate);
 			}
 		}else{
-			if (StringUtils.isBlank(auditFstate)) {
+			if (auditFstate==null) {
 				pager.addQueryParam("auditFstate", "10");
 			}else {
 				pager.addQueryParam("auditFstate", auditFstate);
