@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -220,9 +221,9 @@ public class FormulaController {
 			}else{
 				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年";
 			}
-			seriesDate[i] = map2.get("indexValue").toString();
-			seriesLevel[i] = map2.get("indexValueLevel").toString();
-			seriesAll[i] = map2.get("indexValueAll").toString();			
+			seriesDate[i] = map2.get("indexValue")==null ? "0" : map2.get("indexValue").toString();
+			seriesLevel[i] = map2.get("indexValueLevel")==null ? "0" : map2.get("indexValueLevel").toString();
+			seriesAll[i] = map2.get("indexValueAll")==null ? "0" : map2.get("indexValueAll").toString();			
 		}
 		xAxis.put("data", xAxisData);
 		legend.put("data",legendData);
