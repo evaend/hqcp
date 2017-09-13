@@ -53,11 +53,11 @@ public class ConstrDept {
 
     private String deptTypeName;
 
-    private String deptTypeOther;
+    private String deptTypeNameOther;
 
     private String deptParentName;
     
-    private String deptParentOther;
+    private String deptParentNameOther;
 
     private String[] workScope;//部门业务管理范围-多选
     
@@ -315,28 +315,12 @@ public class ConstrDept {
         this.deptTypeName = deptTypeName;
     }
 
-    public String getDeptTypeOther() {
-        return deptTypeOther;
-    }
-
-    public void setDeptTypeOther(String deptTypeOther) {
-        this.deptTypeOther = deptTypeOther;
-    }
-
     public String getDeptParentName() {
         return deptParentName;
     }
 
     public void setDeptParentName(String deptParentName) {
         this.deptParentName = deptParentName;
-    }
-
-    public String getDeptParentOther() {
-        return deptParentOther;
-    }
-
-    public void setDeptParentOther(String deptParentOther) {
-        this.deptParentOther = deptParentOther;
     }
 
     public String[] getWorkScope() {
@@ -481,5 +465,21 @@ public class ConstrDept {
 
     public void setMeetingCount(Integer meetingCount) {
         this.meetingCount = meetingCount;
+    }
+
+    public String getDeptTypeNameOther() {
+        return deptTypeNameOther;
+    }
+
+    public void setDeptTypeNameOther(String deptTypeNameOther) {
+        this.deptTypeNameOther = deptTypeNameOther;
+    }
+
+    public String getDeptParentNameOther() {
+        return deptParentNameOther;
+    }
+
+    public void setDeptParentNameOther(String deptParentNameOther) {
+        this.deptParentNameOther = deptParentNameOther;
     }
 }

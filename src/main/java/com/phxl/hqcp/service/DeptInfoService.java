@@ -65,7 +65,7 @@ public interface DeptInfoService extends IBaseService{
      * @return void    返回类型
      * @throws
      */
-    public void insertEditConstrDept(ConstrDept constrDept, String sessionUserId, String sessionUserName, Long sessionOrgId) throws Exception;
+    public String insertEditConstrDept(ConstrDept constrDept, String sessionUserId, String sessionUserName, Long sessionOrgId) throws Exception;
 
     /**
      *
