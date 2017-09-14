@@ -158,7 +158,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
           constrDept.setModefileUserNmae(sessionUserName);
           super.insertInfo(constrDept);
           //添加质量上报信息
-          formulaService.insertForMula(sessionOrgId,sessionUserId, sessionUserName);
+          formulaService.insertForMula(constrDept.getpYear(),sessionOrgId,sessionUserId, sessionUserName);
         }else{
           //编辑科室上报信息
             ConstrDept dept = super.find(ConstrDept.class, constrDept.getConstrDeptGuid());
@@ -758,6 +758,13 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
 		if(list!=null && !list.isEmpty()){
 			resultMap = list.get(0);
 			if(resultMap!=null && !resultMap.isEmpty() && StringUtils.isNotBlank((String)resultMap.get("constrDeptGuid"))){
+			    if(resultMap.get("schedule")!=null && StringUtils.isNotBlank(resultMap.get("schedule").toString())){
+			        BigDecimal b1 = new BigDecimal(resultMap.get("schedule").toString());   
+			        BigDecimal b2 = new BigDecimal("100");
+			        if(b1.compareTo(new BigDecimal(0))==1){
+			            resultMap.put("schedule", b1.multiply(b2).doubleValue());
+			        }
+			    }
 				if(resultMap.get("deptTypeName")!=null && StringUtils.isNotBlank((String)resultMap.get("deptTypeName"))){//部门级别
 					if(DeptTypeName.BU.equals((String)resultMap.get("deptTypeName"))){
 						resultMap.put("deptTypeName", "1");
