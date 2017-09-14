@@ -230,7 +230,7 @@ public class FormulaController {
 		
 		Map<String, Object> itemStyle = new HashMap<String, Object>();
 		Map<String, Object> color = new HashMap<String, Object>();
-		color.put("color", "#bfbfbf");
+		color.put("color", "#d73435");
 		itemStyle.put("normal", color);
 		
 		//时间（柱）
@@ -359,7 +359,7 @@ public class FormulaController {
 		
 		Map<String, Object> itemStyle = new HashMap<String, Object>();
 		Map<String, Object> color = new HashMap<String, Object>();
-		color.put("color", "#bfbfbf");
+		color.put("color", "#d73435");
 		itemStyle.put("normal", color);
 		
 		//时间（柱）
