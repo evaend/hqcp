@@ -202,10 +202,12 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 				}
 				//添加  医学工程人员业务培训率
 				if (formulaTemplateDetail.getIndexPCode().equals("06INDEX")) {
-					formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-					formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-					formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-							Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+					formulaDetail.setNumeratorValue(hospitalInfo.get("meetingDeptUserSum")==null ? 0 : Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
+					formulaDetail.setDenominatorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+					if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("meetingDeptUserSum")!=null) {
+						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
+								Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+					}
 				}
 			}
 			//添加质量上报明细
@@ -243,10 +245,12 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 						}
 						//添加  医学工程人员业务培训率
 						if (formulaDetail.getIndexPCode().equals("06INDEX")) {
-							formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-							formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-							formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-									Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+							formulaDetail.setNumeratorValue(hospitalInfo.get("meetingDeptUserSum")==null ? 0 : Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
+							formulaDetail.setDenominatorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+							if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("meetingDeptUserSum")!=null) {
+								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
+										Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+							}
 						}
 					}
 					
