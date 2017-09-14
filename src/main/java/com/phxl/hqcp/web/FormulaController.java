@@ -233,6 +233,11 @@ public class FormulaController {
 		color.put("color", "#d73435");
 		itemStyle.put("normal", color);
 		
+		Map<String, Object> itemStyle1 = new HashMap<String, Object>();
+		Map<String, Object> color1 = new HashMap<String, Object>();
+		color1.put("color", "#3dbd7d");
+		itemStyle1.put("normal", color1);
+		
 		//时间（柱）
 		Map<String, Object> series1 = new HashMap<String, Object>();
 		series1.put("name","时间");
@@ -253,7 +258,7 @@ public class FormulaController {
 		series3.put("type","line");
 		series3.put("data",seriesAll);
 		series3.put("showSymbol",false);
-		series3.put("itemStyle",itemStyle);
+		series3.put("itemStyle",itemStyle1);
 		//值
 		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
 		series.add(series1);
