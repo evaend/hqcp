@@ -55,6 +55,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 		
 		//查询条件（当前选择时间）
 		Map<String, Object> map1 = new HashMap<String, Object>();
+		map1.put("pYear", pYear);
 		
 		List<FormulaTemplate> templates = formulaTemplateMapper.selectYearFormulaTemplate(map1);
 		//如果当前建设科室的机构，没有质量上报信息，则添加质量上报信息
