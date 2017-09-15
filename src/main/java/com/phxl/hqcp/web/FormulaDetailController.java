@@ -55,9 +55,7 @@ public class FormulaDetailController {
 		if (StringUtils.isBlank(pYear)) {
 			throw new ValidationException("时间不允许为空");
 		}
-		if (StringUtils.isBlank(orgId)) {
-			throw new ValidationException("机构ID不允许为空");
-		}
+		
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
 		//如果当前没有选择时间，默认最接近现在的时间
 		if (StringUtils.isBlank(pYear)) {
