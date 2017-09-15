@@ -28,6 +28,16 @@ public class FormulaDetailServiceImpl extends BaseService implements FormulaDeta
 	//质量上报
 	public void updateFormulaDetail(List<Map<String, Object>> formulaDetailList,Integer isCommit) throws ValidationException {
 		//修改质量上报信息
+		if (isCommit == 1) {
+			for (Map<String, Object> map : formulaDetailList) {
+				FormulaDetail formulaDetail = find(FormulaDetail.class, map.get("guid"));
+				if (!formulaDetail.getIndexPCode().equals("05INDEX") && !formulaDetail.getIndexPCode().equals("06INDEX")) {
+					if (map.get("indexValue")==null || ("").equals(map.get("indexValue"))) {
+						throw new ValidationException("当前质量上报信息没有填写完整，不允许提交");
+					}
+				}
+			}
+		}
 		for (Map<String, Object> map : formulaDetailList) {
 			formulaDetailMapper.updateFormulaDetail(map);
 		}
@@ -46,6 +56,11 @@ public class FormulaDetailServiceImpl extends BaseService implements FormulaDeta
 		//修改主表信息
 		updateInfo(formula);
 				
+	}
+
+	@Override
+	public List<FormulaDetail> selectFormulaDetailList(String indexGuid) {
+		return formulaDetailMapper.selectFormulaDetailList(indexGuid);
 	}
 
 }

@@ -217,6 +217,13 @@ public class FormulaDetailController {
 		Assert.notNull(indexGuid, "质量上报ID不允许为空");
 		
 		Formula formula = formulaService.find(Formula.class, indexGuid);
+		
+		List<FormulaDetail> formulaDetails = formulaDetailService.selectFormulaDetailList(formula.getIndexGuid());
+		for (FormulaDetail formulaDetail : formulaDetails) {
+			if (formulaDetail.getIndexValue()==null || ("").equals( formulaDetail.getIndexGuid() )) {
+				throw new ValidationException("需要科室审核通过，才允许审核");
+			}
+		}
 		Assert.notNull(formula, "该指标信息审核不存在");
 		if (!formula.getAuditFstate().equals("10")) {
 			throw new ValidationException("该指标已经审核过了，不允许重复审核");

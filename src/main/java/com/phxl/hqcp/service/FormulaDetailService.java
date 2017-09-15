@@ -14,4 +14,7 @@ public interface FormulaDetailService extends IBaseService{
 	
 	//质量上报
 	void updateFormulaDetail(List<Map<String, Object>> formulaDetailList,Integer isCommit) throws ValidationException ;
+
+	//查询质量上报明细列表
+	List<FormulaDetail> selectFormulaDetailList(String indexGuid);
 }
