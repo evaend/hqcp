@@ -180,8 +180,13 @@ public class FormulaDetailController {
 				map.put("numeratorValue",ob.get(0));
 				map.put("denominatorValue",ob.get(1));
 				if (ob.get(0)!=null && ob.get(1)!=null) {
-					map.put("indexValue",BigDecimal.valueOf(Double.valueOf( ob.get(0).toString())/ 
-							Double.valueOf(ob.get(1).toString()) ) );
+					if (StringUtils.isNotBlank(ob.get(0).toString()) && StringUtils.isNotBlank(ob.get(1).toString())) {
+						map.put("indexValue",BigDecimal.valueOf(Double.valueOf( ob.get(0).toString())/ 
+								Double.valueOf(ob.get(1).toString()) ) );
+					}else {
+						map.put("indexValue","");
+					}
+					
 				}else {
 					map.put("indexValue","");
 				}
