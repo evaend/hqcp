@@ -491,7 +491,7 @@ public class FormulaController {
 	 * 添加质量上报信息
 	 * @param orgId 要上报的机构
 	 * @return
-	 *//*
+	 */
 	@ResponseBody
 	@RequestMapping("/insertForMula")
 	public String insertForMula(
@@ -500,12 +500,13 @@ public class FormulaController {
 		String result = "error";
 		Assert.notNull(orgId, "请选择机构");
 		Assert.notNull(formulaService.find(OrgInfo.class, orgId), "当前机构不存在");
-		String createUserId = "111"; //session.getAttribute(LoginUser.SESSION_USERID).toString();
-		String createUserName = "222"; //session.getAttribute(LoginUser.SESSION_USERNAME).toString();
+		String createUserId = session.getAttribute(LoginUser.SESSION_USERID).toString();
+		String createUserName = session.getAttribute(LoginUser.SESSION_USERNAME).toString();
 		
+		String pYear = "2017";
 		//添加质量上报信息
-		formulaService.insertForMula(orgId, createUserId, createUserName);
+		formulaService.insertForMula(pYear,orgId, createUserId, createUserName);
 		result = "success";
 		return result;
-	}*/
+	}
 }
