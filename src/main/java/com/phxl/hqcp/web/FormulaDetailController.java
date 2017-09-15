@@ -179,7 +179,8 @@ public class FormulaDetailController {
 				map.put("guid", str);
 				map.put("numeratorValue",ob.get(0));
 				map.put("denominatorValue",ob.get(1));
-				map.put("indexValue",ob.get(2));
+				map.put("indexValue",BigDecimal.valueOf(Double.valueOf( ob.get(0).toString())/ 
+						Double.valueOf(ob.get(1).toString()) ) );
 				list.add(map);
 			}
 		}
