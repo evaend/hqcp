@@ -80,10 +80,9 @@ public class FormulaDetailController {
 		}
 		
 		if (StringUtils.isBlank(orgId)) {
-			pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
-		}else {
-			pager.addQueryParam("orgId", orgId);
+			orgId = session.getAttribute(LoginUser.SESSION_USER_ORGID).toString();
 		}
+		pager.addQueryParam("orgId", orgId);
 		
 		List<Map<String, Object>> list = formulaDetailService.selectFormulaDetail(pager);
 		
