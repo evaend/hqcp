@@ -90,8 +90,9 @@ public class FormulaDetailController {
 			
 		}else {
 			formulaService.insertFormula(pYear, orgId);
-			list = formulaDetailService.selectFormulaDetail(pager);
 		}
+
+		list = formulaDetailService.selectFormulaDetail(pager);
 		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String,Object>>();
 		
