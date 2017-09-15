@@ -108,7 +108,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 	}
 
 	//查询质量指标详情
-	public List<Map<String, Object>> selectFormulaInfo(Map<String, Object> map) {
+	public List<Map<String, Object>> selectFormulaInfo(Pager<Map<String, Object>> map) {
 		return formualMapper.selectFormulaInfo(map);
 	}
 

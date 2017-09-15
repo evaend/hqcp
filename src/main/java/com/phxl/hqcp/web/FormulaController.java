@@ -189,13 +189,31 @@ public class FormulaController {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		//参数
-		Map<String, Object> map = new HashMap<String, Object>();
+		Pager<Map<String, Object>> map = new Pager<Map<String,Object>>(false);
 		
-		map.put("indexPCode", indexValue);
-		map.put("orgId", orgId);
+		map.addQueryParam("indexPCode", indexValue);
+		map.addQueryParam("orgId", orgId);
 		
 		//当前医院的以往指标信息 以及 同级、同省指标信息
 		List<Map<String, Object>> selectFormulaInfo = formulaService.selectFormulaInfo(map);
+
+		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
+		pager.setPageSize(pagesize == null ? 5 : pagesize);
+		pager.setPageNum(page == null ? 1 : page);
+		pager.addQueryParam("orgId", orgId);
+		pager.addQueryParam("indexPCode", indexValue);
+		
+		Map<String, Object> titleMap = new HashMap<String, Object>();
+		
+		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfo(pager);
+		if (selectFormulaInfoList.size()<1) {
+			
+		}else {
+			titleMap.put("qcNameFz", selectFormulaInfoList.get(0).get("qcNameFz"));
+			titleMap.put("qcNameFm", selectFormulaInfoList.get(0).get("qcNameFm"));
+			titleMap.put("qcNameZb", selectFormulaInfoList.get(0).get("qcNameZb"));
+		}
+		pager.setRows(selectFormulaInfoList);
 		
 		//横坐标
 		Map<String, Object> xAxis = new HashMap<String, Object>();
@@ -217,9 +235,9 @@ public class FormulaController {
 			char m = map2.get("ymd").toString().trim().charAt(4);
 			//获取横坐标的值(如果为上半年)
 			if (m == '1') {
-				xAxisData[i] = map2.get("pYear").toString().trim()+"上半年";
+				xAxisData[i] = map2.get("pYear").toString().trim()+"上半年,"+titleMap.get("qcNameZb");
 			}else{
-				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年";
+				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年,"+titleMap.get("qcNameZb");
 			}
 			seriesDate[i] = map2.get("indexValue")==null ? "0" : map2.get("indexValue").toString();
 			seriesLevel[i] = map2.get("indexValueLevel")==null ? "0" : map2.get("indexValueLevel").toString();
@@ -268,24 +286,6 @@ public class FormulaController {
 		resultMap.put("xAxis", xAxis);
 		resultMap.put("legend", legend);
 		resultMap.put("series", series);
-		
-		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
-		pager.setPageSize(pagesize == null ? 5 : pagesize);
-		pager.setPageNum(page == null ? 1 : page);
-		pager.addQueryParam("ymd", pYear);
-		pager.addQueryParam("indexPCode", indexValue);
-
-		Map<String, Object> titleMap = new HashMap<String, Object>();
-		
-		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
-		if (selectFormulaInfoList.size()<1) {
-			
-		}else {
-			titleMap.put("qcNameFz", selectFormulaInfoList.get(0).get("qcNameFz"));
-			titleMap.put("qcNameFm", selectFormulaInfoList.get(0).get("qcNameFm"));
-			titleMap.put("qcNameZb", selectFormulaInfoList.get(0).get("qcNameZb"));
-		}
-		pager.setRows(selectFormulaInfoList);
 		
 		resultMap.put("pager", pager);
 		resultMap.put("titleMap", titleMap);

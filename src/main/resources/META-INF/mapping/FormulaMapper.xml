@@ -132,7 +132,7 @@
   	</resultMap>
   	
  	<!-- 查询质量指标详情 -->
- 	<select id="selectFormulaInfo" resultMap="FormulaInfo" parameterType="java.util.HashMap">
+ 	<select id="selectFormulaInfo" resultMap="FormulaInfo" parameterType="com.phxl.core.base.entity.Pager">
  		select v_qc_score.* , 
 			(select tf_clo_name from td_static_data where tf_clo_code = v_qc_score.HOSPITAL_LEVEL
 			        and  static_id = 
@@ -143,8 +143,8 @@
 			 (select static_id from td_static_info where tf_table_clo = 'HOSPITAL_TYPE')
 			) "hospitalTypeName"
 			 from v_qc_score 
-	 		where index_p_code = #{indexPCode}
-				and org_id = #{orgId}
+	 		where index_p_code = #{conditiions.indexPCode}
+				and org_id = #{conditiions.orgId}
 				order by ymd desc
  	</select>
  	
