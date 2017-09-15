@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ import com.phxl.hqcp.entity.ConstrDeptMeeting;
 import com.phxl.hqcp.entity.ConstrDeptUser;
 import com.phxl.hqcp.entity.ConstrDeptWork;
 import com.phxl.hqcp.service.DeptInfoService;
+import com.phxl.hqcp.service.FormulaService;
 
 /**
  * 手术室耗材申请
@@ -64,6 +66,8 @@ public class DeptInfoController {
 
 	@Autowired
 	DeptInfoService deptInfoService;
+	@Autowired
+    FormulaService formulaService;
 	
 	/**
 	 * 
@@ -749,6 +753,7 @@ public class DeptInfoController {
 	    //获取会话中的信息
         String sessionUserId = (String)request.getSession().getAttribute(LoginUser.SESSION_USERID);
         String sessionUserName = (String)request.getSession().getAttribute(LoginUser.SESSION_USERNAME);
+        Long sessionOrgId = (Long)request.getSession().getAttribute(LoginUser.SESSION_USER_ORGID);
         entity.setAuditId(sessionUserId);
         entity.setAuditName(sessionUserName);
         entity.setAuditFstate(auditFstate);
@@ -757,6 +762,7 @@ public class DeptInfoController {
         entity.setModefileUserId(sessionUserId);
         entity.setModefileUserNmae(sessionUserName);
         deptInfoService.updateInfo(entity);
+        formulaService.insertForMula(entity.getpYear(),sessionOrgId,sessionUserId, sessionUserName);
     }
 	
 	/**
