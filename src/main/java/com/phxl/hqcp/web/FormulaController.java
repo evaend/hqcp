@@ -218,6 +218,7 @@ public class FormulaController {
 		//横坐标
 		Map<String, Object> xAxis = new HashMap<String, Object>();
 		//纵坐标
+		Map<String, Object> yAxis = new HashMap<String, Object>();
 		Map<String, Object> legend = new HashMap<String, Object>();
 		
 		String [] xAxisData = new String [selectFormulaInfo.size()];
@@ -243,7 +244,9 @@ public class FormulaController {
 			seriesLevel[i] = map2.get("indexValueLevel")==null ? "0" : map2.get("indexValueLevel").toString();
 			seriesAll[i] = map2.get("indexValueAll")==null ? "0" : map2.get("indexValueAll").toString();			
 		}
+		xAxis.put("type", "category");
 		xAxis.put("data", xAxisData);
+		yAxis.put("type", "value");
 		legend.put("data",legendData);
 		
 		Map<String, Object> itemStyle = new HashMap<String, Object>();
