@@ -433,10 +433,10 @@ public class FormulaController {
 		if (StringUtils.isBlank(indexValue)) {
 			throw new ValidationException("指标类型不允许为空");
 		}
-		pager.addQueryParam("ymd", pYear);
+		pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
 		pager.addQueryParam("indexPCode", indexValue);
 
-		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
+		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfo(pager);
 		
 		final String qcNameFz = selectFormulaInfoList.get(0).get("qcNameFz").toString();
 		final String qcNameFm = selectFormulaInfoList.get(0).get("qcNameFm").toString();
