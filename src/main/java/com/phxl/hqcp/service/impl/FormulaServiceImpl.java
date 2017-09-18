@@ -67,7 +67,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 				this.updateFormulaDetailForTemplate(formula,orgId.toString());
 			}
 		}
-		else{
+		else if (list==null || list.size()!=templates.size()) {
 			//如果没有数据，则全部添加
 			if (list.size()==0) {
 				//循环所有的模板主表
@@ -193,22 +193,22 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 				if (formulaTemplateDetail.getIndexPCode().equals("05INDEX")) {
 					formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
 					formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-					if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+					if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
 						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
 							Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-					}else {
-						formulaDetail.setIndexValue(BigDecimal.valueOf(0));
 					}
 				}
 				//添加  医学工程人员业务培训率
 				if (formulaTemplateDetail.getIndexPCode().equals("06INDEX")) {
-					formulaDetail.setNumeratorValue(hospitalInfo.get("meetingDeptUserSum")==null ? 0 : Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-					formulaDetail.setDenominatorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
-					if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("meetingDeptUserSum")!=null) {
-						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-								Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+					formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+					formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+					if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+							Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
 					}
 				}
+				System.out.println(hospitalInfo.get("staffSum"));
+				System.out.println(hospitalInfo.get("planBedSum"));
 			}
 			//添加质量上报明细
 			insertInfo(formulaDetail);
@@ -236,20 +236,18 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 						if (formulaDetail.getIndexPCode().equals("05INDEX")) {
 							formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
 							formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-							if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+							if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
 								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
 									Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-							}else {
-								formulaDetail.setIndexValue(BigDecimal.valueOf(0));
 							}
 						}
 						//添加  医学工程人员业务培训率
 						if (formulaDetail.getIndexPCode().equals("06INDEX")) {
-							formulaDetail.setNumeratorValue(hospitalInfo.get("meetingDeptUserSum")==null ? 0 : Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-							formulaDetail.setDenominatorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
-							if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("meetingDeptUserSum")!=null) {
-								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-										Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+							formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+							formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+							if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+									Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
 							}
 						}
 					}

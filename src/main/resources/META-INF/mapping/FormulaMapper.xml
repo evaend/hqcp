@@ -71,16 +71,13 @@
  
  	<!-- 查询建设科室信息 -->
 	<select id="selectHospitalInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select staff_sum "staffSum" ,plan_bed_sum "planBedSum"
-			,(select sum(meeting_dept_user_sum ) from tb_constr_dept_meeting
-			where meeting_date > #{startDate}
-			and meeting_date >= #{endDate}) "meetingDeptUserSum"
-			from tb_constr_dept_org where 
-			constr_dept_guid = 
-			(select constr_dept_guid from 
-			tb_constr_dept where org_id = #{orgId}
-			and p_year = #{pYear}
-			)
+			select plan_bed_sum "planBedSum" , 
+			(select count(tb_constr_dept_user.constr_dept_user_guid )
+			 from tb_constr_dept_user
+			 left join tb_constr_dept on tb_constr_dept.constr_dept_guid = 
+			 tb_constr_dept_user.constr_dept_guid
+			 where tb_constr_dept.org_id = #{orgId} and tb_constr_dept.p_year= #{pYear}) "staffSum"
+			 from tb_constr_dept_org where p_year = #{pYear} and org_id = #{orgId}
 	</select> 
 	
 	<!-- 查询建设科室公式记录 -->
