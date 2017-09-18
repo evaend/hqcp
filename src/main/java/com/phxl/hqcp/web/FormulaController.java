@@ -452,13 +452,13 @@ public class FormulaController {
 		}
 
 		// 导出的excel列头，和数据库查询的结果一致
-		List<String> fieldName = Arrays.asList("pYear" , "fOrgName", "hospitalLevel", "hospitalType", "numeratorValue", 
-				"denominatorValue", "indexValue", "indexValueLevel", "indexValueAll");
+		List<String> fieldName = Arrays.asList("pYear" , "fOrgName", "hospitalLevelName", "hospitalTypeName",
+				"numeratorValue", "denominatorValue", "indexValue", "indexValueLevel", "indexValueAll");
 		Map<String,String> ApplyDetailExcelMap = new HashMap<String, String>() {{  
 	        put("pYear", "时间");  
 	        put("fOrgName", "医院名称"); 
-	        put("hospitalLevel", "医院等级");  
-	        put("hospitalType", "医院性质");
+	        put("hospitalLevelName", "医院等级");  
+	        put("hospitalTypeName", "医院性质");
 	        put("numeratorValue", qcNameFz);
 	        put("denominatorValue", qcNameFm); 
 	        put("indexValue", qcNameZb); 
@@ -475,8 +475,8 @@ public class FormulaController {
 			Map<String, Object> entity = (Map<String, Object>) detail;
 			r.put("pYear", entity.get("pYear")==null ? "" : entity.get("pYear").toString());  
 			r.put("fOrgName", entity.get("fOrgName")==null ? "" : entity.get("fOrgName").toString());  
-			r.put("hospitalLevel", entity.get("hospitalLevel")==null ? "" : entity.get("hospitalLevel").toString());   
-			r.put("hospitalType", entity.get("hospitalType")==null ? "" : entity.get("hospitalType").toString());  
+			r.put("hospitalLevelName", entity.get("hospitalLevelName")==null ? "" : entity.get("hospitalLevelName").toString());   
+			r.put("hospitalTypeName", entity.get("hospitalTypeName")==null ? "" : entity.get("hospitalTypeName").toString());  
 			r.put("numeratorValue", entity.get("numeratorValue")==null ? "" : entity.get("numeratorValue").toString());  
 			r.put("denominatorValue", entity.get("denominatorValue")==null ? "" : entity.get("denominatorValue").toString());  
 			r.put("indexValue", entity.get("indexValue")==null ? "" : entity.get("indexValue").toString());   
