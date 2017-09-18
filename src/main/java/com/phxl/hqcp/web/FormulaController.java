@@ -189,17 +189,36 @@ public class FormulaController {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		//参数
-		Map<String, Object> map = new HashMap<String, Object>();
+		Pager<Map<String, Object>> map = new Pager<Map<String,Object>>(false);
 		
-		map.put("indexPCode", indexValue);
-		map.put("orgId", orgId);
+		map.addQueryParam("indexPCode", indexValue);
+		map.addQueryParam("orgId", orgId);
 		
 		//当前医院的以往指标信息 以及 同级、同省指标信息
 		List<Map<String, Object>> selectFormulaInfo = formulaService.selectFormulaInfo(map);
+
+		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
+		pager.setPageSize(pagesize == null ? 5 : pagesize);
+		pager.setPageNum(page == null ? 1 : page);
+		pager.addQueryParam("orgId", orgId);
+		pager.addQueryParam("indexPCode", indexValue);
+		
+		Map<String, Object> titleMap = new HashMap<String, Object>();
+		
+		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfo(pager);
+		if (selectFormulaInfoList.size()<1) {
+			
+		}else {
+			titleMap.put("qcNameFz", selectFormulaInfoList.get(0).get("qcNameFz"));
+			titleMap.put("qcNameFm", selectFormulaInfoList.get(0).get("qcNameFm"));
+			titleMap.put("qcNameZb", selectFormulaInfoList.get(0).get("qcNameZb"));
+		}
+		pager.setRows(selectFormulaInfoList);
 		
 		//横坐标
 		Map<String, Object> xAxis = new HashMap<String, Object>();
 		//纵坐标
+		Map<String, Object> yAxis = new HashMap<String, Object>();
 		Map<String, Object> legend = new HashMap<String, Object>();
 		
 		String [] xAxisData = new String [selectFormulaInfo.size()];
@@ -217,21 +236,28 @@ public class FormulaController {
 			char m = map2.get("ymd").toString().trim().charAt(4);
 			//获取横坐标的值(如果为上半年)
 			if (m == '1') {
-				xAxisData[i] = map2.get("pYear").toString().trim()+"上半年";
+				xAxisData[i] = map2.get("pYear").toString().trim()+"上半年,"+titleMap.get("qcNameZb");
 			}else{
-				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年";
+				xAxisData[i] = map2.get("pYear").toString().trim()+"下半年,"+titleMap.get("qcNameZb");
 			}
 			seriesDate[i] = map2.get("indexValue")==null ? "0" : map2.get("indexValue").toString();
 			seriesLevel[i] = map2.get("indexValueLevel")==null ? "0" : map2.get("indexValueLevel").toString();
 			seriesAll[i] = map2.get("indexValueAll")==null ? "0" : map2.get("indexValueAll").toString();			
 		}
+		xAxis.put("type", "category");
 		xAxis.put("data", xAxisData);
+		yAxis.put("type", "value");
 		legend.put("data",legendData);
 		
 		Map<String, Object> itemStyle = new HashMap<String, Object>();
 		Map<String, Object> color = new HashMap<String, Object>();
-		color.put("color", "#bfbfbf");
+		color.put("color", "#d73435");
 		itemStyle.put("normal", color);
+		
+		Map<String, Object> itemStyle1 = new HashMap<String, Object>();
+		Map<String, Object> color1 = new HashMap<String, Object>();
+		color1.put("color", "#3dbd7d");
+		itemStyle1.put("normal", color1);
 		
 		//时间（柱）
 		Map<String, Object> series1 = new HashMap<String, Object>();
@@ -253,7 +279,7 @@ public class FormulaController {
 		series3.put("type","line");
 		series3.put("data",seriesAll);
 		series3.put("showSymbol",false);
-		series3.put("itemStyle",itemStyle);
+		series3.put("itemStyle",itemStyle1);
 		//值
 		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
 		series.add(series1);
@@ -263,24 +289,6 @@ public class FormulaController {
 		resultMap.put("xAxis", xAxis);
 		resultMap.put("legend", legend);
 		resultMap.put("series", series);
-		
-		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(true);
-		pager.setPageSize(pagesize == null ? 5 : pagesize);
-		pager.setPageNum(page == null ? 1 : page);
-		pager.addQueryParam("ymd", pYear);
-		pager.addQueryParam("indexPCode", indexValue);
-
-		Map<String, Object> titleMap = new HashMap<String, Object>();
-		
-		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfoList(pager);
-		if (selectFormulaInfoList.size()<1) {
-			
-		}else {
-			titleMap.put("qcNameFz", selectFormulaInfoList.get(0).get("qcNameFz"));
-			titleMap.put("qcNameFm", selectFormulaInfoList.get(0).get("qcNameFm"));
-			titleMap.put("qcNameZb", selectFormulaInfoList.get(0).get("qcNameZb"));
-		}
-		pager.setRows(selectFormulaInfoList);
 		
 		resultMap.put("pager", pager);
 		resultMap.put("titleMap", titleMap);
@@ -359,7 +367,7 @@ public class FormulaController {
 		
 		Map<String, Object> itemStyle = new HashMap<String, Object>();
 		Map<String, Object> color = new HashMap<String, Object>();
-		color.put("color", "#bfbfbf");
+		color.put("color", "#d73435");
 		itemStyle.put("normal", color);
 		
 		//时间（柱）
@@ -483,7 +491,7 @@ public class FormulaController {
 	 * 添加质量上报信息
 	 * @param orgId 要上报的机构
 	 * @return
-	 *//*
+	 */
 	@ResponseBody
 	@RequestMapping("/insertForMula")
 	public String insertForMula(
@@ -492,12 +500,13 @@ public class FormulaController {
 		String result = "error";
 		Assert.notNull(orgId, "请选择机构");
 		Assert.notNull(formulaService.find(OrgInfo.class, orgId), "当前机构不存在");
-		String createUserId = "111"; //session.getAttribute(LoginUser.SESSION_USERID).toString();
-		String createUserName = "222"; //session.getAttribute(LoginUser.SESSION_USERNAME).toString();
+		String createUserId = session.getAttribute(LoginUser.SESSION_USERID).toString();
+		String createUserName = session.getAttribute(LoginUser.SESSION_USERNAME).toString();
 		
+		String pYear = "2017";
 		//添加质量上报信息
-		formulaService.insertForMula(orgId, createUserId, createUserName);
+		formulaService.insertForMula(pYear,orgId, createUserId, createUserName);
 		result = "success";
 		return result;
-	}*/
+	}
 }

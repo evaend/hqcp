@@ -55,9 +55,7 @@ public class FormulaDetailController {
 		if (StringUtils.isBlank(pYear)) {
 			throw new ValidationException("时间不允许为空");
 		}
-		if (StringUtils.isBlank(orgId)) {
-			throw new ValidationException("机构ID不允许为空");
-		}
+		
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
 		//如果当前没有选择时间，默认最接近现在的时间
 		if (StringUtils.isBlank(pYear)) {
@@ -82,10 +80,9 @@ public class FormulaDetailController {
 		}
 		
 		if (StringUtils.isBlank(orgId)) {
-			pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
-		}else {
-			pager.addQueryParam("orgId", orgId);
+			orgId = session.getAttribute(LoginUser.SESSION_USER_ORGID).toString();
 		}
+		pager.addQueryParam("orgId", orgId);
 		
 		List<Map<String, Object>> list = formulaDetailService.selectFormulaDetail(pager);
 		
@@ -93,8 +90,9 @@ public class FormulaDetailController {
 			
 		}else {
 			formulaService.insertFormula(pYear, orgId);
-			list = formulaDetailService.selectFormulaDetail(pager);
 		}
+
+		list = formulaDetailService.selectFormulaDetail(pager);
 		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String,Object>>();
 		
@@ -181,7 +179,18 @@ public class FormulaDetailController {
 				map.put("guid", str);
 				map.put("numeratorValue",ob.get(0));
 				map.put("denominatorValue",ob.get(1));
-				map.put("indexValue",ob.get(2));
+				if (ob.get(0)!=null && ob.get(1)!=null) {
+					if (StringUtils.isNotBlank(ob.get(0).toString()) && StringUtils.isNotBlank(ob.get(1).toString())) {
+						map.put("indexValue",BigDecimal.valueOf(Double.valueOf( ob.get(0).toString())/ 
+								Double.valueOf(ob.get(1).toString()) ) );
+					}else {
+						map.put("indexValue","");
+					}
+					
+				}else {
+					map.put("indexValue","");
+				}
+				
 				list.add(map);
 			}
 		}
@@ -209,6 +218,13 @@ public class FormulaDetailController {
 		Assert.notNull(indexGuid, "质量上报ID不允许为空");
 		
 		Formula formula = formulaService.find(Formula.class, indexGuid);
+		
+		List<FormulaDetail> formulaDetails = formulaDetailService.selectFormulaDetailList(formula.getIndexGuid());
+		for (FormulaDetail formulaDetail : formulaDetails) {
+			if (formulaDetail.getIndexValue()==null || ("").equals( formulaDetail.getIndexGuid() )) {
+				throw new ValidationException("需要科室审核通过，才允许审核");
+			}
+		}
 		Assert.notNull(formula, "该指标信息审核不存在");
 		if (!formula.getAuditFstate().equals("10")) {
 			throw new ValidationException("该指标已经审核过了，不允许重复审核");

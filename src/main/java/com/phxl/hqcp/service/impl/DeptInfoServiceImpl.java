@@ -157,8 +157,6 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
           constrDept.setModefileUserId(sessionUserId);
           constrDept.setModefileUserNmae(sessionUserName);
           super.insertInfo(constrDept);
-          //添加质量上报信息
-          formulaService.insertForMula(constrDept.getpYear(),sessionOrgId,sessionUserId, sessionUserName);
         }else{
           //编辑科室上报信息
             ConstrDept dept = super.find(ConstrDept.class, constrDept.getConstrDeptGuid());
@@ -223,6 +221,8 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
         if(constrDept.getMeetingList()!=null && !constrDept.getMeetingList().isEmpty()){
             insertConstrDeptMeeting(constrDept);
         }
+        //添加质量上报信息
+        formulaService.insertForMula(constrDept.getpYear(),sessionOrgId,sessionUserId, sessionUserName);
         return constrDept.getConstrDeptGuid();
     }
 

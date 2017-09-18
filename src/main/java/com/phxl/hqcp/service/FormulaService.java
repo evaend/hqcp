@@ -21,7 +21,7 @@ public interface FormulaService extends IBaseService{
 	List<Map<String, Object>> selectTemplateDetail(Map<String, Object> map);
 
 	//查询质量指标详情
-	List<Map<String, Object>> selectFormulaInfo(Map<String, Object> map);
+	List<Map<String, Object>> selectFormulaInfo(Pager<Map<String, Object>> map);
 	
 	//查询质量指标列表
 	List<Map<String, Object>> selectFormulaInfoList(Pager<Map<String, Object>> pager);

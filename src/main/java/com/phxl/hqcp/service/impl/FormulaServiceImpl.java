@@ -55,6 +55,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 		
 		//查询条件（当前选择时间）
 		Map<String, Object> map1 = new HashMap<String, Object>();
+		map1.put("pYear", pYear);
 		
 		List<FormulaTemplate> templates = formulaTemplateMapper.selectYearFormulaTemplate(map1);
 		//如果当前建设科室的机构，没有质量上报信息，则添加质量上报信息
@@ -66,7 +67,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 				this.updateFormulaDetailForTemplate(formula,orgId.toString());
 			}
 		}
-		else{
+		else if (list==null || list.size()!=templates.size()) {
 			//如果没有数据，则全部添加
 			if (list.size()==0) {
 				//循环所有的模板主表
@@ -107,7 +108,7 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 	}
 
 	//查询质量指标详情
-	public List<Map<String, Object>> selectFormulaInfo(Map<String, Object> map) {
+	public List<Map<String, Object>> selectFormulaInfo(Pager<Map<String, Object>> map) {
 		return formualMapper.selectFormulaInfo(map);
 	}
 
@@ -192,20 +193,22 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 				if (formulaTemplateDetail.getIndexPCode().equals("05INDEX")) {
 					formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
 					formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-					if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+					if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
 						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
 							Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-					}else {
-						formulaDetail.setIndexValue(BigDecimal.valueOf(0));
 					}
 				}
 				//添加  医学工程人员业务培训率
 				if (formulaTemplateDetail.getIndexPCode().equals("06INDEX")) {
-					formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-					formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-					formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-							Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
+					formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+					formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+					if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+							Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
+					}
 				}
+				System.out.println(hospitalInfo.get("staffSum"));
+				System.out.println(hospitalInfo.get("planBedSum"));
 			}
 			//添加质量上报明细
 			insertInfo(formulaDetail);
@@ -213,43 +216,45 @@ public class FormulaServiceImpl extends BaseService implements FormulaService{
 	}
 	
 	public void updateFormulaDetailForTemplate(Formula formula,String orgId) {
-		//查询科室建设信息
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("startDate", formula.getStartTime());
-		map.put("endDate", formula.getEndTime());
-		map.put("orgId", orgId);
-		map.put("pYear", formula.getpYear());
-			
-		Map<String, Object> hospitalInfo = formualMapper.selectHospitalInfo(map);
-			
-		List<FormulaDetail> FormulaDetailList = formulaDetailMapper.selectFormulaDetailList(formula.getIndexGuid());
-		if (FormulaDetailList != null) {
-			for (int i = 0; i < FormulaDetailList.size(); i++) {
-				//模板明细
-				FormulaDetail formulaDetail = FormulaDetailList.get(i);
-				if (hospitalInfo!=null) {
-					//修改   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
-					if (formulaDetail.getIndexPCode().equals("05INDEX")) {
-						formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
-						formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
-						if (hospitalInfo.get("planBedSum")!=null && hospitalInfo.get("planBedSum")!=null) {
-							formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
-								Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
-						}else {
-							formulaDetail.setIndexValue(BigDecimal.valueOf(0));
+		if (!formula.getAuditFstate().equals("20")) {
+			//查询科室建设信息
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("startDate", formula.getStartTime());
+			map.put("endDate", formula.getEndTime());
+			map.put("orgId", orgId);
+			map.put("pYear", formula.getpYear());
+				
+			Map<String, Object> hospitalInfo = formualMapper.selectHospitalInfo(map);
+				
+			List<FormulaDetail> FormulaDetailList = formulaDetailMapper.selectFormulaDetailList(formula.getIndexGuid());
+			if (FormulaDetailList != null) {
+				for (int i = 0; i < FormulaDetailList.size(); i++) {
+					//模板明细
+					FormulaDetail formulaDetail = FormulaDetailList.get(i);
+					if (hospitalInfo!=null) {
+						//修改   医学工程人员（医疗设备、医用耗材管理和工程技术人员）配置水平
+						if (formulaDetail.getIndexPCode().equals("05INDEX")) {
+							formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+							formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+							if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+									Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
+							}
+						}
+						//添加  医学工程人员业务培训率
+						if (formulaDetail.getIndexPCode().equals("06INDEX")) {
+							formulaDetail.setNumeratorValue(hospitalInfo.get("staffSum")==null ? 0 : Long.valueOf(hospitalInfo.get("staffSum").toString()));
+							formulaDetail.setDenominatorValue(hospitalInfo.get("planBedSum")==null ? 0 : Long.valueOf(hospitalInfo.get("planBedSum").toString()));
+							if (hospitalInfo.get("staffSum")!=null && hospitalInfo.get("planBedSum")!=null) {
+								formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("staffSum").toString()) /
+									Double.valueOf(hospitalInfo.get("planBedSum").toString()) ) );
+							}
 						}
 					}
-					//添加  医学工程人员业务培训率
-					if (formulaDetail.getIndexPCode().equals("06INDEX")) {
-						formulaDetail.setNumeratorValue(Long.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()));
-						formulaDetail.setDenominatorValue(Long.valueOf(hospitalInfo.get("staffSum").toString()));
-						formulaDetail.setIndexValue(BigDecimal.valueOf( Double.valueOf(hospitalInfo.get("meetingDeptUserSum").toString()) /
-								Double.valueOf(hospitalInfo.get("staffSum").toString()) ) );
-					}
+					
+					//添加质量上报明细
+					updateInfo(formulaDetail);
 				}
-				
-				//添加质量上报明细
-				updateInfo(formulaDetail);
 			}
 		}
 	}

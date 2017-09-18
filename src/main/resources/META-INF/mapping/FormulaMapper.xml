@@ -71,16 +71,13 @@
  
  	<!-- 查询建设科室信息 -->
 	<select id="selectHospitalInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select staff_sum "staffSum" ,plan_bed_sum "planBedSum"
-			,(select sum(meeting_dept_user_sum ) from tb_constr_dept_meeting
-			where meeting_date > #{startDate}
-			and meeting_date >= #{endDate}) "meetingDeptUserSum"
-			from tb_constr_dept_org where 
-			constr_dept_guid = 
-			(select constr_dept_guid from 
-			tb_constr_dept where org_id = #{orgId}
-			and p_year = #{pYear}
-			)
+			select plan_bed_sum "planBedSum" , 
+			(select count(tb_constr_dept_user.constr_dept_user_guid )
+			 from tb_constr_dept_user
+			 left join tb_constr_dept on tb_constr_dept.constr_dept_guid = 
+			 tb_constr_dept_user.constr_dept_guid
+			 where tb_constr_dept.org_id = #{orgId} and tb_constr_dept.p_year= #{pYear}) "staffSum"
+			 from tb_constr_dept_org where p_year = #{pYear} and org_id = #{orgId}
 	</select> 
 	
 	<!-- 查询建设科室公式记录 -->
@@ -127,18 +124,39 @@
 	    <result column="index_value" property="indexValue" jdbcType="VARCHAR" />
 	    <result column="index_value_level" property="indexValueLevel" jdbcType="VARCHAR" />
 	    <result column="index_value_all" property="indexValueAll" jdbcType="VARCHAR" />
+	    <result column="hospitalLevelName" property="hospitalLevelName" jdbcType="VARCHAR" />
+	    <result column="hospitalTypeName" property="hospitalTypeName" jdbcType="VARCHAR" />
   	</resultMap>
   	
  	<!-- 查询质量指标详情 -->
- 	<select id="selectFormulaInfo" resultMap="FormulaInfo" parameterType="java.util.HashMap">
- 		select * from v_qc_score where index_p_code = #{indexPCode}
-			and org_id = #{orgId}
-			order by ymd desc
+ 	<select id="selectFormulaInfo" resultMap="FormulaInfo" parameterType="com.phxl.core.base.entity.Pager">
+ 		select v_qc_score.* , 
+			(select tf_clo_name from td_static_data where tf_clo_code = v_qc_score.HOSPITAL_LEVEL
+			        and  static_id = 
+			 (select static_id from td_static_info where tf_table_clo = 'HOSPITAL_LEVEL')
+			) "hospitalLevelName" ,
+			(select tf_clo_name from td_static_data where tf_clo_code = v_qc_score.HOSPITAL_type
+			        and  static_id = 
+			 (select static_id from td_static_info where tf_table_clo = 'HOSPITAL_TYPE')
+			) "hospitalTypeName"
+			 from v_qc_score 
+	 		where index_p_code = #{conditiions.indexPCode}
+				and org_id = #{conditiions.orgId}
+				order by ymd desc
  	</select>
  	
  	<!-- 查询全部医院，某段时期的某个指标信息 -->
  	<select id="selectFormulaInfoList" resultMap="FormulaInfo" parameterType="com.phxl.core.base.entity.Pager">
- 		select * from v_qc_score 
+ 		select v_qc_score.* , 
+			(select tf_clo_name from td_static_data where tf_clo_code = v_qc_score.HOSPITAL_LEVEL
+			        and  static_id = 
+			 (select static_id from td_static_info where tf_table_clo = 'HOSPITAL_LEVEL')
+			) "hospitalLevelName" ,
+			(select tf_clo_name from td_static_data where tf_clo_code = v_qc_score.HOSPITAL_type
+			        and  static_id = 
+			 (select static_id from td_static_info where tf_table_clo = 'HOSPITAL_TYPE')
+			) "hospitalTypeName"
+			 from v_qc_score 
 			<![CDATA[ where ymd <= #{conditiions.ymd, jdbcType=DECIMAL} 
 				and index_p_code = #{conditiions.indexPCode, jdbcType=VARCHAR} ]]>
 			order by ymd desc
