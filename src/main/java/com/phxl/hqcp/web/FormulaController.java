@@ -425,6 +425,7 @@ public class FormulaController {
 	public void exporAllYearFornla(
 			@RequestParam(value="pYear",required = false ) String pYear,
 			@RequestParam(value="indexValue",required = false ) String indexValue,
+			@RequestParam(value="orgId",required = false ) String orgId,
 			HttpServletRequest request,HttpServletResponse response) throws Exception{
 		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(false);
 		if (StringUtils.isBlank(pYear)) {
@@ -433,7 +434,7 @@ public class FormulaController {
 		if (StringUtils.isBlank(indexValue)) {
 			throw new ValidationException("指标类型不允许为空");
 		}
-		pager.addQueryParam("orgId", session.getAttribute(LoginUser.SESSION_USER_ORGID));
+		pager.addQueryParam("orgId", orgId);
 		pager.addQueryParam("indexPCode", indexValue);
 
 		List<Map<String, Object>> selectFormulaInfoList = formulaService.selectFormulaInfo(pager);
