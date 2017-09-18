@@ -286,9 +286,15 @@ public class FormulaController {
 		series.add(series2);
 		series.add(series3);
 		
+		Map<String, Map<String, Object>> tooltip = new HashMap<String, Map<String,Object>> ();
+		Map<String, Object> trigger = new HashMap<String, Object>();
+		trigger.put("trigger", "axis");
+		tooltip.put("tooltip", trigger);
+		
 		resultMap.put("xAxis", xAxis);
 		resultMap.put("legend", legend);
 		resultMap.put("series", series);
+		resultMap.put("tooltip", tooltip);
 		
 		resultMap.put("pager", pager);
 		resultMap.put("titleMap", titleMap);
