@@ -37,7 +37,7 @@
 	
 	<!-- 科室信息审核列表 -->
 	<select id="searchConstrDeptAuditList" resultType="java.util.LinkedHashMap" parameterType="com.phxl.core.base.entity.Pager">
-		select cd.qc_org_id,cd.org_id,cd.constr_dept_guid "constrDeptGuid",cd.p_year "pYear",o.org_name "orgName",d.dept_name "deptName",o.lxr "lxr",o.lxdh "lxdh",cd.audit_fstate "auditFstate",
+		select cd.qc_org_id "qcOrgId",cd.org_id "orgId",cd.constr_dept_guid "constrDeptGuid",cd.p_year "pYear",o.org_name "orgName",d.dept_name "deptName",o.lxr "lxr",o.lxdh "lxdh",cd.audit_fstate "auditFstate",
            (CASE WHEN cd.schedule is null THEN 0 ELSE cd.schedule END) "schedule" 
 	    from TD_QC_SCOPE qc join TB_CONSTR_DEPT cd on qc.qc_org_id = cd.qc_org_id and qc.org_id = cd.org_id
 	    left join td_org_info o on o.org_id = cd.org_id
