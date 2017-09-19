@@ -270,7 +270,7 @@ public class FormulaController {
 		series2.put("name","同级医院平均水平");
 		series2.put("type","line");
 		series2.put("data",seriesLevel);
-		series2.put("showSymbol",false);
+//		series2.put("showSymbol",false);
 		series2.put("itemStyle",itemStyle);
 		
 		//全省（线）
@@ -278,7 +278,7 @@ public class FormulaController {
 		series3.put("name","全省医院平均配置水平对比");
 		series3.put("type","line");
 		series3.put("data",seriesAll);
-		series3.put("showSymbol",false);
+//		series3.put("showSymbol",false);
 		series3.put("itemStyle",itemStyle1);
 		//值
 		List<Map<String, Object>> series = new ArrayList<Map<String,Object>>();
