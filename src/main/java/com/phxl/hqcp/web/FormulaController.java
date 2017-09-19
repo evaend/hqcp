@@ -295,7 +295,7 @@ public class FormulaController {
 		resultMap.put("legend", legend);
 		resultMap.put("series", series);
 		resultMap.put("yAxis", yAxis);
-		resultMap.put("tooltip", tooltip);
+//		resultMap.put("tooltip", tooltip);
 		
 		resultMap.put("pager", pager);
 		resultMap.put("titleMap", titleMap);
